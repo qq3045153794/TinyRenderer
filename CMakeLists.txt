@@ -7,6 +7,7 @@ set(SRC
     ${PROJECT_SOURCE_DIR}/src/tools/Shader.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Texture2D.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/RenderText.cpp
+    ${PROJECT_SOURCE_DIR}/src/camera/CameraFps.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
@@ -30,6 +31,7 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${PROJECT_SOURCE_DIR}/src/model
         ${PROJECT_SOURCE_DIR}/src/tools
+        ${PROJECT_SOURCE_DIR}/src/camera
         ${PROJECT_SOURCE_DIR}/vendor/glad/include
         ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
         ${PROJECT_SOURCE_DIR}/vendor/glm

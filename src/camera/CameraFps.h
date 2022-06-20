@@ -17,9 +17,21 @@ namespace gl_cameras {
                             0.0, 0.0, 1.0, 0.0,\
                             0.0, 0.0, 0.0, 1.0)
 
+enum CameraMovement{
+  FORWARD,
+  BACKWARD,
+  LEFT,
+  RIGHT
+};
+
 class CameraFps {
  public: 
-  const glm::mat4& const getViewMatrix() { return glm::lookAt(eye_, eye_+front_, up_); }
+  CameraFps (glm::vec3 eye, glm::vec3 front, glm::vec3 up);
+  const glm::mat4 getViewMatrix() { return glm::lookAt(eye_, eye_+front_, up_); }
+  const GLfloat & getFov() { return zoom_; }
+  void processKeyboard(CameraMovement direction, float deltaTime);
+  void processMouseMovement(GLfloat xoffset, GLfloat yoffset);
+  void processMouseScroll(GLfloat yoffset);
  private:
   void updateCameraVector();
   
@@ -27,10 +39,18 @@ class CameraFps {
   GLfloat yaw_;
   GLfloat roll_;
   GLfloat zoom_;
-  glm::vec3 front_;
+  
+  GLfloat movement_speed_;
+  GLfloat mouse_sensitivity_;
+
+  const glm::vec3 kFront;
+  const glm::vec3 kUp;
+  const glm::vec3 kRight;
+
   glm::vec3 eye_;
+  glm::vec3 front_;
   glm::vec3 up_;
-  glm::vec3 world_up_;
+  glm::vec3 right_;
 };
 
 }
