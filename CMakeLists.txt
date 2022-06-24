@@ -18,14 +18,15 @@ set(LIBS
     GL m Xrandr  X11  pthread dl
 )
 
-add_executable(${PROJECT_NAME} 
-    ${PROJECT_SOURCE_DIR}/examples/demo1/main.cpp
-    ${SRC}      
-)
-#add_executable(${PROJECT_NAME}
-#    ${PROJECT_SOURCE_DIR}/src/tools/front.cpp
-#    ${SRC}
+#add_executable(${PROJECT_NAME} 
+#    ${PROJECT_SOURCE_DIR}/examples/demo1/main.cpp
+#    ${SRC}      
 #)
+
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCE_DIR}/main.cpp
+    ${SRC}
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
