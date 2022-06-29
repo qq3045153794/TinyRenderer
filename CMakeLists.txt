@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.15)
 project(LearnOpenGL)
-set(SRC
-    
+set(SRC    
     ${PROJECT_SOURCE_DIR}/src/model/Trangle.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/ResourceManager.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Shader.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Texture2D.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/RenderText.cpp
+    ${PROJECT_SOURCE_DIR}/src/camera/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/CameraFps.cpp
+    ${PROJECT_SOURCE_DIR}/src/camera/TrackBallControls.cpp
+    ${PROJECT_SOURCE_DIR}/src/camera/TrackBallInteractor.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
@@ -18,15 +20,15 @@ set(LIBS
     GL m Xrandr  X11  pthread dl
 )
 
-#add_executable(${PROJECT_NAME} 
-#    ${PROJECT_SOURCE_DIR}/examples/demo1/main.cpp
-#    ${SRC}      
-#)
-
-add_executable(${PROJECT_NAME}
-    ${PROJECT_SOURCE_DIR}/main.cpp
-    ${SRC}
+add_executable(${PROJECT_NAME} 
+    ${PROJECT_SOURCE_DIR}/examples/demo1/main.cpp
+    ${SRC}      
 )
+
+#add_executable(${PROJECT_NAME}
+#    ${PROJECT_SOURCE_DIR}/main.cpp
+#    ${SRC}
+#)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

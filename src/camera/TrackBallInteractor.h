@@ -18,7 +18,7 @@ namespace gl_cameras
   {
   public:
     TrackBallInteractor();
-    ~TrackBallInteractor();
+    ~TrackBallInteractor() {};
     void update();
     void set_click_point(GLfloat x, GLfloat y);
     void set_screen_size(GLfloat width, GLfloat height);
@@ -44,8 +44,8 @@ namespace gl_cameras
     glm::quat rotation_;
     glm::quat rotation_sum_;
     GLfloat translate_length_;
-    GLfloat is_left_click_;
-    GLfloat is_dragging_;
+    GLboolean is_left_click_;
+    GLboolean is_dragging_;
     GLfloat speed_;
     GLfloat height_;
     GLfloat width_;

@@ -6,6 +6,17 @@ const glm::vec3 TrackBallInteractor::X(1.0f, 0.0, 0.0);
 const glm::vec3 TrackBallInteractor::Y(0.0f, 1.0, 0.0);
 const glm::vec3 TrackBallInteractor::Z(0.0f, 0.0, 1.0);
 
+TrackBallInteractor::TrackBallInteractor()
+    : rotation_(1.0f, 0.0f, 0.0f, 0.0f),
+      rotation_sum_(1.0f, 0.0f, 0.0f, 0.0f),
+      is_left_click_(false),
+      is_dragging_(false),
+      speed_(0.25f),
+      height_(1.0f),
+      width_(1.0f) { }
+
+
+
 // https://www.opengl.org/wiki/Object_Mouse_Trackball
 void TrackBallInteractor::compute_point_on_sphere(const glm::vec2 &point, 
                                                   glm::vec3& result) {
@@ -34,7 +45,7 @@ void TrackBallInteractor
   GLfloat cos_theta = glm::dot(u,v);
   glm::vec3 rotation_axis;
   const GLfloat& kEpsiLon = 1.0e-5f;
-  if(cos_theta < 1.0f + kEpsiLon) {
+  if(cos_theta < -1.0f + kEpsiLon) {
     rotation_axis = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), u);
     if(glm::length2(rotation_axis) < 0.01) {
       rotation_axis = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), u);
@@ -60,7 +71,7 @@ void TrackBallInteractor::drag() {
 
   compute_point_on_sphere(click_point_, stop_vector_);
   compute_rotation_between_vectors(start_vector_, stop_vector_, rotation_);
-
+  rotation_ = glm::inverse(rotation_);
   drag_arc();
 }
 
@@ -72,22 +83,24 @@ void TrackBallInteractor::drag_arc() {
 void TrackBallInteractor::update_camera_eye_up(bool is_eye, bool is_up) {
   if(is_eye) {
     glm::vec3 eye;
-    // TODO
+    compute_camera_eye(eye);
+    camera_->set_eye(eye);
   }
 
   if(is_up) {
     glm::vec3 up;
+    compute_camera_up(up);
+    camera_->set_up(up);
   }
 }
 
 void TrackBallInteractor::compute_camera_eye(glm::vec3& eye) {
   glm::vec3 orientation = rotation_sum_ * Z;
-  eye = translate_length_ * orientation;
-  // TODO
+  eye = translate_length_ * orientation + camera_->get_center();
 }
 
 void TrackBallInteractor::compute_camera_up(glm::vec3& up) {
-  // TODO
+  up = glm::normalize(rotation_sum_ * Y);
 }
 
 void TrackBallInteractor::update() {
@@ -108,7 +121,8 @@ void TrackBallInteractor::update() {
 
 void TrackBallInteractor::freeze_transform() {
   if(camera_) {
-    // TODO
+    rotation_sum_ = glm::inverse(glm::quat(camera_->get_view_mat()));
+    translate_length_ = glm::length(camera_->get_eye() - camera_->get_center());
   }
 }
 

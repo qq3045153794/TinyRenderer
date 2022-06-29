@@ -52,4 +52,8 @@ void TrackBallControls::size_call_back(GLFWwindow* window, int width, int height
   instance().interator_.set_screen_size(static_cast<GLfloat>(width), static_cast<GLfloat>(height));
 }
 
+void TrackBallControls::update() {
+  interator_.update();
+}
+
 }
