@@ -11,7 +11,7 @@ TrackBallInteractor::TrackBallInteractor()
       rotation_sum_(1.0f, 0.0f, 0.0f, 0.0f),
       is_left_click_(false),
       is_dragging_(false),
-      speed_(0.25f),
+      speed_(1.0f),
       height_(1.0f),
       width_(1.0f) { }
 
@@ -73,6 +73,8 @@ void TrackBallInteractor::drag() {
   compute_rotation_between_vectors(start_vector_, stop_vector_, rotation_);
   rotation_ = glm::inverse(rotation_);
   drag_arc();
+  prev_click_point_ = click_point_;
+  start_vector_ = stop_vector_;
 }
 
 void TrackBallInteractor::drag_arc() {
