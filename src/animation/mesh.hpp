@@ -29,9 +29,10 @@ struct Texture {
 class Mesh {
  public:
   Mesh() = delete;
-  Mesh(const Mesh&) = delete;
-  const Mesh& operator=(const Mesh&) = delete;
-  ~Mesh();
+  // TODO RAII
+  //Mesh(const Mesh&) = delete;
+  //const Mesh& operator=(const Mesh&) = delete;
+  //~Mesh();
   Mesh(std::vector<Vertex> vertices_, std::vector<GLuint>indices_, std::vector<Texture> textures_);
   void draw(Shader& shader);
  private:
@@ -50,12 +51,14 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint>indices, std::vector
   setup_mesh();
 }
 
+/*
+TODO RAII
 Mesh::~Mesh() {
   glDeleteVertexArrays(1, &vao_);
   glDeleteBuffers(1, &vbo_);
   glDeleteBuffers(1, &ebo_);
 }
-
+*/
 void Mesh::setup_mesh() {
   glGenVertexArrays(1, &vao_);
   glGenBuffers(1, &vbo_);
