@@ -30,7 +30,7 @@ class Bone {
  public:
   Bone(const std::string& name, int id, const aiNodeAnim* channel);
   void update(float animation_time);
-  glm::mat4 get_local_transform;
+  glm::mat4& get_local_transform();
   const std::string& get_bone_name() const { return name_;};
   const int get_bone_id() { return id_;};
   int get_position_index(float animation_time);
@@ -80,12 +80,15 @@ Bone::Bone(const std::string& name, int id, const aiNodeAnim* channel)
       rotations_.push_back(data);
     }
 
+    
     num_scalings_ = channel->mNumScalingKeys;
     for(int key_index = 0; key_index < num_scalings_; key_index++) {
       aiVector3D scale = channel->mScalingKeys[key_index].mValue;
       float time_stamp = channel->mScalingKeys[key_index].mTime;
+      //if(name_ == "Hips") std::cout<<"t="<<time_stamp<<" "<<std::endl;
       KeyScale data;
       data.scale = AssimpTOGlm::get_glm_vec(scale);
+      data.time_stamp = time_stamp;
       scales_.push_back(data);
     }
 
@@ -165,6 +168,10 @@ float Bone::get_scale_factor(float last_time_stamp, float next_time_stamp, float
   float frames_diff = next_time_stamp - last_time_stamp;
   scale_factor = mid_way_length / frames_diff;
   return scale_factor;
+}
+
+glm::mat4& Bone::get_local_transform() {
+  return local_transform_;
 }
 
 }

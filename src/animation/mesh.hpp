@@ -114,7 +114,7 @@ void Mesh::draw(Shader& shader) {
     }
 
     glActiveTexture(GL_TEXTURE0 + i);
-    shader.set_integer((name + name).c_str(), i);
+    shader.set_integer((name + number).c_str(), i);
     glBindTexture(GL_TEXTURE_2D, textures_[i].id);
   }
 

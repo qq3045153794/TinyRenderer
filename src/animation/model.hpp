@@ -24,7 +24,7 @@ class Model {
   Model(const std::string& path, bool gamma);
   ~Model();
   void draw(Shader& shader);
-  const auto& get_bone_info_map();
+  auto& get_bone_info_map();
   const int& getBoneCount();
  private:
   std::vector<Texture> textures_loaded_;
@@ -32,7 +32,7 @@ class Model {
   std::string directory_;
   bool gammaCorrection_;
   std::map<std::string, BoneInfo> bone_info_map_;
-  int bone_counter_;
+  int bone_counter_ = 0;
 
   void load_model(const std::string &path);
   void process_node(aiNode* node, const aiScene* scene);
@@ -54,8 +54,15 @@ void Model::load_model(const std::string &path) {
   const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
   if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
-  {
+  { 
     std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+    std::cout<<scene<<std::endl;
+    std::cout<<(scene->mFlags)<<std::endl;
+    std::cout<<AI_SCENE_FLAGS_INCOMPLETE<<std::endl;
+    std::cout<<scene->mRootNode<<std::endl;
+    std::cout<<"model"<<std::endl;
+    
+    std::cout<<"end model"<<std::endl;
     return;
   }
   directory_ = path.substr(0, path.find_last_of('/'));
@@ -70,7 +77,7 @@ void Model::process_node(aiNode* node, const aiScene* scene) {
     meshes_.push_back(process_mesh(mesh, scene));
   }
 
-  for(size_t i = 0; i< node->mNumChildren; i++) {
+  for(size_t i = 0; i < node->mNumChildren; i++) {
     process_node(node->mChildren[i], scene);
   }
 }
@@ -136,7 +143,13 @@ void Model::set_vertex_bone_data_to_default(Vertex& vertex) {
 void Model::set_vertex_bone_data(Vertex& vertex, 
                                  int bone_id, 
                                  float weight) {
-
+  for(size_t i = 0; i < kMaxBone; ++i) {
+    if(vertex.bone_ids[i] < 0) {
+      vertex.weights[i] = weight;
+      vertex.bone_ids[i] = bone_id;
+      break;
+    }
+  }
 }
 
 GLuint Model::texture_from_file(const char* path, 
@@ -208,19 +221,6 @@ std::vector<Texture> Model::load_material_textures(aiMaterial* mat,
   return textures;
 }
 
-void Model::set_vertex_bone_data(Vertex& vertex, 
-                                 int bone_id, 
-                                 float weight) {
-  
-  for(size_t i = 0; i < kMaxBone; ++i) {
-    if(vertex.bone_ids < 0) {
-      vertex.weights[i] = weight;
-      vertex.bone_ids[i] = bone_id;
-      break;
-    }
-  }
-}
-
 void Model::extract_bone_weight_for_vertices(std::vector<Vertex>& vertices, 
                                       aiMesh* mesh, 
                                       const aiScene* scene) {
@@ -251,6 +251,19 @@ void Model::extract_bone_weight_for_vertices(std::vector<Vertex>& vertices,
   }
 }
 
+void Model::draw(Shader& shader) {
+  for(size_t i = 0; i < meshes_.size(); i++) {
+    meshes_[i].draw(shader);
+  }
+}
+
+auto& Model::get_bone_info_map() {
+  return bone_info_map_;
+}
+
+const int& Model::getBoneCount() {
+  return bone_counter_;
+}
 
 }
 
