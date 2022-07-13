@@ -15,8 +15,8 @@ set(SRC
 
 set(LIBS
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/lib/libglfw3.a
-    ${PROJECT_SOURCE_DIR}/vendor/std_image/stb_image.h
     ${PROJECT_SOURCE_DIR}/vendor/freetype/lib/libfreetype.so.6.17.0
+    ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/bin/libassimp.so.5.2.0
     GL m Xrandr  X11  pthread dl
 )
 
@@ -35,11 +35,13 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/src/model
         ${PROJECT_SOURCE_DIR}/src/tools
         ${PROJECT_SOURCE_DIR}/src/camera
+        ${PROJECT_SOURCE_DIR}/src/animation
         ${PROJECT_SOURCE_DIR}/vendor/glad/include
         ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
         ${PROJECT_SOURCE_DIR}/vendor/glm
         ${PROJECT_SOURCE_DIR}/vendor/std_image
         ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
+        ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
 )
 
 target_link_libraries(${PROJECT_NAME}
