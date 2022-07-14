@@ -32,9 +32,9 @@ void init() {
   ResourceManager::load_texture("../resource/texture/awesomeface.png", "trangle");
   ResourceManager::load_shader("../resource/shader/front.vs", "../resource/shader/front.fs", "front");
   ResourceManager::load_shader("../resource/shader/anim_model.vs", "../resource/shader/anim_model.fs", "anim");
-  model = new gl_animation::Model("../resource/objects/car/blender_car.glb","false");
-  animation = new gl_animation::Animation("../resource/objects/car/blender_car.glb", model);
-  animator = new gl_animation::Animator(animation);
+  model = new gl_animation::Model("../resource/objects/obj/Wolf_One_obj.obj","false");
+  // animation = new gl_animation::Animation("../resource/objects/obj/Wolf_obj.obj", model);
+  // animator = new gl_animation::Animator(animation);
 
   //camera_fps = new gl_cameras::CameraFps(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
   camera_p = new gl_cameras::Camera(45.0f, static_cast<float>(SCREEN_WIDTH)/static_cast<float>(SCREEN_HEIGHT), 0.1f, 1000.0f);
@@ -83,7 +83,7 @@ int main() {
 
     processInput(window);
     gl_cameras::TrackBallControls::instance().update();
-    animator->update_animation(deltaTime);
+    // animator->update_animation(deltaTime);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     ResourceManager::get_shader("anim").use();
@@ -94,6 +94,7 @@ int main() {
     std::cout<<"c="<<camera_p->get_center().x<<" "<<camera_p->get_center().y<<" "<<camera_p->get_center().z<<std::endl;
     std::cout<<"u="<<camera_p->get_up().x<<" "<<camera_p->get_up().y<<" "<<camera_p->get_up().z<<std::endl;
    
+    /*
     auto transforms = animator->get_final_bone_matrices();
     
     for(int i = 0; i < transforms.size(); i++) {
@@ -105,14 +106,15 @@ int main() {
       std::cout<<"\n";
       //<<transforms[i][0]<<" "<<transforms[i][0]<<" "<<transforms[i][0]<<"\n";
     }
+    */
 
     glm::mat4 t_model = glm::mat4(1.0);
     t_model = glm::translate(t_model, glm::vec3(0.0f, -0.4f, 0.0f));
-    t_model = glm::scale(t_model, glm::vec3(0.5f, 0.5f, 0.5f));
+    // t_model = glm::scale(t_model, glm::vec3(0.5f, 0.5f, 0.5f));
     ResourceManager::get_shader("anim").set_matrix4("model", t_model, true);
     model->draw(ResourceManager::get_shader("anim"));
 
-    //trangle->draw();
+    // trangle->draw();
     glDisable(GL_DEPTH_TEST);
     text->draw(L"东风谷早苗",650.0, 25.0, glm::vec3(1.0, 1.0, 1.0));
     glEnable(GL_DEPTH_TEST);

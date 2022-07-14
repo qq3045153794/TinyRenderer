@@ -19,6 +19,9 @@ class AssimpTOGlm {
   }
 
   static glm::vec3 get_glm_vec(const aiVector3D& vec) {
+    std::cout<<vec.x<<"\n";
+    std::cout<<vec.y<<"\n";
+    std::cout<<vec.z<<"\n";
     return glm::vec3(vec.x, vec.y, vec.z);
   }
 
