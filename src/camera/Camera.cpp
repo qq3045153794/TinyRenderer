@@ -43,9 +43,11 @@ const glm::mat4& Camera::get_projection_mat() {
 const glm::vec3& Camera::get_eye() {
   return eye_;
 }
+
 const glm::vec3& Camera::get_center() {
   return center_;
 }
+
 const glm::vec3& Camera::get_up() {
   return up_;
 }

@@ -1,7 +1,18 @@
 
 #include "Image.h"
 
-Image::Image() {
+
+
+std::shared_ptr<Image> Image::create_image_model(glm::vec2 sz, 
+                                          glm::vec3 position, 
+                                          glm::quat rotation) {
+    return std::shared_ptr<Image> (new Image(sz, position, rotation));
+}
+
+Image::Image(glm::vec2 sz, glm::vec3 position, glm::quat rotation)
+    : m_sz(sz),
+      m_position(position),
+      m_rotation(rotation) {
     setup_buffer();
 }
 
@@ -15,7 +26,7 @@ void Image::setup_buffer() {
     GLfloat data[6][5] = {
         {0.0, 0.0, 0.0, 0.0, 1.0}, {0.0, 1.0, 0.0, 0.0, 0.0},
         {1.0, 0.0, 0.0, 1.0, 1.0}, {1.0, 0.0, 0.0, 1.0, 1.0},
-        {0.0, 1.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 1.0, 1.0, 1.0}
+        {0.0, 1.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 0.0, 1.0, 0.0}
     };
 
     glGenVertexArrays(1, &m_vao);
@@ -25,16 +36,14 @@ void Image::setup_buffer() {
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 5, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), static_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(0));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void*)(sizeof(GLfloat) *3));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(sizeof(GLfloat) * 3));
     glEnableVertexAttribArray(1);
 }
 
-std::shared_ptr<Image> create_image_model() {
-    return std::shared_ptr<Image> (new Image());
-}
+
 
 void Image::draw(Shader& shader) {
     shader.use();
