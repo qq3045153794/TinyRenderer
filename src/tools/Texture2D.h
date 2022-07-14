@@ -9,6 +9,8 @@ public:
   void set_image(GLuint width, GLuint height, unsigned char* data);
   void bind() const;
 
+  GLuint get_texture_id();
+
   void set_format(GLuint internal_format, GLuint image_format);
   void set_wrap(GLuint warp_s, GLuint warp_t);
   void set_filter(GLuint filter_min, GLuint filter_max);

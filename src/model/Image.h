@@ -7,13 +7,12 @@
 #include <memory>
 class Image {
  public:
-    Image();
+    Image(glm::vec2 sz, glm::vec3 postion, glm::quat rotation);
     ~Image();
     Image(const Image&) = delete;
     const Image& operator= (const Image&) = delete;
     void draw(Shader& shader);
-    
-    static std::shared_ptr<Image> create_image_model();
+    static std::shared_ptr<Image> create_image_model(glm::vec2 sz, glm::vec3 position, glm::quat rotation);
  private:
     void setup_buffer();
     glm::vec2 m_sz;

@@ -98,11 +98,11 @@ int main() {
     /*
     for(int i = 0; i < transforms.size(); i++) {
       ResourceManager::get_shader("anim").set_matrix4(("finalBonesMatrices[" + std::to_string(i) + "]").c_str(), transforms[i], true);
-      std::cout<<transforms[i][0][0]<<" "<<transforms[i][0][1]<<" "<<transforms[i][0][2]<<" "<<transforms[i][0][3]<<"\n";
-      std::cout<<transforms[i][1][0]<<" "<<transforms[i][1][1]<<" "<<transforms[i][1][2]<<" "<<transforms[i][1][3]<<"\n";
-      std::cout<<transforms[i][2][0]<<" "<<transforms[i][2][1]<<" "<<transforms[i][2][2]<<" "<<transforms[i][2][3]<<"\n";
-      std::cout<<transforms[i][3][0]<<" "<<transforms[i][3][1]<<" "<<transforms[i][3][2]<<" "<<transforms[i][3][3]<<"\n";
-      std::cout<<"\n";
+      //std::cout<<transforms[i][0][0]<<" "<<transforms[i][0][1]<<" "<<transforms[i][0][2]<<" "<<transforms[i][0][3]<<"\n";
+      //std::cout<<transforms[i][1][0]<<" "<<transforms[i][1][1]<<" "<<transforms[i][1][2]<<" "<<transforms[i][1][3]<<"\n";
+      //std::cout<<transforms[i][2][0]<<" "<<transforms[i][2][1]<<" "<<transforms[i][2][2]<<" "<<transforms[i][2][3]<<"\n";
+      //std::cout<<transforms[i][3][0]<<" "<<transforms[i][3][1]<<" "<<transforms[i][3][2]<<" "<<transforms[i][3][3]<<"\n";
+      //std::cout<<"\n";
       //<<transforms[i][0]<<" "<<transforms[i][0]<<" "<<transforms[i][0]<<"\n";
     }
     */
@@ -112,7 +112,7 @@ int main() {
     ResourceManager::get_shader("anim").set_matrix4("model", t_model, true);
     model->draw(ResourceManager::get_shader("anim"));
 
-    //trangle->draw();
+    // trangle->draw();
     glDisable(GL_DEPTH_TEST);
     
     glEnable(GL_DEPTH_TEST);

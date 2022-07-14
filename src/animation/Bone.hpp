@@ -65,6 +65,7 @@ Bone::Bone(const std::string& name, int id, const aiNodeAnim* channel)
       aiVector3D ai_position = channel->mPositionKeys[position_index].mValue;
       float time_stamp = channel->mPositionKeys[position_index].mTime;
       KeyPosition data;
+      std::cout<<ai_position.x<<" "<<ai_position.y<<" "<<ai_position.z<<"\n";
       data.position = AssimpTOGlm::get_glm_vec(ai_position);
       data.time_stamp = time_stamp;
       positions_.push_back(data);
@@ -87,6 +88,7 @@ Bone::Bone(const std::string& name, int id, const aiNodeAnim* channel)
       float time_stamp = channel->mScalingKeys[key_index].mTime;
       //if(name_ == "Hips") std::cout<<"t="<<time_stamp<<" "<<std::endl;
       KeyScale data;
+      std::cout<<scale.x<<" "<<scale.y<<" "<<scale.z<<"\n";
       data.scale = AssimpTOGlm::get_glm_vec(scale);
       data.time_stamp = time_stamp;
       scales_.push_back(data);
