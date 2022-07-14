@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 1
-map_Kd textures/wolf_col.jpg
+map_Kd textures/Wolf_Body.jpg
 
 newmtl Wolf_Claws
 Ns 0.000000
@@ -30,8 +30,8 @@ Ks 0.000000 0.000000 0.000000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 1
-map_Kd -s 0.800000 0.800000 1.000000 textures/Wolf_Eyes_1.jpg
+illum 1   
+map_Kd -s 0.800000 0.800000 1.000000 textures/Wolf_Eyes_2.jpg
 map_Ke -s 0.800000 0.800000 1.000000 textures/Wolf_Eyes_1.jpg
 
 newmtl Wolf_Fur
