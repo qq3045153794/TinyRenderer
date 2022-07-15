@@ -7,6 +7,7 @@ YUVFrame::YUVFrame(GLuint width, GLuint height, GLuint sampler)
       m_height(height),
       m_sampler(sampler),
       m_texture(),
+      m_mult_texture(),
       m_shader(ResourceManager::load_shader("../resource/shader/frame.vs",
                                             "../resource/shader/frame.fs", "yuv_shader")) {
   setup_frame_buffer();
@@ -39,7 +40,7 @@ void YUVFrame::setup_frame_buffer() {
                             m_mult_rbo);
   // 检查帧缓冲
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete! 1" << std::endl;
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   glGenFramebuffers(1, &m_fbo);
@@ -52,14 +53,15 @@ void YUVFrame::setup_frame_buffer() {
 
   // 检查帧缓冲
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete! 2" << std::endl;
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void YUVFrame::begin_render() {
   glBindFramebuffer(GL_FRAMEBUFFER, m_mult_fbo);
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
 }
 
 void YUVFrame::end_render() {
@@ -74,12 +76,13 @@ void YUVFrame::end_render() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
 }
 
 void YUVFrame::setup_screem_buffer() {
-  GLfloat data[6][5] = {{-1.0, -1.0, 0.0, 0.0, 1.0}, {-1.0, 1.0, 0.0, 0.0, 0.0},
-                        {1.0, -1.0, 0.0, 1.0, 1.0},  {1.0, -1.0, 0.0, 1.0, 1.0},
-                        {-1.0, 1.0, 0.0, 0.0, 0.0},  {1.0, 1.0, 0.0, 1.0, 0.0}};
+  GLfloat data[6][5] = {{-1.0, -1.0, 0.0, 0.0, 0.0}, {-1.0, 1.0, 0.0, 0.0, 1.0},
+                        {1.0, -1.0, 0.0, 1.0, 0.0},  {1.0, -1.0, 0.0, 1.0, 0.0},
+                        {-1.0, 1.0, 0.0, 0.0, 1.0},  {1.0, 1.0, 0.0, 1.0, 1.0}};
 
   glGenVertexArrays(1, &m_vao);
   glBindVertexArray(m_vao);

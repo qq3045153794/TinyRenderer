@@ -27,10 +27,6 @@ add_executable(demo_1
     ${SRC}      
 )
 
-#add_executable(${PROJECT_NAME}
-#    ${PROJECT_SOURCE_DIR}/main.cpp
-#    ${SRC}
-#)
 
 target_include_directories(demo_1
     PUBLIC
@@ -74,6 +70,32 @@ target_include_directories(demo_2
 )
 
 target_link_libraries(demo_2
+    PUBLIC
+        ${LIBS}
+)
+
+add_executable(demo_3 
+    ${PROJECT_SOURCE_DIR}/examples/demo3/main.cpp
+    ${SRC}      
+)
+
+target_include_directories(demo_3
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/src/model
+        ${PROJECT_SOURCE_DIR}/src/tools
+        ${PROJECT_SOURCE_DIR}/src/camera
+        ${PROJECT_SOURCE_DIR}/src/animation
+        ${PROJECT_SOURCE_DIR}/src/frame
+        ${PROJECT_SOURCE_DIR}/vendor/glad/include
+        ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
+        ${PROJECT_SOURCE_DIR}/vendor/glm
+        ${PROJECT_SOURCE_DIR}/vendor/std_image
+        ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
+        ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
+        
+)
+
+target_link_libraries(demo_3
     PUBLIC
         ${LIBS}
 )

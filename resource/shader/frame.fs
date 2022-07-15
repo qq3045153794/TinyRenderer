@@ -14,6 +14,6 @@ void main() {
     // U V 范围[-0.5 0.5]
     float U = -0.1396 * R + 0.3604 * G + 0.5 * B + 0.5;
     float V = 0.5 * R - 0.4598 * G - 0.0402 * B + 0.5;
-    color = vec4(Y, Y, Y, 1.0);
+    color = vec4(R, G, B, 1.0);
 
 }

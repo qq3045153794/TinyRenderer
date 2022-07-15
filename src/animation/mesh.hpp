@@ -117,7 +117,7 @@ void Mesh::draw(Shader& shader) {
     shader.set_integer((name + number).c_str(), i);
     glBindTexture(GL_TEXTURE_2D, textures_[i].id);
   }
-  std::cout<<diffuse_nr<<" "<<specular_nr<<" "<<normal_nr<<" "<<height_nr<<"\n";
+
   glBindVertexArray(vao_);
   glDrawElements(GL_TRIANGLES, static_cast<GLuint>(indices_.size()), GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);

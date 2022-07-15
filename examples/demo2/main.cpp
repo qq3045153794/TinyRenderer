@@ -19,28 +19,28 @@ void init() {
 
   ResourceManager::load_shader("../examples/demo2/image.vs", "../examples/demo2/image.fs",
                                "image_shader");
-  ResourceManager::get_shader("image_shader").use();
+  
   glm::mat4 projection =
       glm::ortho(0.0f, (GLfloat)SCREEN_WIDTH, 0.0f, (GLfloat)SCREEN_HEIGHT, -1.0f, 1.0f);
   glm::mat4 view = glm::mat4(1.0);
-
+  
+  ResourceManager::get_shader("image_shader").use();
   ResourceManager::get_shader("image_shader").set_matrix4("projection", projection);
   ResourceManager::get_shader("image_shader").set_matrix4("view", view);
 
   ResourceManager::get_shader("image_shader").set_integer("texture_0", 0);
+  
   ResourceManager::load_texture("../resource/texture/001.jpg", "001");
-  glActiveTexture(GL_TEXTURE0);
-  ResourceManager::get_texture("001").bind();
+
 }
 
 int main() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   // 窗口禁止拖动
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  // glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
   GLFWwindow *window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout", nullptr, nullptr);
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -56,6 +56,9 @@ int main() {
     processInput(window);
 
     yuv_frame->begin_render();
+    
+    glActiveTexture(GL_TEXTURE0);
+    ResourceManager::get_texture("001").bind();
     image_render->draw(ResourceManager::get_shader("image_shader"));
     yuv_frame->end_render();
 
@@ -73,5 +76,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
+    //glViewport(0, 0, width, height);
 }

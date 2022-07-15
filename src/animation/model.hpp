@@ -56,13 +56,6 @@ void Model::load_model(const std::string& path) {
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)  // if is Not Zero
   {
     std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-    std::cout << scene << std::endl;
-    std::cout << (scene->mFlags) << std::endl;
-    std::cout << AI_SCENE_FLAGS_INCOMPLETE << std::endl;
-    std::cout << scene->mRootNode << std::endl;
-    std::cout << "model" << std::endl;
-
-    std::cout << "end model" << std::endl;
     return;
   }
   directory_ = path.substr(0, path.find_last_of('/'));
