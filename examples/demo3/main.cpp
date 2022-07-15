@@ -26,7 +26,7 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void init() {
   yuv_frame = std::shared_ptr<YUVFrame>(new YUVFrame(SCREEN_WIDTH, SCREEN_HEIGHT, 4));
-
+  yuv_frame->set_process(gl_frame::GAUSSIAN_BLUR);
   ResourceManager::load_shader("../examples/demo3/bm.vs", "../examples/demo3/bm.fs", "anim");
   model = new gl_animation::Model("../resource/objects/派蒙bk/untitled.obj","false");
   

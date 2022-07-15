@@ -129,3 +129,41 @@ Texture2D ResourceManager::load_texture_from_file(const GLchar *file) {
   }
   return texture2D;
 }
+
+TextureCube ResourceManager::load_texture_cube(const std::vector<GLchar *> &file,
+                                               std::string name) {
+  textureCubes[name] = load_texture_cube_from_file(file);
+}
+
+TextureCube ResourceManager::load_texture_cube_from_file(const std::vector<GLchar *> &file) {
+  TextureCube textureCube;
+  int width, height, nrComponents;
+  std::vector<GLuint> widths;
+  std::vector<GLuint> heights;
+  std::vector<GLuint> image_formats;
+  std::vector<GLuint> internal_formats;
+  std::vector<unsigned char *> datas;
+  for (size_t i = 0; i < file.size(); i++) {
+    unsigned char *image = stbi_load(file[i], &width, &height, &nrComponents, 0);
+    if (image) {
+      GLenum internalFormat;
+      GLenum dataFormat;
+      if (nrComponents == 1) {
+        image_formats.push_back(GL_RED);
+        internal_formats.push_back(GL_RED);
+      } else if (nrComponents == 3) {
+        image_formats.push_back(GL_RGB);
+        internal_formats.push_back(GL_RGB);
+      } else if (nrComponents == 4) {
+        image_formats.push_back(GL_RGBA);
+        internal_formats.push_back(GL_RGBA);
+      }
+      widths.push_back(width);
+      heights.push_back(height);
+      datas.push_back(image);
+    }
+  }
+  textureCube.set_format(internal_formats, image_formats);
+  textureCube.set_image(widths, heights, datas);
+  return textureCube;
+}

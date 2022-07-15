@@ -1,8 +1,10 @@
+#ifndef _TEXTURE_2D_H_
+#define _TEXTURE_2D_H_
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-#ifndef _TEXTURE_2D_H_
-#define _TEXTURE_2D_H_
+
 class Texture2D {
 public:
   Texture2D();
@@ -25,6 +27,7 @@ private:
   /*纹理环绕*/
   GLuint wrap_s;            //s(x)轴纹理环绕方式
   GLuint wrap_t;            //t(y)轴纹理环绕方式
+  
   /*纹理过滤*/
   GLuint filter_min;        //缩小时纹理过滤方式
   GLuint filter_max;        //放大时纹理过滤方式

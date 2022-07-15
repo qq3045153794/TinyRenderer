@@ -1,4 +1,5 @@
 #include "Texture2D.h"
+
 #include <iostream>
 Texture2D::Texture2D()
     : width(0),
@@ -8,9 +9,7 @@ Texture2D::Texture2D()
       wrap_s(GL_REPEAT),
       wrap_t(GL_REPEAT),
       filter_min(GL_LINEAR),
-      filter_max(GL_LINEAR) {
-  
-}
+      filter_max(GL_LINEAR) {}
 
 void Texture2D::set_image(GLuint width, GLuint height, unsigned char* data) {
   this->width = width;
@@ -18,14 +17,13 @@ void Texture2D::set_image(GLuint width, GLuint height, unsigned char* data) {
 
   glGenTextures(1, &this->texture);
   glBindTexture(GL_TEXTURE_2D, this->texture);
-  std::cout<<width<<" "<<height<<" "<<this->texture<<"\n";
   glTexImage2D(GL_TEXTURE_2D, 0, this->internal_format, this->width, this->height, 0,
                this->image_format, GL_UNSIGNED_BYTE, data);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->wrap_s);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->wrap_t);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this->filter_min);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, this->filter_max);
-  // glBindTexture(0, this->texture);
+  glBindTexture(0, this->texture);
 }
 
 void Texture2D::set_mult_image(GLuint width, GLuint height, GLuint sampler) {
@@ -34,8 +32,9 @@ void Texture2D::set_mult_image(GLuint width, GLuint height, GLuint sampler) {
 
   glGenTextures(1, &this->texture);
   glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, this->texture);
-  
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampler, GL_RGB, this->width, this->height, GL_TRUE);
+
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampler, GL_RGB, this->width, this->height,
+                          GL_TRUE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->wrap_s);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->wrap_t);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, this->filter_min);

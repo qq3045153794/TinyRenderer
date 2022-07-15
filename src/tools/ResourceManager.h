@@ -4,6 +4,7 @@
 #include "glad/glad.h"
 #include "Shader.h"
 #include "Texture2D.h"
+#include "TextureCube.h"
 
 #include <map>
 #include <string>
@@ -16,6 +17,7 @@ public:
   //资源存储
   static std::map<std::string, Shader> shaders;
   static std::map<std::string, Texture2D> texture2Ds;
+  static std::map<std::string, TextureCube> textureCubes;
   //从文件加载着色器
   static Shader load_shader(const GLchar *vshader_file, const GLchar *fshader_file, const GLchar *gshader_file, std::string name);
   static Shader load_shader(const GLchar *vshader_file, const GLchar *fshader_file, std::string name);
@@ -23,8 +25,12 @@ public:
   static Shader &get_shader(std::string name);
   //从文件中加载2D纹理
   static Texture2D load_texture(const GLchar *file, std::string name);
+  
+  static TextureCube load_texture_cube(const std::vector<GLchar*>& file, std::string name);
+
   //检索存储的的2D纹理
   static Texture2D &get_texture(std::string name);
+  
   //清空
   static void clear();
 
@@ -33,5 +39,6 @@ private:
   static Shader load_shader_from_file(const GLchar *vshader_file, const GLchar *fshader_file);
   static Shader load_shader_from_file(const GLchar *vshader_file, const GLchar *fshader_file, const GLchar *gshader_file);
   static Texture2D load_texture_from_file(const GLchar *file);
+  static TextureCube load_texture_cube_from_file(const std::vector<GLchar*>& file);
 };
 #endif

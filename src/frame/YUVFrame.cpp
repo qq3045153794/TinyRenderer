@@ -6,12 +6,15 @@ YUVFrame::YUVFrame(GLuint width, GLuint height, GLuint sampler)
     : m_width(width),
       m_height(height),
       m_sampler(sampler),
+      m_process(NONE),
       m_texture(),
       m_mult_texture(),
       m_shader(ResourceManager::load_shader("../resource/shader/frame.vs",
                                             "../resource/shader/frame.fs", "yuv_shader")) {
   setup_frame_buffer();
   setup_screem_buffer();
+  // 设置后期处理
+  set_process(m_process);
 }
 
 YUVFrame::~YUVFrame() {
@@ -20,6 +23,11 @@ YUVFrame::~YUVFrame() {
   glDeleteFramebuffers(1, &m_mult_fbo);
   glDeleteRenderbuffers(1, &m_mult_rbo);
   glDeleteBuffers(1, &m_vbo);
+}
+
+void YUVFrame::set_process(Process process) {
+  m_process = process;
+  m_shader.set_integer("process", static_cast<int>(m_process), true);
 }
 
 void YUVFrame::setup_frame_buffer() {
