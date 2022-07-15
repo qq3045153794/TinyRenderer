@@ -6,7 +6,7 @@ set(SRC
     ${PROJECT_SOURCE_DIR}/src/tools/ResourceManager.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Shader.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Texture2D.cpp
-    ${PROJECT_SOURCE_DIR}/src/tools/RenderText.cpp
+    #${PROJECT_SOURCE_DIR}/src/tools/RenderText.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/CameraFps.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/TrackBallControls.cpp
@@ -17,7 +17,7 @@ set(SRC
 
 set(LIBS
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/lib/libglfw3.a
-    ${PROJECT_SOURCE_DIR}/vendor/freetype/lib/libfreetype.so.6.17.0
+    #${PROJECT_SOURCE_DIR}/vendor/freetype/lib/libfreetype.so
     ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/bin/libassimp.so.5.2.0
     GL m Xrandr  X11  pthread dl
 )
@@ -42,7 +42,7 @@ target_include_directories(demo_1
         ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
         ${PROJECT_SOURCE_DIR}/vendor/glm
         ${PROJECT_SOURCE_DIR}/vendor/std_image
-        ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
+        #${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
         ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
 )
 
