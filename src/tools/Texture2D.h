@@ -7,6 +7,7 @@ class Texture2D {
 public:
   Texture2D();
   void set_image(GLuint width, GLuint height, unsigned char* data);
+  void set_mult_image(GLuint width, GLuint height, GLuint sampler);
   void bind() const;
 
   GLuint get_texture_id();

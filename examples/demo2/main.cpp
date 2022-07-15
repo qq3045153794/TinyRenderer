@@ -15,7 +15,7 @@ void init() {
   image_render = Image::create_image_model(glm::vec2(500.0, 500.0),
                                            glm::vec3(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5, 0.0),
                                            glm::quat(1.0, 0.0, 0.0, 0.0));
-  yuv_frame = std::shared_ptr<YUVFrame>(new YUVFrame(SCREEN_WIDTH, SCREEN_HEIGHT));
+  yuv_frame = std::shared_ptr<YUVFrame>(new YUVFrame(SCREEN_WIDTH, SCREEN_HEIGHT, 4));
 
   ResourceManager::load_shader("../examples/demo2/image.vs", "../examples/demo2/image.fs",
                                "image_shader");

@@ -2,9 +2,10 @@
 
 namespace gl_frame {
 
-YUVFrame::YUVFrame(GLuint width, GLuint height)
+YUVFrame::YUVFrame(GLuint width, GLuint height, GLuint sampler)
     : m_width(width),
       m_height(height),
+      m_sampler(sampler),
       m_texture(),
       m_shader(ResourceManager::load_shader("../resource/shader/frame.vs",
                                             "../resource/shader/frame.fs", "yuv_shader")) {
@@ -15,12 +16,32 @@ YUVFrame::YUVFrame(GLuint width, GLuint height)
 YUVFrame::~YUVFrame() {
   glDeleteVertexArrays(1, &m_vao);
   glDeleteFramebuffers(1, &m_fbo);
-  glDeleteRenderbuffers(1, &m_rbo);
+  glDeleteFramebuffers(1, &m_mult_fbo);
+  glDeleteRenderbuffers(1, &m_mult_rbo);
   glDeleteBuffers(1, &m_vbo);
-
 }
 
 void YUVFrame::setup_frame_buffer() {
+  glGenFramebuffers(1, &m_mult_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_mult_fbo);
+
+  m_mult_texture.set_mult_image(m_width, m_height, m_sampler);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+                         m_mult_texture.get_texture_id(), 0);
+
+  // 创建个渲染缓冲 将其作为深度缓冲添加到帧缓冲中
+  glGenRenderbuffers(1, &m_mult_rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, m_mult_rbo);
+  glRenderbufferStorageMultisample(GL_RENDERBUFFER, m_sampler, GL_DEPTH24_STENCIL8, m_width,
+                                   m_height);
+  glBindRenderbuffer(0, m_mult_rbo);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+                            m_mult_rbo);
+  // 检查帧缓冲
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
   glGenFramebuffers(1, &m_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
@@ -29,12 +50,6 @@ void YUVFrame::setup_frame_buffer() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          m_texture.get_texture_id(), 0);
 
-  // 创建个渲染缓冲 将其作为深度缓冲添加到帧缓冲中
-  glGenRenderbuffers(1, &m_rbo);
-  glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
-  glBindRenderbuffer(0, m_rbo);
   // 检查帧缓冲
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
@@ -42,12 +57,20 @@ void YUVFrame::setup_frame_buffer() {
 }
 
 void YUVFrame::begin_render() {
-  glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_mult_fbo);
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void YUVFrame::end_render() {
+  // 读取MSAA FBO
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, m_mult_fbo);
+  // 写入普通 FBO
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+
+  // 将源的颜色缓冲输入到目标的颜色缓冲中
+  glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, m_width, m_height, GL_COLOR_BUFFER_BIT,
+                    GL_NEAREST);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
