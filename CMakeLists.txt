@@ -6,6 +6,7 @@ set(SRC
     ${PROJECT_SOURCE_DIR}/src/tools/ResourceManager.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Shader.cpp
     ${PROJECT_SOURCE_DIR}/src/tools/Texture2D.cpp
+    ${PROJECT_SOURCE_DIR}/src/tools/TextureCube.cpp
     #${PROJECT_SOURCE_DIR}/src/tools/RenderText.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/camera/CameraFps.cpp
@@ -13,6 +14,7 @@ set(SRC
     ${PROJECT_SOURCE_DIR}/src/camera/TrackBallInteractor.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
     ${PROJECT_SOURCE_DIR}/src/frame/YUVFrame.cpp
+    ${PROJECT_SOURCE_DIR}/src/render/TexCubeRender.cpp
 )
 
 set(LIBS
@@ -96,6 +98,34 @@ target_include_directories(demo_3
 )
 
 target_link_libraries(demo_3
+    PUBLIC
+        ${LIBS}
+)
+
+
+add_executable(demo_4 
+    ${PROJECT_SOURCE_DIR}/examples/demo4/main.cpp
+    ${SRC}      
+)
+
+target_include_directories(demo_4
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/src/model
+        ${PROJECT_SOURCE_DIR}/src/tools
+        ${PROJECT_SOURCE_DIR}/src/camera
+        ${PROJECT_SOURCE_DIR}/src/animation
+        ${PROJECT_SOURCE_DIR}/src/frame
+        ${PROJECT_SOURCE_DIR}/src/render
+        ${PROJECT_SOURCE_DIR}/vendor/glad/include
+        ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
+        ${PROJECT_SOURCE_DIR}/vendor/glm
+        ${PROJECT_SOURCE_DIR}/vendor/std_image
+        ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
+        ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
+        
+)
+
+target_link_libraries(demo_4
     PUBLIC
         ${LIBS}
 )

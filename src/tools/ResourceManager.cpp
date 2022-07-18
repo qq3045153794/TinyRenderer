@@ -5,6 +5,7 @@
 
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture2D> ResourceManager::texture2Ds;
+std::map<std::string, TextureCube> ResourceManager::textureCubes;
 Shader ResourceManager::load_shader(const GLchar *vshader_file, const GLchar *fshader_file,
                                     const GLchar *gshader_file, std::string name) {
   shaders[name] = load_shader_from_file(vshader_file, fshader_file, gshader_file);

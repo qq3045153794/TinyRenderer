@@ -51,7 +51,7 @@ Model::Model(const std::string& path, bool gamma) : gammaCorrection_(gamma) { lo
 void Model::load_model(const std::string& path) {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
-      path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+      path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)  // if is Not Zero
   {

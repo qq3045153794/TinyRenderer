@@ -6,6 +6,7 @@
 #include "Animation.hpp"
 #include "Animator.hpp"
 #include "model.hpp"
+#include "TexCubeRender.h"
 #include <iostream>
 #include <memory>
 using YUVFrame = gl_frame::YUVFrame;
@@ -15,6 +16,7 @@ Trangle* trangle;
 std::shared_ptr<YUVFrame> yuv_frame;
 gl_cameras::Camera* camera_p;
 gl_animation::Model* model;
+std::shared_ptr<TexCubeRender> tex_cube_render;
 
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
@@ -26,8 +28,10 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void init() {
   yuv_frame = std::shared_ptr<YUVFrame>(new YUVFrame(SCREEN_WIDTH, SCREEN_HEIGHT, 4));
-  yuv_frame->set_process(gl_frame::GAUSSIAN_BLUR);
-  ResourceManager::load_shader("../examples/demo3/bm.vs", "../examples/demo3/bm.fs", "anim");
+  // yuv_frame->set_process(gl_frame::GAUSSIAN_BLUR);
+
+  tex_cube_render = std::shared_ptr<TexCubeRender>(new TexCubeRender());
+  ResourceManager::load_shader("../examples/demo4/bm1.vs", "../examples/demo4/bm1.fs", "anim");
   model = new gl_animation::Model("../resource/objects/派蒙bk/untitled.obj","false");
   
   camera_p = new gl_cameras::Camera(45.0f, static_cast<float>(SCREEN_WIDTH)/static_cast<float>(SCREEN_HEIGHT), 0.1f, 1000.0f);
@@ -41,7 +45,6 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  // glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Breakout", nullptr, nullptr);
   glfwMakeContextCurrent(window);
@@ -50,7 +53,7 @@ int main() {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
-  stbi_set_flip_vertically_on_load(true);
+
   init();
   
   gl_cameras::TrackBallControls::instance().init(window, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -74,11 +77,18 @@ int main() {
     
     gl_cameras::TrackBallControls::instance().update();
     ResourceManager::get_shader("anim").use();
+    ResourceManager::get_shader("anim").set_vector3f("V", camera_p->get_eye());
+    ResourceManager::get_shader("anim").set_integer("tex_cube", 0);
+    glActiveTexture(GL_TEXTURE0);
+    tex_cube_render->get_tex_cube().Bind();
+
     ResourceManager::get_shader("anim").set_matrix4("view", camera_p->get_view_mat(), true);
     glm::mat4 t_model = glm::mat4(1.0);
     t_model = glm::translate(t_model, glm::vec3(0.0f, -1.0f, 0.0f));
     t_model = glm::scale(t_model, glm::vec3(2.0f,2.0f, 2.0f));
     ResourceManager::get_shader("anim").set_matrix4("model", t_model, true);
+    
+    tex_cube_render->render(*camera_p);
     
     model->draw(ResourceManager::get_shader("anim"));
     yuv_frame->end_render();

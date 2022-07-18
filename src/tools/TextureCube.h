@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <vector>
-
-#include "GLFW/glfw3.h"
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
 class TextureCube {
  public:
   TextureCube();

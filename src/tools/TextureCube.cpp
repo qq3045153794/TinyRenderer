@@ -18,8 +18,8 @@ void TextureCube::set_image(std::vector<GLuint> width, std::vector<GLuint> heigh
   glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 
   for (size_t i = 0; i < data.size(); i++) {
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_image_format[i], m_width[i], m_height[i], 0,
-                 m_internal_format[i], GL_UNSIGNED_BYTE, data[i]);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_image_format[i], m_width[i], m_height[i],
+                 0, m_internal_format[i], GL_UNSIGNED_BYTE, data[i]);
   }
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, m_filter_min);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, m_filter_max);
@@ -46,4 +46,4 @@ void TextureCube::set_format(const std::vector<GLuint> image_format,
   m_internal_format = internal_format;
 }
 
-void TextureCube::Bind() const { glBindTexture(GL_TEXTURE_CUBE_MAP, GL_MAX_CUBE_MAP_TEXTURE_SIZE); }
+void TextureCube::Bind() const { glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture); }
