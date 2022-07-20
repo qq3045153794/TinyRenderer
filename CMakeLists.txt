@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(LearnOpenGL)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
 set(SRC    
     ${PROJECT_SOURCE_DIR}/src/model/Trangle.cpp
     ${PROJECT_SOURCE_DIR}/src/model/Image.cpp
@@ -128,4 +133,14 @@ target_include_directories(demo_4
 target_link_libraries(demo_4
     PUBLIC
         ${LIBS}
+)
+
+
+add_executable(demo_5 
+    ${PROJECT_SOURCE_DIR}/examples/demo5/main.cpp      
+)
+
+target_include_directories(demo_5
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
 )
