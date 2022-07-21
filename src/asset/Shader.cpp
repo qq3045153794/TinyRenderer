@@ -2,13 +2,18 @@
 
 namespace asset {
 
-Shader::Shader(const GLchar *vertex_code, const GLchar *fragment_code,
-               const GLchar *geometry_code) {
-  compile(vertex_code, fragment_code);
+Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file,
+               const GLchar *geometry_file) {
+  const std::string &vertex_code = File::read_file(vertex_file);
+  const std::string &fragment_code = File::read_file(fragment_file);
+  const std::string &geometry_code = File::read_file(geometry_file);
+  compile(vertex_code.c_str(), fragment_code.c_str(), geometry_code.c_str());
 }
 
-Shader::Shader(const GLchar *vertex_code, const GLchar *fragment_code) {
-  compile(vertex_code, fragment_code);
+Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file) {
+  const std::string &vertex_code = File::read_file(vertex_file);
+  const std::string &fragment_code = File::read_file(fragment_file);
+  compile(vertex_code.c_str(), fragment_code.c_str());
 }
 
 Shader::~Shader() {
@@ -100,43 +105,43 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
 }
 
 template <typename T>
-void Shader::set_uniform(const GLchar *name, T &val) {
+void Shader::set_uniform(const GLchar *name, T val) {
   using namespace glm;
 
-  this->bind();
-  GLuint block_idx = glGetUniformBlockIndex(m_id, name);
+  GLuint block_idx = glGetUniformLocation(m_id, name);
 
   if constexpr (std::is_same_v<T, GLint>) {
     glUniform1i(block_idx, val);
   } else if constexpr (std::is_same_v<T, GLfloat>) {
     glUniform1f(block_idx, val);
   } else if constexpr (std::is_same_v<T, GLuint>) {
-    glUniform1ui(block_idx, val)
+    glUniform1ui(block_idx, val);
   } else if constexpr (std::is_same_v<T, vec2>) {
-    glUniform2fv(block_idx, val)
+    glUniform2fv(block_idx, 1, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, vec3>) {
-    glUniform3fv(block_idx, val)
+    glUniform3fv(block_idx, 1, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, vec4>) {
-    glUniform4fv(block_idx, val)
+    glUniform4fv(block_idx, 1, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, mat2>) {
-    glUniformMatrix2fv(block_idx, val)
+    glUniformMatrix2fv(block_idx, 1, GL_FALSE, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, mat3>) {
-    glUniformMatrix3fv(block_idx, val)
+    glUniformMatrix3fv(block_idx, 1, GL_FALSE, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, mat4>) {
-    glUniformMatrix4fv(block_idx, val)
+    glUniformMatrix4fv(block_idx, 1, GL_FALSE, glm::value_ptr(val));
   } else {
+    
     std::cout << "Eorr\n";
   }
 
-  this->ubind();
+
 }
 
-#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, T &val);
+#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, T val);
 
 using namespace glm;
 
 INSTANTIATE_TEMPLATE(int)
-INSTANTIATE_TEMPLATE(float)
+INSTANTIATE_TEMPLATE(GLfloat)
 INSTANTIATE_TEMPLATE(GLuint)
 INSTANTIATE_TEMPLATE(vec2)
 INSTANTIATE_TEMPLATE(vec3)

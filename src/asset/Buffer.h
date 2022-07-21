@@ -12,6 +12,7 @@ class BufferBase {
   BufferBase(const BufferBase&) = delete;
   BufferBase& operator=(const BufferBase&) = delete;
 
+  GLuint get_id() const { return m_id; }
   virtual void bind() const = 0;
   virtual void ubind() const = 0;
 
@@ -46,11 +47,12 @@ class UBO : public BufferBase {
 
  public:
   UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz, GLuint index);
-  ~UBO();
+  virtual ~UBO(){};
   void set_uniform(GLuint uid, void* data);
 
   virtual void bind() const override;
-  virtual void ubind() const override;  
+  virtual void ubind() const override;
+
  private:
   u_vec m_offset_vec;
   u_vec m_length_vec;

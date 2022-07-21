@@ -24,7 +24,6 @@ set(SRC
 
 set(LIBS
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/lib/libglfw3.a
-    #${PROJECT_SOURCE_DIR}/vendor/freetype/lib/libfreetype.so
     ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/bin/libassimp.so.5.2.0
     GL m Xrandr  X11  pthread dl
 )
@@ -137,10 +136,27 @@ target_link_libraries(demo_4
 
 
 add_executable(demo_5 
-    ${PROJECT_SOURCE_DIR}/examples/demo5/main.cpp      
+    ${PROJECT_SOURCE_DIR}/examples/demo5/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Buffer.cpp      
+    ${PROJECT_SOURCE_DIR}/src/asset/Shader.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Texture.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/VAO.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
 target_include_directories(demo_5
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/vendor/glad/include
+    ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
+    ${PROJECT_SOURCE_DIR}/vendor/glm
+    ${PROJECT_SOURCE_DIR}/vendor/std_image
+    
+)
+
+target_link_libraries(demo_5
+    PUBLIC
+        ${LIBS}
 )

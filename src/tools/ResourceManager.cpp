@@ -134,6 +134,7 @@ Texture2D ResourceManager::load_texture_from_file(const GLchar *file) {
 TextureCube ResourceManager::load_texture_cube(const std::vector<GLchar *> &file,
                                                std::string name) {
   textureCubes[name] = load_texture_cube_from_file(file);
+  return textureCubes[name];
 }
 
 TextureCube ResourceManager::load_texture_cube_from_file(const std::vector<GLchar *> &file) {
@@ -162,9 +163,12 @@ TextureCube ResourceManager::load_texture_cube_from_file(const std::vector<GLcha
       widths.push_back(width);
       heights.push_back(height);
       datas.push_back(image);
-    }
+      
+    } 
   }
   textureCube.set_format(internal_formats, image_formats);
   textureCube.set_image(widths, heights, datas);
+  for(const auto& it : datas)
+    stbi_image_free(it);
   return textureCube;
 }
