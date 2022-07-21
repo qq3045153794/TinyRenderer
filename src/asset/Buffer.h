@@ -2,6 +2,7 @@
 #define _LEARN_OPENGL_SRC_ASSET_BUFFER_H_
 
 #include "glad/glad.h"
+#include "vector"
 namespace asset {
 
 class BufferBase {
@@ -38,6 +39,21 @@ class IBO : public BufferBase {
 
  private:
   GLuint m_count;
+};
+
+class UBO : public BufferBase {
+  using u_vec = std::vector<GLuint>;
+
+ public:
+  UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz, GLuint index);
+  ~UBO();
+  void set_uniform(GLuint uid, void* data);
+
+  virtual void bind() const override;
+  virtual void ubind() const override;  
+ private:
+  u_vec m_offset_vec;
+  u_vec m_length_vec;
 };
 
 }  // namespace asset
