@@ -3,13 +3,16 @@
 
 #include <string>
 
-#include "GLFW/glfw3.h"
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+
 
 class Window {
  public:
-  Window& instand();
+  static Window& instand();
   void init();
+  void update();
   void clear();
   GLuint m_width, m_height;
   GLuint m_x, m_y;

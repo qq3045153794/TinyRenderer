@@ -160,3 +160,32 @@ target_link_libraries(demo_5
     PUBLIC
         ${LIBS}
 )
+
+
+add_executable(demo_6 
+    ${PROJECT_SOURCE_DIR}/examples/demo6/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Buffer.cpp      
+    ${PROJECT_SOURCE_DIR}/src/asset/Shader.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Texture.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/VAO.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/App.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
+)
+
+target_include_directories(demo_6
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/vendor/glad/include
+    ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
+    ${PROJECT_SOURCE_DIR}/vendor/glm
+    ${PROJECT_SOURCE_DIR}/vendor/std_image
+    
+)
+
+target_link_libraries(demo_6
+    PUBLIC
+        ${LIBS}
+)
