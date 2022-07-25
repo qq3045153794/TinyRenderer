@@ -2,7 +2,7 @@
 #include <iostream>
 namespace asset {
 
-VAO::VAO() : m_count(0) { glGenVertexArrays(1, &m_id); std::cout<<"A"<<m_id<<"\n";}
+VAO::VAO() : m_count(0) { glGenVertexArrays(1, &m_id); }
 
 VAO::~VAO() { glDeleteBuffers(1, &m_id); }
 

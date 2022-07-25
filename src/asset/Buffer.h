@@ -2,7 +2,8 @@
 #define _LEARN_OPENGL_SRC_ASSET_BUFFER_H_
 
 #include "glad/glad.h"
-#include "vector"
+#include <vector>
+#include <string>
 namespace asset {
 
 class BufferBase {
@@ -46,8 +47,9 @@ class UBO : public BufferBase {
   using u_vec = std::vector<GLuint>;
 
  public:
-  UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz, GLuint index);
+  UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz);
   virtual ~UBO(){};
+  void set_binding(GLuint uid, const std::string& name, GLuint shader_id);
   void set_uniform(GLuint uid, void* data);
 
   virtual void bind() const override;

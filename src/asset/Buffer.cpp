@@ -21,11 +21,11 @@ void IBO::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
 
 void IBO::ubind() const { glBindBuffer, (GL_ELEMENT_ARRAY_BUFFER, 0); }
 
-UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz, GLuint index)
+UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz)
     : BufferBase(), m_offset_vec(offset_vec), m_length_vec(length_vec) {
   glBindBuffer(GL_UNIFORM_BUFFER, m_id);
   glBufferData(GL_UNIFORM_BUFFER, sz, NULL, GL_STATIC_DRAW);
-  glBindBufferBase(GL_UNIFORM_BUFFER, index, m_id);
+  
 }
 
 void UBO::set_uniform(GLuint uid, void* data) {
@@ -34,10 +34,14 @@ void UBO::set_uniform(GLuint uid, void* data) {
   this->ubind();
 }
 
+void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
+  GLuint block_idx = glGetUniformBlockIndex(shader_id, name.c_str());
+  glUniformBlockBinding(shader_id, block_idx, uid);
+  glBindBufferBase(GL_UNIFORM_BUFFER, uid, m_id);
+}
+
 void UBO::bind() const {
-  this->bind();
   glBindBuffer(GL_UNIFORM_BUFFER, m_id);
-  this->ubind();
 }
 
 void UBO::ubind() const {

@@ -14,6 +14,7 @@ class Texture {
   void ubind(GLuint unit) const;
 
  private:
+
   void set_sampler_state();
 
   GLuint m_id;
