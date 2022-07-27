@@ -12,7 +12,8 @@ class Window {
  public:
   static Window& instand();
   void init();
-  void update();
+  void update() const;
+  void clear_buffer() const;
   void clear();
   GLuint m_width, m_height;
   GLuint m_x, m_y;

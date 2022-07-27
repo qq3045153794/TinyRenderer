@@ -170,6 +170,7 @@ add_executable(demo_6
     ${PROJECT_SOURCE_DIR}/src/asset/VAO.cpp
     ${PROJECT_SOURCE_DIR}/src/core/App.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
