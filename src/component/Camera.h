@@ -1,0 +1,7 @@
+#ifndef _LEARN_OPENGL_SRC_COMPONENT_CAMERA_H_
+#define _LEARN_OPENGL_SRC_COMPONENT_CAMERA_H_
+class Camera {
+  
+}
+
+#endif
