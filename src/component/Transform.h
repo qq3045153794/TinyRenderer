@@ -7,19 +7,23 @@ namespace component {
 
 class Transform {
  public:
-  
   void rotation(const glm::vec3& axis, float angle);
   void rotation(const glm::quat& q);
   void rotation(const glm::vec3& eular);
-  
+
   void translate(const glm::vec3& v);
   void scale(const glm::vec3& s);
   const glm::mat4& get_transform() const;
-  const glm::mat4& get_eular() const;
-  const glm::mat4& get_position() const; 
+  const glm::vec3& get_eular() const;
+  const glm::vec3& get_position() const;
+  const glm::mat4& get_lookat() const;
   Transform();
   ~Transform();
+
  private:
+  void culate_asix();
+  void culate_eular();
+
   // 变换矩阵
   glm::mat4 m_transform;
 
@@ -32,6 +36,6 @@ class Transform {
   glm::vec3 m_right, m_up, m_forward;
 };
 
-}
+}  // namespace component
 
 #endif
