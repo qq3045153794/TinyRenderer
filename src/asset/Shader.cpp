@@ -105,7 +105,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
 }
 
 template <typename T>
-void Shader::set_uniform(const GLchar *name, T val) {
+void Shader::set_uniform(const GLchar *name, const T &val) {
   using namespace glm;
 
   GLuint block_idx = glGetUniformLocation(m_id, name);
@@ -129,14 +129,11 @@ void Shader::set_uniform(const GLchar *name, T val) {
   } else if constexpr (std::is_same_v<T, mat4>) {
     glUniformMatrix4fv(block_idx, 1, GL_FALSE, glm::value_ptr(val));
   } else {
-    
     std::cout << "Eorr\n";
   }
-
-
 }
 
-#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, T val);
+#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, const T &val);
 
 using namespace glm;
 
