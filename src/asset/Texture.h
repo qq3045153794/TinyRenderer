@@ -1,13 +1,16 @@
 #ifndef _LEARN_OPENGL_SRC_ASSET_TEXTURE_H_
 #define _LEARN_OPENGL_SRC_ASSET_TEXTURE_H_
 
+#include <vector>
 #include "glad/glad.h"
+
 
 namespace asset {
 
 class Texture {
  public:
   Texture(const GLchar* path);
+  Texture(const std::vector<GLchar*>& path_vec);
   Texture(const GLchar* path, GLuint sampler) {};
   ~Texture();
   void bind(GLuint unit) const;
