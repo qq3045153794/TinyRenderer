@@ -20,6 +20,9 @@ class Transform {
   Transform();
   ~Transform();
 
+  // 局部坐标
+  glm::vec3 m_right, m_up, m_forward;
+
  private:
   void culate_asix();
   void culate_eular();
@@ -32,8 +35,7 @@ class Transform {
   glm::vec3 m_eular;
   glm::quat m_rotation;
 
-  // 局部坐标
-  glm::vec3 m_right, m_up, m_forward;
+  
 };
 
 }  // namespace component

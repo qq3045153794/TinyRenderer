@@ -13,11 +13,10 @@ class Camera {
   const glm::mat4& get_view_mat() const { return T.get_lookat(); };
 
   virtual const glm::mat4& get_projection_mat() const = 0;
-  virtual void update() const = 0;
+  virtual void update() = 0;
 
- private:
+ protected:
   Transform T;
-
 };
 
 class CameraFps : public Camera {
@@ -25,14 +24,14 @@ class CameraFps : public Camera {
   CameraFps(float fov, float aspect, float znear, float zfar);
   virtual ~CameraFps();
   virtual const glm::mat4& get_projection_mat() const override;
+  virtual void update() override;
+
  private:
   float m_fov;
   float m_aspect;
   float m_znear;
   float m_zfar;
-
 };
-
 
 }  // namespace component
 

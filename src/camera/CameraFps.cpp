@@ -25,7 +25,7 @@ CameraFps::CameraFps(glm::vec3 eye, glm::vec3 front, glm::vec3 up)
   updateCameraVector();      
 }
 
-void CameraFps::updateCameraVector() {
+void CameraFps::giupdateCameraVector() {
   front_ = mat4_Y(glm::radians(-yaw_)) * mat4_Z(glm::radians(pitch_)) * mat4_X(glm::radians(roll_)) * glm::vec4(kFront, 0.0);
   up_ = mat4_Y(glm::radians(-yaw_)) * mat4_Z(glm::radians(pitch_)) * mat4_X(glm::radians(roll_)) * glm::vec4(kUp, 0.0); 
   right_ = mat4_Y(glm::radians(-yaw_)) * mat4_Z(glm::radians(pitch_)) * mat4_X(glm::radians(roll_)) * glm::vec4(kRight, 0.0);
