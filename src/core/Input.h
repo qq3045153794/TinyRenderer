@@ -19,6 +19,8 @@ class Input {
 
   static void set_cursor(float new_x, float new_y);
   static glm::vec2 get_cursor();
+  static float get_offset_x();
+  static float get_offset_y();
 
  private:
   static std::unordered_map<uint8_t, bool> keybook;

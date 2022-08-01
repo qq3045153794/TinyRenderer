@@ -31,6 +31,13 @@ void CameraFps::update() {
     T.translate(T.m_right * velocity);
   }
 
+  T.rotation(T.m_up, Input::get_offset_x() * 0.05);
+  T.rotation(T.m_right, Input::get_offset_y() * 0.05);
+
+}
+
+const glm::mat4& CameraFps::get_projection_mat() {
+  return T.get_lookat();
 }
 
 

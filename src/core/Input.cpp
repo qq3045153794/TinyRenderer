@@ -55,6 +55,13 @@ glm::vec2 Input::get_cursor() {
   return glm::vec2(cursor_x, cursor_y);
 }
 
+float Input::get_offset_x() {
+  return cursor_dx;
+}
+
+float Input::get_offset_y() {
+  cursor_dy
+}
 
 
 
