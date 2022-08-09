@@ -10,9 +10,9 @@ class Camera {
   Camera() : T(){};
   virtual ~Camera(){};
 
-  const glm::mat4& get_view_mat() const { return T.get_lookat(); };
+  const glm::mat4 get_view_mat() const { return T.get_lookat(); };
 
-  virtual const glm::mat4& get_projection_mat() const = 0;
+  virtual const glm::mat4 get_projection_mat() const = 0;
   virtual void update() = 0;
 
  protected:
@@ -22,8 +22,8 @@ class Camera {
 class CameraFps : public Camera {
  public:
   CameraFps(float fov, float aspect, float znear, float zfar);
-  virtual ~CameraFps();
-  virtual const glm::mat4& get_projection_mat() const override;
+  virtual ~CameraFps() {};
+  virtual const glm::mat4 get_projection_mat() const override;
   virtual void update() override;
 
  private:

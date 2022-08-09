@@ -1,5 +1,5 @@
 #include "component/Transform.h"
-
+#include "iostream"
 #include <glm/gtx/euler_angles.hpp>
 namespace component {
 
@@ -21,6 +21,8 @@ Transform::~Transform() {}
 
 void Transform::translate(const glm::vec3& v) {
   m_position = m_position + v;
+  std::cout<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
+  std::cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<std::endl;
   m_transform[3] = glm::vec4(m_position, 1.0f);
 
   culate_asix();
@@ -62,14 +64,14 @@ void Transform::rotation(const glm::vec3& eular) {
 }
 
 void Transform::rotation(const glm::quat& q) {
-  m_rotation = m_rotation * q;
+  m_rotation = glm::normalize(m_rotation * q);
   m_transform = glm::mat4_cast(q) * m_transform;
 }
 
 void Transform::culate_asix() {
-  m_right = m_transform[0];
-  m_up = m_transform[1];
-  m_forward = -1.0f * m_transform[2];
+  m_right = glm::normalize(m_transform[0]);
+  m_up = glm::normalize(m_transform[1]);
+  m_forward = glm::normalize(-1.f * m_transform[2]);
 }
 
 void Transform::culate_eular() {
@@ -85,7 +87,8 @@ const glm::vec3& Transform::get_eular() const { return m_eular; }
 
 const glm::vec3& Transform::get_position() const { return m_position; }
 
-const glm::mat4& Transform::get_lookat() const {
+const glm::mat4 Transform::get_lookat() const {
+  std::cout<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
   return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 

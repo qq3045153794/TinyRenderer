@@ -59,7 +59,8 @@ void Mesh::create_buffer(const std::vector<Vertex>& vertex, const std::vector<GL
   m_vao = std::make_shared<asset::VAO>();
 
   for(size_t i = 0; i < 3; i++) {
-    m_vao->set_vbo(*m_vbo, i, va_sz[i], sizeof(Vertex), va_offset[i], GL_FLOAT);   
+    m_vao->set_vbo(*m_vbo, i, va_sz[i], sizeof(Vertex), 
+                   va_offset[i], GL_FLOAT);   
   }
   m_vao->set_ibo(*m_ibo);
 

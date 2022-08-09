@@ -11,7 +11,7 @@ class Input {
 
   Input();
   ~Input();
-
+  static void init();
   static void set_key_down(uint8_t key, bool pressed);
   static bool get_key_down(uint8_t key);
   static void set_mouse_down(MouceButton button, bool pressed);

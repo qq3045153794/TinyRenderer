@@ -26,10 +26,6 @@ class Shader {
   // 设置uniform值
   template <typename T>
   void set_uniform(const GLchar* name, const T& val);
-  void set_matrix4(const GLchar* name, const glm::mat4& matrix) {
-    glUniformMatrix4fv(glGetUniformLocation(this->m_id, name), 1, GL_FALSE, glm::value_ptr(matrix));
-  }
-
   const GLuint get_id() const {return m_id;}
 
   void bind() const;

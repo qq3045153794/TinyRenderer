@@ -1,5 +1,7 @@
 #ifndef _LEARN_OPENGL_SRC_COMPONENT_H_
 #define _LEARN_OPENGL_SRC_COMPONENT_H_
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -16,7 +18,7 @@ class Transform {
   const glm::mat4& get_transform() const;
   const glm::vec3& get_eular() const;
   const glm::vec3& get_position() const;
-  const glm::mat4& get_lookat() const;
+  const glm::mat4 get_lookat() const;
   Transform();
   ~Transform();
 
@@ -34,8 +36,6 @@ class Transform {
   glm::vec3 m_scale;
   glm::vec3 m_eular;
   glm::quat m_rotation;
-
-  
 };
 
 }  // namespace component

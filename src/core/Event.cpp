@@ -42,7 +42,8 @@ void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, 
       _key = 'd';
       break;
   }
-  Input::set_key_down(_key, action == GLFW_PRESS);
+
+  Input::set_key_down(_key, action != GLFW_RELEASE);
 }
 
 
