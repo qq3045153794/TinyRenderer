@@ -92,6 +92,8 @@ const glm::vec3& Transform::get_eular() const { return m_eular; }
 const glm::vec3& Transform::get_position() const { return m_position; }
 
 const glm::mat4 Transform::get_lookat() const {
+  std::cout<<"position = "<<m_position.x<< " " <<m_position.y <<" " <<m_position.z <<std::endl;
+  std::cout<<"forward = "<<m_forward.x <<" " << m_forward.y <<" " << m_forward.z <<std::endl;
   return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 

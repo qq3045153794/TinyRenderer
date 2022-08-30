@@ -27,6 +27,7 @@ int main() {
   std::unique_ptr<asset::Texture> tex =
       std::make_unique<asset::Texture>("../resource/texture/awesomeface.png");
   std::unique_ptr<component::Transform> T = std::make_unique<component::Transform>();
+  
 
   while (run) {
     Window::instand().clear_buffer();
