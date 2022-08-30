@@ -1,6 +1,8 @@
 #include "component/Transform.h"
-#include "iostream"
+
 #include <glm/gtx/euler_angles.hpp>
+
+#include "iostream"
 namespace component {
 
 static const glm::vec3 world_right{1.0f, 0.0f, 0.0f};     // +x axis
@@ -9,7 +11,7 @@ static const glm::vec3 world_forward{0.0f, 0.0f, -1.0f};  // -z axis
 
 Transform::Transform()
     : m_transform(1.0),
-      m_position(1.0),
+      m_position(0.0),
       m_eular(0.0),
       m_rotation(1.0, 0.0, 0.0, 0.0),
       m_scale(1.0),
@@ -21,8 +23,6 @@ Transform::~Transform() {}
 
 void Transform::translate(const glm::vec3& v) {
   m_position = m_position + v;
-  std::cout<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
-  std::cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<std::endl;
   m_transform[3] = glm::vec4(m_position, 1.0f);
 
   culate_asix();
@@ -68,6 +68,10 @@ void Transform::rotation(const glm::quat& q) {
   m_transform = glm::mat4_cast(q) * m_transform;
 }
 
+// Y -> Z -> X 顺序
+//接口显示为欧拉角 四元数实现
+void ealar_ratation(const glm::vec3& eular) {}
+
 void Transform::culate_asix() {
   m_right = glm::normalize(m_transform[0]);
   m_up = glm::normalize(m_transform[1]);
@@ -88,7 +92,8 @@ const glm::vec3& Transform::get_eular() const { return m_eular; }
 const glm::vec3& Transform::get_position() const { return m_position; }
 
 const glm::mat4 Transform::get_lookat() const {
-  std::cout<<m_position[0]<<" "<<m_position[1]<<" "<<m_position[2]<<std::endl;
+  std::cout<<"position = "<<m_position.x<< " " <<m_position.y <<" " <<m_position.z <<std::endl;
+  std::cout<<"forward = "<<m_forward.x <<" " << m_forward.y <<" " << m_forward.z <<std::endl;
   return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 
