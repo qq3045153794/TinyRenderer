@@ -61,8 +61,9 @@ void CameraFps::update() {
   } else if (Input::get_key_down('d')) {
     T.translate(T.m_right * velocity);
   }
-  T.rotation(T.m_up, Input::get_offset_x() * 0.02);
-  T.rotation(T.m_right, Input::get_offset_y() * 0.02);
+  T.rotation(glm::vec3(Input::get_offset_x() * 0.02, Input::get_offset_y() * 0.02, 0.0));
+  // T.rotation(T.m_up, Input::get_offset_x() * 0.02);
+  // T.rotation(T.m_right, Input::get_offset_y() * 0.02);
 }
 
 }  // namespace component

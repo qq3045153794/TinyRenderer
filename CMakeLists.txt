@@ -226,3 +226,37 @@ target_link_libraries(demo_7
     PUBLIC
         ${LIBS}
 )
+
+add_executable(demo_8
+    ${PROJECT_SOURCE_DIR}/examples/demo8/main.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Buffer.cpp      
+    ${PROJECT_SOURCE_DIR}/src/asset/Shader.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/Texture.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/VAO.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/App.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Window.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Clock.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Event.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Input.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Transform.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
+    ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
+)
+
+target_include_directories(demo_8
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/vendor/glad/include
+    ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
+    ${PROJECT_SOURCE_DIR}/vendor/glm
+    ${PROJECT_SOURCE_DIR}/vendor/std_image
+    
+)
+
+target_link_libraries(demo_8
+    PUBLIC
+        ${LIBS}
+)

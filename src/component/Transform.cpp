@@ -41,7 +41,8 @@ void Transform::scale(const glm::vec3& s) {
 }
 
 void Transform::rotation(const glm::vec3& axis, float angle) {
-  glm::quat q = glm::angleAxis(angle, axis);
+  float radians = glm::radians(angle);
+  glm::quat q = glm::normalize(glm::angleAxis(radians, axis));
   rotation(q);
 
   culate_asix();
@@ -51,10 +52,12 @@ void Transform::rotation(const glm::vec3& axis, float angle) {
 void Transform::rotation(const glm::vec3& eular) {
   glm::vec3 ridians = glm::radians(eular);
 
-  glm::mat4 RX = glm::rotate(glm::mat4(1.0), eular.x, world_up);
+  glm::mat4 RX = glm::rotate(glm::mat4(1.0), eular.x, world_right);
   glm::mat4 RY = glm::rotate(glm::mat4(1.0), eular.y, world_up);
-  glm::mat4 RZ = glm::rotate(glm::mat4(1.0), eular.z, world_up);
-  glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
+  glm::mat4 RZ = glm::rotate(glm::mat4(1.0), eular.z, -world_forward);
+  
+  glm::mat4 R = glm::eulerAngleYZX(eular.y, eular.z, eular.x);
+  // glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
 
   m_rotation = glm::quat_cast(R);
   m_transform = R * m_transform;
@@ -64,8 +67,11 @@ void Transform::rotation(const glm::vec3& eular) {
 }
 
 void Transform::rotation(const glm::quat& q) {
-  m_rotation = glm::normalize(m_rotation * q);
+  m_rotation = glm::normalize(q * m_rotation);
   m_transform = glm::mat4_cast(q) * m_transform;
+
+  culate_asix();
+  culate_eular();
 }
 
 // Y -> Z -> X 顺序
@@ -76,6 +82,7 @@ void Transform::culate_asix() {
   m_right = glm::normalize(m_transform[0]);
   m_up = glm::normalize(m_transform[1]);
   m_forward = glm::normalize(-1.f * m_transform[2]);
+  std::cout<<m_up.x<<" "<<m_up.y<<" "<<m_up.z<<std::endl;
 }
 
 void Transform::culate_eular() {
@@ -92,8 +99,6 @@ const glm::vec3& Transform::get_eular() const { return m_eular; }
 const glm::vec3& Transform::get_position() const { return m_position; }
 
 const glm::mat4 Transform::get_lookat() const {
-  std::cout<<"position = "<<m_position.x<< " " <<m_position.y <<" " <<m_position.z <<std::endl;
-  std::cout<<"forward = "<<m_forward.x <<" " << m_forward.y <<" " << m_forward.z <<std::endl;
   return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 
