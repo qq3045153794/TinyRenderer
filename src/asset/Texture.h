@@ -12,7 +12,9 @@ class Texture {
   Texture(const GLchar* path);
   Texture(const std::vector<GLchar*>& path_vec);
   Texture(const GLchar* path, GLuint sampler) {};
+  Texture(GLuint width, GLuint height);
   ~Texture();
+  GLuint get_id(); 
   void bind(GLuint unit) const;
   void ubind(GLuint unit) const;
 
