@@ -35,11 +35,15 @@ void FBO::set_color_texture() {
   
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->get_id(), 0);
 }
+
 void FBO::set_depth_texture() {
   m_rbo = std::make_unique<RBO> (m_width, m_height);
 
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo->get_id());
 }
 
+const Texture& FBO::get_color_texture() {
+  return *m_texture;
+}
 
 }

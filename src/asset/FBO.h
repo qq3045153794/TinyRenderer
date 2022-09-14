@@ -1,5 +1,7 @@
 #include "asset/Asset.h"
 #include "asset/Texture.h"
+#include "asset/Shader.h"
+#include "asset/VAO.h"
 
 namespace asset {
 class RBO : public Asset{
@@ -16,7 +18,9 @@ class FBO : public Asset {
   virtual ~FBO();
   void set_color_texture();
   void set_depth_texture();
+  const Texture& get_color_texture();
  private:
+
   std::unique_ptr<Texture> m_texture;
   std::unique_ptr<RBO> m_rbo;
   GLuint m_width, m_height;
