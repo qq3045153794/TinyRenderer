@@ -21,7 +21,6 @@ class FBO : public Asset {
   void set_color_texture();
   void set_depth_texture();
   const Texture& get_color_texture();
- private:
   void draw() const;
   void bind() const override;
   void ubind() const override;
