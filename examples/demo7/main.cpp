@@ -1,3 +1,4 @@
+#include "asset/FBO.h"
 #include "asset/Shader.h"
 #include "asset/Texture.h"
 #include "component/Camera.h"
@@ -17,8 +18,8 @@ int main() {
   }
 
   std::unique_ptr<Mesh> obj = std::make_unique<Mesh>(Mesh::QUAD);
-  std::unique_ptr<component::CameraFps> main_camera = std::make_unique<component::CameraFps>(
-      0.f, 1.f, 0.f, 1.f, 0.1f, 100.f);
+  std::unique_ptr<component::Camera> main_camera =
+      std::make_unique<component::Camera>(0.f, 1.f, 0.f, 1.f, 0.1f, 100.f);
   main_camera->set_position(glm::vec3(0.0, 0.0, 1.0));
   bool run = true;
 
@@ -27,20 +28,28 @@ int main() {
   std::unique_ptr<asset::Texture> tex =
       std::make_unique<asset::Texture>("../resource/texture/awesomeface.png");
   std::unique_ptr<component::Transform> T = std::make_unique<component::Transform>();
-  
+
+  std::unique_ptr<asset::FBO> fbo =
+      std::make_unique<asset::FBO>(Window::instand().m_width, Window::instand().m_height);
+  fbo->set_color_texture();
+  fbo->set_depth_texture();
 
   while (run) {
     Window::instand().clear_buffer();
     shader->bind();
-    main_camera->update();
     Clock::update();
     shader->set_uniform("projection", main_camera->get_projection_mat());
     const auto& view_mat = main_camera->get_view_mat();
     shader->set_uniform("view", view_mat);
     shader->set_uniform("model", T->get_transform());
 
+    fbo->bind();
+    Window::instand().clear_buffer();
     tex->bind(0);
     obj->draw();
+    fbo->ubind();
+
+    fbo->draw();
     Window::instand().update();
   }
 }
