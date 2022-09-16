@@ -208,6 +208,7 @@ add_executable(demo_7
     ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Transform.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Material.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
@@ -242,6 +243,7 @@ add_executable(demo_8
     ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Transform.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Material.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c

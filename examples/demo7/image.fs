@@ -2,9 +2,9 @@
 in vec2 tex_coords;
 out vec4 color;
 
-uniform sampler2D texture_1;
+uniform sampler2D texture_0;
 
 void main()
 {    
-    color = vec4(texture(texture_1, tex_coords).rgb, 1.0);
+    color = vec4(texture(texture_0, tex_coords).rgb, 1.0);
 }
