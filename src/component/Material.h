@@ -1,3 +1,6 @@
+#ifndef _LEARN_OPENGL_SRC_COMPONENT_MATERIAL_H_
+#define _LEARN_OPENGL_SRC_COMPONENT_MATERIAL_H_
+
 #include <memory>
 #include <unordered_map>
 
@@ -23,3 +26,5 @@ class Material {
 };
 
 }
+
+#endif

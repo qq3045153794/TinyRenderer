@@ -2,15 +2,15 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:41:23
  * @LastEditors  : xietao
- * @LastEditTime : 2022-08-30 16:39:04
+ * @LastEditTime : 2022-09-20 20:20:22
  * @FilePath     : /Learn_OpenGL/src/component/Transform.h
  * @Description  : 变换组件 设置位置、旋转和大小 也能获取物体欧拉角
  *                 位置、欧拉角(Y -> X -> Z)、lookat、变换矩阵
  * Copyright (c) 2022, All Rights Reserved.
  */
 
-#ifndef _LEARN_OPENGL_SRC_COMPONENT_H_
-#define _LEARN_OPENGL_SRC_COMPONENT_H_
+#ifndef _LEARN_OPENGL_SRC_COMPONENT_TRANSFORM_H_
+#define _LEARN_OPENGL_SRC_COMPONENT_TRANSFORM_H_
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/glm.hpp"

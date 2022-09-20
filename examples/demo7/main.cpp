@@ -20,6 +20,7 @@ int main() {
   }
 
   std::unique_ptr<Mesh> obj = std::make_unique<Mesh>(Mesh::QUAD);
+  
   std::unique_ptr<component::Camera> main_camera =
       std::make_unique<component::Camera>(0.f, 1.f, 0.f, 1.f, 0.1f, 100.f);
   main_camera->set_position(glm::vec3(0.0, 0.0, 1.0));

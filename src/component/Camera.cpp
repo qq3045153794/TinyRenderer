@@ -16,16 +16,16 @@
 #include "core/Input.h"
 namespace component {
 
-Camera::Camera(float fov, float aspect, float znear, float zfar)
-    : T(),
+Camera::Camera(Transform* t, float fov, float aspect, float znear, float zfar)
+    : T(t),
       m_fov(fov),
       m_aspect(aspect),
       m_znear(znear),
       m_zfar(zfar),
       m_camera_projection(PERSPECTIVE) {}
 
-Camera::Camera(float left, float right, float bottom, float top, float znear, float zfar)
-    : T(),
+Camera::Camera(Transform* t, float left, float right, float bottom, float top, float znear, float zfar)
+    : T(t),
       m_left(left),
       m_right(right),
       m_bottom(bottom),
@@ -42,28 +42,26 @@ const glm::mat4 Camera::get_projection_mat() const {
   }
 };
 
-CameraFps::CameraFps(float fov, float aspect, float znear, float zfar)
-    : Camera(fov, aspect, znear, zfar) {}
+CameraFps::CameraFps(Transform* t, float fov, float aspect, float znear, float zfar)
+    : Camera(t, fov, aspect, znear, zfar) {}
 
-CameraFps::CameraFps(float left, float right, float bottom, float top, float znear, float zfar)
-    : Camera(left, right, bottom, top, znear, zfar) {}
+CameraFps::CameraFps(Transform* t, float left, float right, float bottom, float top, float znear, float zfar)
+    : Camera(t, left, right, bottom, top, znear, zfar) {}
 
 void CameraFps::update() {
   float dt = Clock::dt;
   float velocity = dt;
 
   if (Input::get_key_down('w')) {
-    T.translate(T.m_forward * velocity);
+    T->translate(T->m_forward * velocity);
   } else if (Input::get_key_down('s')) {
-    T.translate(T.m_forward * velocity * -1.0f);
+    T->translate(T->m_forward * velocity * -1.0f);
   } else if (Input::get_key_down('a')) {
-    T.translate(T.m_right * velocity * -1.0f);
+    T->translate(T->m_right * velocity * -1.0f);
   } else if (Input::get_key_down('d')) {
-    T.translate(T.m_right * velocity);
+    T->translate(T->m_right * velocity);
   }
-  T.rotation(glm::vec3(Input::get_offset_x() * 0.02, Input::get_offset_y() * 0.02, 0.0));
-  // T.rotation(T.m_up, Input::get_offset_x() * 0.02);
-  // T.rotation(T.m_right, Input::get_offset_y() * 0.02);
+  T->rotation(glm::vec3(Input::get_offset_x() * 0.02, Input::get_offset_y() * 0.02, 0.0));
 }
 
 }  // namespace component
