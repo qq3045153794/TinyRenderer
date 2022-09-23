@@ -16,8 +16,8 @@ void Input::init() {
     keystate.second = 0;
   }
 
-  cursor_x = Window::instand().m_width * 0.5f;
-  cursor_y = Window::instand().m_height * 0.5f;
+  cursor_x = Window::m_width * 0.5f;
+  cursor_y = Window::m_height * 0.5f;
   set_cursor(cursor_x, cursor_y);
 
   cursor_dx = 0.f;
@@ -68,7 +68,7 @@ void Input::set_cursor(float new_x, float new_y) {
   cursor_dx = new_x - cursor_x;
   cursor_dy = new_y - cursor_y;
 
-  glfwSetCursorPos(Window::instand().m_window, cursor_x, cursor_y);
+  glfwSetCursorPos(Window::m_window, cursor_x, cursor_y);
 }
 
 glm::vec2 Input::get_cursor() { return glm::vec2(cursor_x, cursor_y); }

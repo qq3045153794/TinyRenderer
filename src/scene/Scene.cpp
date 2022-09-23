@@ -1,16 +1,13 @@
 
 #include "scene/Scene.h"
 
+#include "scene/Render.h"
+
 namespace scene {
 
+Scene::Scene(const std::string& title) { m_title = title; }
 
-Scene::Scene(const std::string& title) {
-  m_title = title;  
-}
-
-Scene::~Scene() {
-
-}
+Scene::~Scene() {}
 
 Entity Scene::create_entity(const std::string& name) {
   Entity e = {name, registry.create(), &registry};
@@ -19,4 +16,6 @@ Entity Scene::create_entity(const std::string& name) {
   return e;
 }
 
-} // namespace name
+void Scene::on_scene_render() { Render::clear_buffer(); }
+
+}  // namespace scene

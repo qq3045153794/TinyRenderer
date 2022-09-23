@@ -1,11 +1,7 @@
 #include "core/Window.h"
 
-Window& Window::instand() {
-  static Window i;
-  return i;
-}
 
-Window::Window() : m_width(800U), m_height(600U), m_x(0U), m_y(0U), title("LearnOpenGL") {}
+Window::Window() {}
 
 Window::~Window() {
   if (m_window) {
@@ -22,6 +18,10 @@ void Window::clear() {
 }
 
 void Window::init() {
+  m_width = 800U;
+  m_height = 600U;
+  m_x = m_y = 0U;
+  title = "LearnOpenGL";
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -32,12 +32,14 @@ void Window::init() {
   glfwMakeContextCurrent(m_window);
 }
 
-void Window::update() const {
+void Window::update() {
   glfwSwapBuffers(m_window);
   glfwPollEvents();
 }
 
-void Window::clear_buffer() const {
+void Window::clear_buffer() {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+void Window::rename(const std::string& title) { glfwSetWindowTitle(m_window, title.c_str()); }
