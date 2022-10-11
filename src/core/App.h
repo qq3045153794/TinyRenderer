@@ -8,13 +8,9 @@ class App {
  public:
   static App& instand();
   void init();
-  void run();
-  static bool m_app_run;
+  void render_update();
 
  private:
-  std::shared_ptr<Mesh> m_mesh;
-  std::shared_ptr<asset::Shader> m_shader;
-  std::shared_ptr<asset::Texture> m_texture;
   App();
   App(const App&) = delete;
   App& operator=(const App&) = delete;

@@ -3,6 +3,8 @@
 #include "core/Input.h"
 #include "core/Window.h"
 #include "scene/Scene.h"
+#include "examples/Scene1.hpp"
+
 namespace scene {
 
 std::queue<entt::entity> Render::render_queue;
@@ -20,7 +22,7 @@ void Render::clear_buffer() {
 void Render::Attach(const std::string& title) {
   Window::rename(title);
   Input::init();
-  curr_scene = new Scene(title);
+  curr_scene = new Scene1(title);
   curr_scene->init();
 }
 
@@ -49,5 +51,14 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
 }
 
 void Render::draw_scene() { curr_scene->on_scene_render(); }
+
+void Render::eable_depth_test() {
+  glEnable(GL_DEPTH_TEST);
+}
+
+void Render::eable_alpha_blend() {
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
 
 }  // namespace scene

@@ -98,7 +98,7 @@ target_include_directories(demo_3
         ${PROJECT_SOURCE_DIR}/vendor/std_image
         ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
         ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
-        
+        ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
 )
 
 target_link_libraries(demo_3
@@ -126,7 +126,7 @@ target_include_directories(demo_4
         ${PROJECT_SOURCE_DIR}/vendor/std_image
         ${PROJECT_SOURCE_DIR}/vendor/freetype/include/freetype2
         ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
-        
+        ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
 )
 
 target_link_libraries(demo_4
@@ -153,6 +153,7 @@ target_include_directories(demo_5
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
+    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
     
 )
 
@@ -183,7 +184,7 @@ target_include_directories(demo_6
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
-    
+    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include    
 )
 
 target_link_libraries(demo_6
@@ -221,6 +222,7 @@ target_include_directories(demo_7
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
+    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
     
 )
 
@@ -256,6 +258,7 @@ target_include_directories(demo_8
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
+    ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
     
 )
 

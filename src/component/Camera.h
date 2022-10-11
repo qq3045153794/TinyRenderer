@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:38:56
  * @LastEditors  : xietao
- * @LastEditTime : 2022-09-20 20:12:16
+ * @LastEditTime : 2022-09-30 22:12:04
  * @FilePath     : /Learn_OpenGL/src/component/Camera.h
  * @Description  :
  *
@@ -22,9 +22,9 @@ class Camera {
   Camera(Transform* T, float left, float right, float bottom, float top, float znear, float zfar);
   virtual ~Camera(){};
 
-  const glm::mat4 get_view_mat() const { return T->get_lookat(); };
+  glm::mat4 get_view_mat() const { return T->get_lookat(); };
 
-  const glm::mat4 get_projection_mat() const;
+  glm::mat4 get_projection_mat() const;
 
   void set_position(const glm::vec3& position) { T->translate(position); }
 
@@ -46,7 +46,8 @@ class Camera {
 class CameraFps : public Camera {
  public:
   CameraFps(Transform* T, float fov, float aspect, float znear, float zfar);
-  CameraFps(Transform* T, float left, float right, float bottom, float top, float znear, float zfar);
+  CameraFps(Transform* T, float left, float right, float bottom, float top, float znear,
+            float zfar);
 
   virtual ~CameraFps(){};
   void update();

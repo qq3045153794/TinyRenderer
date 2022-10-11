@@ -4,10 +4,10 @@
 #include <entt/entt.hpp>
 #include <string>
 
-#include "component/Transform.h"
-#include "component/Mesh.h"
-#include "component/Material.h"
 #include "component/Camera.h"
+#include "component/Material.h"
+#include "component/Mesh.h"
+#include "component/Transform.h"
 
 namespace scene {
 
@@ -30,12 +30,11 @@ class Entity {
 
   template <typename T, typename... Args>
   T& AddComponent(Args&&... args) {
-    
     if constexpr (std::is_same_v<T, component::Camera>) {
-      auto transform = registry->get<component::Transform> (id);
-      return registry->emplace<T> (id, &transform, std::forward<Args>(args)...)
+      auto transform = registry->get<component::Transform>(id);
+      return registry->emplace<T>(id, &transform, std::forward<Args>(args)...)
     }
-    return registry->emplace<T> (id, std::forward<Args>(args)...);
+    return registry->emplace<T>(id, std::forward<Args>(args)...);
   }
 
   template <typename T>

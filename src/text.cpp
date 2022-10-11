@@ -3,6 +3,9 @@
 using namespace std;
 int main() {
 
+  const int i = 0;
+  int* p = const_cast<int*> (&i);
+
   float pitch = glm::radians(35.6f), yaw = 0, roll= 0;
 
   //初始朝向

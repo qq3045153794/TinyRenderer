@@ -15,10 +15,14 @@ class Scene {
   Scene(const std::string& title);
   virtual ~Scene();
   Entity create_entity(const std::string& name);
+  void add_nor_ubo();
+  void set_nor_ubo(GLuint uid, std::shared_ptr<asset::Shader> shader);
+
   virtual void init();
   virtual void on_scene_render();
 
- private:
+ protected:
+  std::shared_ptr<asset::UBO> nor_ubo;
   entt::registry registry;
   std::map<entt::entity, std::string> directory;
 };
