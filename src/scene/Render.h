@@ -5,10 +5,10 @@
 #include <queue>
 
 #include "asset/Shader.h"
-#include "glad/glad.h"
 
 namespace scene {
 
+class Scene;
 class Render {
  public:
   Render();

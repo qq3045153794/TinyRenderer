@@ -13,8 +13,8 @@ namespace component {
 class Material {
  public:
   Material(std::shared_ptr<asset::Shader> shader);
-  Material(const Material&) = delete;
-  Material& operator=(const Material&) = delete;
+  // Material(const Material&) = delete;
+  // Material& operator=(const Material&) = delete;
 
   void set_texture(GLuint u_id, std::shared_ptr<asset::Texture> texture);
   template <typename T>

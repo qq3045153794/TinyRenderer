@@ -38,7 +38,7 @@ class Scene1 : public Scene {
 
     main_camera = create_entity("main_camera");
     main_camera.AddComponent<Camera>(
-        30, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1, 100);
+        30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f, 100.f);
     main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 1.0));
 
     Render::eable_depth_test();

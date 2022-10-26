@@ -9,6 +9,10 @@ Scene::Scene(const std::string& title) { m_title = title; }
 
 Scene::~Scene() {}
 
+void Scene::init() {
+
+}
+
 Entity Scene::create_entity(const std::string& name) {
   Entity e = {name, registry.create(), &registry};
   e.AddComponent<component::Transform>();

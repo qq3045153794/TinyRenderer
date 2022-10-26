@@ -27,14 +27,16 @@ class Entity {
 
   Entity(const Entity&) = default;
   Entity& operator=(const Entity&) = default;
-
+  
   template <typename T, typename... Args>
   T& AddComponent(Args&&... args) {
-    if constexpr (std::is_same_v<T, component::Camera>) {
-      auto transform = registry->get<component::Transform>(id);
-      return registry->emplace<T>(id, &transform, std::forward<Args>(args)...)
+    using namespace component;
+    if constexpr (std::is_same_v<T, Camera>) {
+      auto transform = registry->get<Transform>(id);
+      return registry->emplace<T>(id, &transform, std::forward<Args>(args)...);
+    } else {
+      return registry->emplace<T>(id, std::forward<Args>(args)...);
     }
-    return registry->emplace<T>(id, std::forward<Args>(args)...);
   }
 
   template <typename T>
