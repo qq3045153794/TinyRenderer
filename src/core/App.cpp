@@ -25,8 +25,9 @@ void App::init() {
 }
 
 void App::render_update() {
-  
+  // 画面渲染
   Render::draw_scene();  
+  // 双缓存 窗口回调
   Window::update();
   
 }

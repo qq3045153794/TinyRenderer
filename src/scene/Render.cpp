@@ -34,6 +34,7 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
 
   while (!render_queue.empty()) {
     auto& e = render_queue.front();
+    render_queue.pop();
     if (mesh_group.contains(e)) {
       auto& mesh = mesh_group.get<Mesh>(e);
       auto& transform = mesh_group.get<Transform>(e);
@@ -42,8 +43,16 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         shader->bind();
         shader->set_uniform("model", transform.get_transform());
       } else {
+        
         material.bind();
         material.set_uniform("model", transform.get_transform());
+        std::cout << "get model" << std::endl;
+        for (int j = 0; j < 4; j++) {
+          for (int i = 0; i < 4; i ++) {
+            std::cout << transform.get_transform()[i][j] << " ";
+          }
+          std::cout << std::endl;
+        }
       }
       mesh.draw();
     }

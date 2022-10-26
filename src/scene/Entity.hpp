@@ -32,7 +32,7 @@ class Entity {
   T& AddComponent(Args&&... args) {
     using namespace component;
     if constexpr (std::is_same_v<T, Camera>) {
-      auto transform = registry->get<Transform>(id);
+      auto& transform = registry->get<Transform>(id);
       return registry->emplace<T>(id, &transform, std::forward<Args>(args)...);
     } else {
       return registry->emplace<T>(id, std::forward<Args>(args)...);
