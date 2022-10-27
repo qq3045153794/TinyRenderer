@@ -46,13 +46,14 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         
         material.bind();
         material.set_uniform("model", transform.get_transform());
-        std::cout << "get model" << std::endl;
-        for (int j = 0; j < 4; j++) {
-          for (int i = 0; i < 4; i ++) {
-            std::cout << transform.get_transform()[i][j] << " ";
-          }
-          std::cout << std::endl;
-        }
+        // std::cout <<"id = "<<material.m_shader->get_id() << std::endl;
+        // std::cout << "get model" << std::endl;
+        // for (int j = 0; j < 4; j++) {
+        //   for (int i = 0; i < 4; i ++) {
+        //     std::cout << transform.get_transform()[i][j] << " ";
+        //   }
+        //   std::cout << std::endl;
+        // }
       }
       mesh.draw();
     }

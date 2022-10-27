@@ -24,10 +24,11 @@ class Material {
   }
   void bind() const;
   void ubind() const;
+  std::shared_ptr<asset::Shader> m_shader;
 
  private:
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
-  std::shared_ptr<asset::Shader> m_shader;
+  // std::shared_ptr<asset::Shader> m_shader;
 };
 
 }  // namespace component

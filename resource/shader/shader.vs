@@ -4,8 +4,12 @@ layout (location = 1) in vec3 a_nor;
 layout (location = 2) in vec2 a_tex;
 
 out vec2 tex_coords;
-uniform mat4 projection;
-uniform mat4 view;
+layout (std140) uniform Matrices {
+    mat4 projection;
+    mat4 view;
+};
+// uniform mat4 projection;
+// uniform mat4 view;
 uniform mat4 model;
 
 void main()

@@ -31,42 +31,37 @@ class Scene1 : public Scene {
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
     quad.AddComponent<Material>(quad_shader);
     quad.GetComponent<Material>().set_texture(0, quad_texture);
-    std::cout << "create = " << quad.name << " " << (int)quad.id << std::endl;
 
     main_camera = create_entity("main_camera");
-    main_camera.AddComponent<Camera>(
-        30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
-        100.f);
+    // main_camera.AddComponent<Camera>(
+    //     30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
+    //     100.f);
+    main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
     main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 1.0));
 
-    std::cout << "create = " << main_camera.name << " " << (int)main_camera.id << std::endl;
-    std::cout << "camera pos = " << main_camera.GetComponent<Transform>().get_position().x << " "
-              << main_camera.GetComponent<Transform>().get_position().y << " "
-              << main_camera.GetComponent<Transform>().get_position().z << std::endl;
-    std::cout << main_camera.GetComponent<Camera>().T->get_position(). x << " "
-              << main_camera.GetComponent<Camera>().T->get_position(). y << " "
-              << main_camera.GetComponent<Camera>().T->get_position(). z << std::endl;
+    
     Render::eable_depth_test();
     Render::eable_alpha_blend();
   }
 
   virtual void on_scene_render() override {
-    // exit(0);
+
     if (nor_ubo != nullptr) {
       glm::mat4 proj = main_camera.GetComponent<Camera>().get_projection_mat();
       glm::mat4 view = main_camera.GetComponent<Camera>().get_view_mat();
       nor_ubo->set_uniform(0, glm::value_ptr(proj));
       nor_ubo->set_uniform(1, glm::value_ptr(view));
+      
+      // log
       auto pos = main_camera.GetComponent<Camera>().T->get_position();
       auto forward = main_camera.GetComponent<Camera>().T->m_forward;
-      std::cout << "pos  = " << pos.x << " " << pos.y << " " << pos.z << std::endl;
-      std::cout << "forward = " << forward.x << forward.y << " " <<forward.z << std::endl;
-      std::cout << "camera = " << view[3][0] << " " << view[3][1] << " " << view[3][2] << std::endl;
     }
-
-    Render::Submit(quad.id);
-    Render::render_scene();
     Render::clear_buffer();
+    
+    Render::Submit(quad.id);;
+    Render::render_scene();
+    
+    
   };
 };
 
