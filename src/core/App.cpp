@@ -19,7 +19,7 @@ void App::init() {
   Window::init();
   core::Log::init();
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-    std::cout << "Failed to initialize GLAD" << std::endl;
+    CORE_ERROR("Failed to initialize GLAD");
     return;
   }
   // 渲染器绑定场景

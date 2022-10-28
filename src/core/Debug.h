@@ -1,3 +1,13 @@
+/*
+ * @Author       : xietao
+ * @Date         : 2022-10-27 19:58:03
+ * @LastEditors  : xietao
+ * @LastEditTime : 2022-10-28 14:02:27
+ * @FilePath     : /Learn_OpenGL/src/core/Debug.h
+ * @Description  : 检测构建是否OpenGL构建错误
+ *
+ * Copyright (c) 2022, All Rights Reserved.
+ */
 #ifndef _SRC_CORE_DEBUG_H_
 #define _SRC_CORE_DEBUG_H_
 
@@ -40,7 +50,7 @@ class Debug {
 #define CHECK_ERROR()                                          \
   {                                                            \
     GLenum error_code = glGetError();                          \
-    if (error_code  != GL_NO_ERROR) {                         \
+    if (error_code != GL_NO_ERROR) {                           \
       CORE_ERROR("{}", core::Debug::gl_check_err(error_code)); \
     }                                                          \
   }

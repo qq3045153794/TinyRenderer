@@ -82,7 +82,6 @@ void Transform::culate_asix() {
   m_right = glm::normalize(m_transform[0]);
   m_up = glm::normalize(m_transform[1]);
   m_forward = glm::normalize(-1.f * m_transform[2]);
-  std::cout<<m_up.x<<" "<<m_up.y<<" "<<m_up.z<<std::endl;
 }
 
 void Transform::culate_eular() {

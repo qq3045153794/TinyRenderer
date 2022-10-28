@@ -1,6 +1,6 @@
 #include <iostream>
 #include "component/Mesh.h"
-
+#include "core/Log.h"
 static const std::vector<GLuint> va_offset = {
     offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal), offsetof(Mesh::Vertex, uv)};
 
@@ -12,7 +12,7 @@ Mesh::Mesh(primitive obj) {
     case CUBE: create_cube(); break;
     case SPHERE: create_sphere(); break;
     default: {
-      std::cout<<"no obj"<<std::endl;
+      CORE_INFO("MESH primitive INVAILD");
     }
   }
 }

@@ -1,5 +1,6 @@
 #include "asset/Shader.h"
 
+#include "core/Debug.h"
 namespace asset {
 
 Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file,
@@ -88,7 +89,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
       char *message = (char *)alloca(sizeof(char) * len);
       glGetShaderInfoLog(object, len, &len, message);
-      std::cout << "| ERROR::SHADER: Compile-time error: Type: " << type << "\n";
+      CORE_ERROR("ERROR::SHADER: Compile-time error: Type: ");
       std::cout << message << "\n";
     }
   } else {
@@ -98,7 +99,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
       char *message = (char *)alloca(sizeof(char) * len);
       glGetShaderInfoLog(object, len, &len, message);
-      std::cout << "| ERROR::Shader: Link-time error: Type: " << type << "\n";
+      CORE_ERROR("ERROR::Shader: Link-time error: Type: ");
       std::cout << message << "\n";
     }
   }
@@ -108,13 +109,13 @@ template <typename T>
 void Shader::set_uniform(const GLchar *name, const T &val) {
   using namespace glm;
   GLuint block_idx = glGetUniformLocation(m_id, name);
-
   if constexpr (std::is_same_v<T, GLint>) {
     glUniform1i(block_idx, val);
   } else if constexpr (std::is_same_v<T, GLfloat>) {
     glUniform1f(block_idx, val);
   } else if constexpr (std::is_same_v<T, GLuint>) {
-    glUniform1ui(block_idx, val);
+    // 转换成int,一般不会传uint进入shader sampler2D也是int类型
+    glUniform1i(block_idx, static_cast<GLint>(val));
   } else if constexpr (std::is_same_v<T, vec2>) {
     glUniform2fv(block_idx, 1, glm::value_ptr(val));
   } else if constexpr (std::is_same_v<T, vec3>) {
@@ -128,6 +129,7 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
   } else if constexpr (std::is_same_v<T, mat4>) {
     glUniformMatrix4fv(block_idx, 1, GL_FALSE, glm::value_ptr(val));
   } else {
+    CORE_ERROR("{} set_uniform invaild", name);
   }
 }
 

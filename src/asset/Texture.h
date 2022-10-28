@@ -9,7 +9,7 @@ namespace asset {
 
 class Texture {
  public:
-  Texture(const GLchar* path);
+  Texture(const GLchar* path, bool flip = false);
   Texture(const std::vector<GLchar*>& path_vec);
   Texture(const GLchar* path, GLuint sampler) {};
   Texture(GLuint width, GLuint height);

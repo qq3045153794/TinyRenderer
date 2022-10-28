@@ -1,6 +1,6 @@
 #include "core/Event.h"
 
-#include <iostream>
+#include "core/Log.h"
 
 void Event::register_callback() {
   GLFWwindow* w_ptr = Window::m_window;
@@ -50,8 +50,8 @@ void Event::window_size_callback(GLFWwindow* window, int width, int height) {}
 
 void Event::cursor_enter_callback(GLFWwindow* window, int entered) {
   if (entered) {
-    std::cout << "Cursor enters window" << std::endl;
+    CORE_INFO("Cursor enters window");
   } else {
-    std::cout << "Cursor leaves window" << std::endl;
+    CORE_INFO("Cursor leaves window");
   }
 }

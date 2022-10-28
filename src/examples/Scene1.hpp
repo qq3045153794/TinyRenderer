@@ -24,7 +24,8 @@ class Scene1 : public Scene {
         std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
     add_nor_ubo();
     set_nor_ubo(0U, quad_shader);
-    quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png");
+    quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
+    CHECK_ERROR();
 
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
@@ -51,7 +52,6 @@ class Scene1 : public Scene {
       nor_ubo->set_uniform(0, glm::value_ptr(proj));
       nor_ubo->set_uniform(1, glm::value_ptr(view));
 
-      // log
       auto pos = main_camera.GetComponent<Camera>().T->get_position();
       auto forward = main_camera.GetComponent<Camera>().T->m_forward;
     }

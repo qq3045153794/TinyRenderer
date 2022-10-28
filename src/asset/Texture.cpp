@@ -5,8 +5,8 @@
 #include "utils/image.h"
 namespace asset {
 
-Texture::Texture(const GLchar* img_path) : m_target(GL_TEXTURE_2D) {
-  const auto& image = utils::Image(img_path);
+Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
+  const auto& image = utils::Image(img_path, flip);
   m_width = image.get_width();
   m_height = image.get_height();
   m_image_format = image.get_img_format();
@@ -15,7 +15,7 @@ Texture::Texture(const GLchar* img_path) : m_target(GL_TEXTURE_2D) {
   glBindTexture(m_target, m_id);
   glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
                GL_UNSIGNED_BYTE, image.get_buffer());
-  glBindTexture(0, m_id);
+  glBindTexture(m_target, 0);
 
   set_sampler_state();
 }
@@ -37,7 +37,7 @@ Texture::Texture(const std::vector<GLchar*>& path_vec) : m_target(GL_TEXTURE_CUB
                  GL_UNSIGNED_BYTE, image.get_buffer());
     ++idx;
   }
-  glBindTexture(0, m_id);
+  glBindTexture(m_target, 0);
   set_sampler_state();
 }
 
@@ -50,7 +50,7 @@ Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
   glBindTexture(m_target, m_id);
   glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
                GL_UNSIGNED_BYTE, NULL);
-  glBindTexture(0, m_id);
+  glBindTexture(m_target, 0);
 
   set_sampler_state();
 }
@@ -70,7 +70,7 @@ void Texture::set_sampler_state() {
     glTexParameteri(m_target, GL_TEXTURE_WRAP_R, GL_REPEAT);
   }
 
-  glBindTexture(0, m_id);
+  glBindTexture(m_target, 0);
 }
 
 void Texture::bind(GLuint unit) const {
@@ -78,6 +78,6 @@ void Texture::bind(GLuint unit) const {
   glBindTexture(m_target, m_id);
 }
 
-void Texture::ubind(GLuint unit) const { glBindTexture(0, m_id); }
+void Texture::ubind(GLuint unit) const { glBindTexture(m_target, 0); }
 
 }  // namespace asset

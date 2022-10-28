@@ -1,4 +1,5 @@
 #include "FBO.h"
+#include "core/Log.h"
 
 namespace asset {
 
@@ -61,7 +62,7 @@ void FBO::set_color_texture() {
   m_texture = std::make_unique<Texture> (m_width, m_height);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->get_id(), 0);
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   this->ubind();
 }
 
@@ -71,7 +72,7 @@ void FBO::set_depth_texture() {
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo->get_id());
 
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   this->ubind();
 }
 

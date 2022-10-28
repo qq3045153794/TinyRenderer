@@ -33,7 +33,6 @@ void Input::set_key_down(uint8_t key, bool pressed) {
     return;
   }
   keybook[key] = pressed;
-  std::cout << key << " " << pressed << std::endl;
 }
 
 bool Input::get_key_down(uint8_t key) {

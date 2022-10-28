@@ -4,14 +4,14 @@
 
 #include "stb_image.h"
 #include "glad/glad.h"
-
+#include "core/Log.h"
 namespace utils {
 Image::Image(const std::string& img_path, bool flip) : m_width(0), m_height(0), n_channels(0) {
   stbi_set_flip_vertically_on_load(flip);
   m_buffer = stbi_load(img_path.c_str(), &m_width, &m_height, &n_channels, 0);
-
+  stbi_set_flip_vertically_on_load(false);
   if(!m_buffer){
-    std::cout << "Texture failed to load at path: " << img_path << std::endl;
+    CORE_ERROR("Texture failed to load at path: {}", img_path);
   }
 }
 

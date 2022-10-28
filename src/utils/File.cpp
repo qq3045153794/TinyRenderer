@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "core/Log.h"
 namespace utils {
 std::string File::read_file(const std::string& file_path) {
   std::string out;
@@ -16,7 +17,7 @@ std::string File::read_file(const std::string& file_path) {
     out = file_stream.str();
     file.close();
   } catch(std::ifstream::failure e) {
-    std::cout << "ERROR::SHADER::FILE_NO_SUCCESFULLY_READ" << std::endl;
+    CORE_ERROR("ERROR::SHADER::FILE_NO_SUCCESFULLY_READ");
   }
   return out;
 }
