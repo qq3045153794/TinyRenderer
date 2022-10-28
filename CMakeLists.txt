@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 set(LIBS
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/lib/libglfw3.a
     ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/bin/libassimp.so.5.2.0
+    ${PROJECT_SOURCE_DIR}/vendor/stdlog/lib/libspdlog.a
     GL m Xrandr  X11  pthread dl
 )
 
@@ -24,6 +25,7 @@ add_executable(demo_9
     ${PROJECT_SOURCE_DIR}/src/core/Clock.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Event.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Input.cpp
+    ${PROJECT_SOURCE_DIR}/src/core/Log.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Transform.cpp
@@ -43,6 +45,7 @@ target_include_directories(demo_9
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
     ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
+    ${PROJECT_SOURCE_DIR}/vendor/stdlog/include
     
 )
 
