@@ -1,5 +1,5 @@
-#ifndef _LEARN_OPENGL_SRC_ASSET_VAO_H_
-#define _LEARN_OPENGL_SRC_ASSET_VAO_H_
+#ifndef _SRC_ASSET_VAO_H_
+#define _SRC_ASSET_VAO_H_
 
 #include "asset/Buffer.h"
 namespace asset {

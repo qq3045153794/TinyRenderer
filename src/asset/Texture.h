@@ -1,5 +1,5 @@
-#ifndef _LEARN_OPENGL_SRC_ASSET_TEXTURE_H_
-#define _LEARN_OPENGL_SRC_ASSET_TEXTURE_H_
+#ifndef _SRC_ASSET_TEXTURE_H_
+#define _SRC_ASSET_TEXTURE_H_
 
 #include <vector>
 #include "glad/glad.h"
@@ -9,17 +9,16 @@ namespace asset {
 
 class Texture {
  public:
+  explicit Texture(const std::vector<GLchar*>& path_vec);
   Texture(const GLchar* path, bool flip = false);
-  Texture(const std::vector<GLchar*>& path_vec);
-  Texture(const GLchar* path, GLuint sampler) {};
+  Texture(const GLchar* path, GLuint sampler) {}
   Texture(GLuint width, GLuint height);
   ~Texture();
-  GLuint get_id(); 
+  GLuint get_id();
   void bind(GLuint unit) const;
   void ubind(GLuint unit) const;
 
  private:
-
   void set_sampler_state();
 
   GLuint m_id;

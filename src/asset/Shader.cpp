@@ -87,7 +87,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
     if (!success) {
       int len;
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
-      char *message = (char *)alloca(sizeof(char) * len);
+      char *message = reinterpret_cast<char*>(alloca(sizeof(char) * len));
       glGetShaderInfoLog(object, len, &len, message);
       CORE_ERROR("ERROR::SHADER: Compile-time error: Type: ");
       std::cout << message << "\n";
@@ -97,7 +97,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
     if (!success) {
       int len;
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
-      char *message = (char *)alloca(sizeof(char) * len);
+      char *message = reinterpret_cast<char*>(alloca(sizeof(char) * len));
       glGetShaderInfoLog(object, len, &len, message);
       CORE_ERROR("ERROR::Shader: Link-time error: Type: ");
       std::cout << message << "\n";

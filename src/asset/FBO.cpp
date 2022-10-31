@@ -25,7 +25,7 @@ FBO::FBO(GLuint width, GLuint height) {
   glGenFramebuffers(1, &id);
   m_width = width;
   m_height = height;
-  m_shader = std::make_unique<Shader> ("../resource/shader/fbo.vs","../resource/shader/fbo.fs");
+  m_shader = std::make_unique<Shader> ("../resource/shader/fbo.vs",  "../resource/shader/fbo.fs");
   m_shader->bind();
   m_shader->set_uniform("texture_0", 0);
   set_buffer();
@@ -44,14 +44,14 @@ void FBO::set_buffer() {
   };
 
   GLuint index [] = {
-    0, 1, 2, 
+    0, 1, 2,
     0, 3, 2
   };
-  
+
   m_vbo = std::make_unique<VBO> (sizeof(data), data, GL_STATIC_DRAW);
   m_ibo = std::make_unique<IBO> (sizeof(index), index, GL_STATIC_DRAW, 6U);
   m_vao = std::make_unique<VAO> ();
-  
+
   m_vao->set_vbo(*m_vbo, 0, 3U, sizeof(GLfloat) * 5, 0U, GL_FLOAT);
   m_vao->set_vbo(*m_vbo, 1, 2U, sizeof(GLfloat) * 5, 3U * sizeof(GLfloat), GL_FLOAT);
   m_vao->set_ibo(*m_ibo);
@@ -61,8 +61,9 @@ void FBO::set_color_texture() {
   this->bind();
   m_texture = std::make_unique<Texture> (m_width, m_height);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->get_id(), 0);
-  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+  }
   this->ubind();
 }
 
@@ -71,8 +72,9 @@ void FBO::set_depth_texture() {
   m_rbo = std::make_unique<RBO> (m_width, m_height);
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo->get_id());
 
-  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+  }
   this->ubind();
 }
 

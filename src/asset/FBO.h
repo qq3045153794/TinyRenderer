@@ -1,3 +1,6 @@
+#ifndef _SRC_ASSERT_FBO_H_
+#define _SRC_ASSERT_FBO_H_
+
 #include "asset/Asset.h"
 #include "asset/Buffer.h"
 #include "asset/Shader.h"
@@ -38,3 +41,5 @@ class FBO : public Asset {
 };
 
 }  // namespace asset
+
+#endif

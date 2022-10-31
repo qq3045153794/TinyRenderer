@@ -1,5 +1,5 @@
-#ifndef _LEARN_OPENGL_SRC_ASSET_SHADER_H_
-#define _LEARN_OPENGL_SRC_ASSET_SHADER_H_
+#ifndef _SRC_ASSET_SHADER_H_
+#define _SRC_ASSET_SHADER_H_
 #include <fstream>
 #include <iostream>
 #include <sstream>

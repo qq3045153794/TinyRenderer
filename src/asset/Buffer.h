@@ -1,5 +1,5 @@
-#ifndef _LEARN_OPENGL_SRC_ASSET_BUFFER_H_
-#define _LEARN_OPENGL_SRC_ASSET_BUFFER_H_
+#ifndef _SRC_ASSET_BUFFER_H_
+#define _SRC_ASSET_BUFFER_H_
 
 #include "glad/glad.h"
 #include <vector>
@@ -8,8 +8,8 @@ namespace asset {
 
 class BufferBase {
  public:
-  BufferBase() { glGenBuffers(1, &m_id); };
-  virtual ~BufferBase() { glDeleteBuffers(1, &m_id); };
+  BufferBase() { glGenBuffers(1, &m_id); }
+  virtual ~BufferBase() { glDeleteBuffers(1, &m_id); }
   BufferBase(const BufferBase&) = delete;
   BufferBase& operator=(const BufferBase&) = delete;
 
