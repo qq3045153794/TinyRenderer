@@ -23,7 +23,7 @@ class Entity {
   Entity() = default;
   Entity(const std::string& name, entt::entity id, entt::registry* reg)
       : name(name), id(id), registry(reg) {}
-  ~Entity(){};
+  ~Entity(){}
 
   Entity(const Entity&) = default;
   Entity& operator=(const Entity&) = default;

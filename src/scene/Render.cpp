@@ -43,7 +43,6 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         shader->bind();
         shader->set_uniform("model", transform.get_transform());
       } else {
-        
         material.bind();
         material.set_uniform("model", transform.get_transform());
       }
