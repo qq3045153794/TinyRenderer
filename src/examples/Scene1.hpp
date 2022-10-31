@@ -20,6 +20,10 @@ class Scene1 : public Scene {
   std::shared_ptr<Texture> quad_texture;
 
   virtual void init() override {
+    
+    add_fbo(Window::m_width, Window::m_height);
+    CHECK_ERROR();
+
     quad_shader =
         std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
     add_nor_ubo();
@@ -41,6 +45,7 @@ class Scene1 : public Scene {
     main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 1.0));
     CHECK_ERROR();
 
+
     Render::eable_depth_test();
     Render::eable_alpha_blend();
   }
@@ -55,11 +60,16 @@ class Scene1 : public Scene {
       auto pos = main_camera.GetComponent<Camera>().T->get_position();
       auto forward = main_camera.GetComponent<Camera>().T->m_forward;
     }
+
     Render::clear_buffer();
-
+    
+    nor_fbo->bind();
+    Render::clear_buffer();
     Render::Submit(quad.id);
-
     Render::render_scene();
+    
+    nor_fbo->ubind();
+    nor_fbo->draw();
   };
 };
 

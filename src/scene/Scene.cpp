@@ -3,6 +3,8 @@
 
 #include "scene/Render.h"
 
+#include "core/Log.h"
+
 namespace scene {
 
 Scene::Scene(const std::string& title) { m_title = title; }
@@ -26,11 +28,17 @@ void Scene::add_nor_ubo() {
   GLuint sz = 128U;
 
   nor_ubo = std::make_shared<asset::UBO>(offset, lenght, sz);
-  // UBOs.emplace(uid, offset, lenght, sz);
 }
 
 void Scene::set_nor_ubo(GLuint uid, std::shared_ptr<asset::Shader> shader) {
   nor_ubo->set_binding(0, "Matrices", shader->get_id());
+}
+
+void Scene::add_fbo(GLuint width, GLuint height) {
+  nor_fbo = std::make_shared<asset::FBO> (width, height);
+  nor_fbo->set_color_texture();
+  nor_fbo->set_depth_texture();
+  CORE_INFO("add FBO widht :{} height: {}", width, height);
 }
 
 void Scene::on_scene_render() { Render::clear_buffer(); }

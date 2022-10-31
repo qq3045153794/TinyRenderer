@@ -65,6 +65,7 @@ void FBO::set_color_texture() {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
   this->ubind();
+  CORE_INFO("attach color texture");
 }
 
 void FBO::set_depth_texture() {
@@ -76,6 +77,7 @@ void FBO::set_depth_texture() {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
   this->ubind();
+  CORE_INFO("attach depth texture");
 }
 
 void FBO::draw() const{

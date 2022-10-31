@@ -20,6 +20,7 @@ add_executable(demo_9
     ${PROJECT_SOURCE_DIR}/src/asset/Shader.cpp
     ${PROJECT_SOURCE_DIR}/src/asset/Texture.cpp
     ${PROJECT_SOURCE_DIR}/src/asset/VAO.cpp
+    ${PROJECT_SOURCE_DIR}/src/asset/FBO.cpp
     ${PROJECT_SOURCE_DIR}/src/core/App.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Window.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Clock.cpp
