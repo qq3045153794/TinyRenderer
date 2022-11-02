@@ -16,6 +16,7 @@ class Scene1 : public Scene {
   Entity quad;
   Entity main_camera;
   Entity cube;
+  Entity sphere;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Texture> quad_texture;
@@ -35,6 +36,7 @@ class Scene1 : public Scene {
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
     quad.AddComponent<Material>(quad_shader);
     quad.GetComponent<Material>().set_texture(0, quad_texture);
+    quad.GetComponent<Transform>().translate(glm::vec3(-4, 0.0, 0.0));
     CHECK_ERROR();
     CORE_INFO("{} created", quad.name);
 
@@ -42,15 +44,24 @@ class Scene1 : public Scene {
     cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
     cube.AddComponent<Material>(quad_shader);
     cube.GetComponent<Material>().set_texture(0, quad_texture);
+    cube.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 0.0));
     CHECK_ERROR();
     CORE_INFO("{} created", cube.name);
 
+    sphere = create_entity("sphere");
+    sphere.AddComponent<Mesh>(Mesh::primitive::SPHERE);
+    sphere.AddComponent<Material>(quad_shader);
+    sphere.GetComponent<Material>().set_texture(0, quad_texture);
+    sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
+    CHECK_ERROR();
+    CORE_INFO("{} created", sphere.name);
+
     main_camera = create_entity("main_camera");
     main_camera.AddComponent<CameraFps>(
-        30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
+        60.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
         100.f);
     // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
-    main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 2.0));
+    main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 5.0));
     CHECK_ERROR();
     CORE_INFO("{} created", main_camera.name);
 
@@ -77,7 +88,7 @@ class Scene1 : public Scene {
     Render::clear_buffer();
     // 提交至渲染队列
     Render::Submit(quad.id);
-
+    Render::Submit(sphere.id);
     Render::Submit(cube.id);
 
     Render::render_scene();
