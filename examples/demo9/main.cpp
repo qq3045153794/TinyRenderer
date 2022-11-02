@@ -5,5 +5,6 @@ int main() {
   bool run = true;
   while (run) {
     App::instand().render_update();
+    App::instand().event_update();
   }
 }

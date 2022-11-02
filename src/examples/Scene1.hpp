@@ -15,12 +15,12 @@ class Scene1 : public Scene {
   Scene1(const std::string& title) : Scene(title) {}
   Entity quad;
   Entity main_camera;
+  Entity cube;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Texture> quad_texture;
 
   virtual void init() override {
-    
     add_fbo(Window::m_width, Window::m_height);
     CHECK_ERROR();
 
@@ -36,38 +36,52 @@ class Scene1 : public Scene {
     quad.AddComponent<Material>(quad_shader);
     quad.GetComponent<Material>().set_texture(0, quad_texture);
     CHECK_ERROR();
+    CORE_INFO("{} created", quad.name);
+
+    cube = create_entity("cube");
+    cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
+    cube.AddComponent<Material>(quad_shader);
+    cube.GetComponent<Material>().set_texture(0, quad_texture);
+    CHECK_ERROR();
+    CORE_INFO("{} created", cube.name);
 
     main_camera = create_entity("main_camera");
-    // main_camera.AddComponent<Camera>(
-    //     30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
-    //     100.f);
-    main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
-    main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 1.0));
+    main_camera.AddComponent<CameraFps>(
+        30.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
+        100.f);
+    // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
+    main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 2.0));
     CHECK_ERROR();
-
+    CORE_INFO("{} created", main_camera.name);
 
     Render::eable_depth_test();
     Render::eable_alpha_blend();
   }
 
   virtual void on_scene_render() override {
+    auto& camera = main_camera.GetComponent<CameraFps>();
+    camera.update();
     if (nor_ubo != nullptr) {
-      glm::mat4 proj = main_camera.GetComponent<Camera>().get_projection_mat();
-      glm::mat4 view = main_camera.GetComponent<Camera>().get_view_mat();
+      glm::mat4 proj = main_camera.GetComponent<CameraFps>().get_projection_mat();
+      glm::mat4 view = main_camera.GetComponent<CameraFps>().get_view_mat();
       nor_ubo->set_uniform(0, glm::value_ptr(proj));
       nor_ubo->set_uniform(1, glm::value_ptr(view));
 
-      auto pos = main_camera.GetComponent<Camera>().T->get_position();
-      auto forward = main_camera.GetComponent<Camera>().T->m_forward;
+      auto pos = main_camera.GetComponent<CameraFps>().T->get_position();
+      auto forward = main_camera.GetComponent<CameraFps>().T->m_forward;
     }
 
     Render::clear_buffer();
-    
+
     nor_fbo->bind();
     Render::clear_buffer();
+    // 提交至渲染队列
     Render::Submit(quad.id);
+
+    Render::Submit(cube.id);
+
     Render::render_scene();
-    
+
     nor_fbo->ubind();
     nor_fbo->draw();
   };

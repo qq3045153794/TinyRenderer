@@ -5,6 +5,9 @@
 #include "component/Mesh.h"
 #include "core/Window.h"
 #include "core/Log.h"
+#include "core/Clock.h"
+#include "core/Input.h"
+#include "core/Event.h"
 #include "scene/Render.h"
 
 using  Render = scene::Render ;
@@ -17,7 +20,11 @@ App& App::instand() {
 void App::init() {
   // 初始化窗口系统
   Window::init();
-  core::Log::init();
+  Log::init();
+  Clock::init();
+  Input::init();
+  Event::register_callback();
+
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     CORE_ERROR("Failed to initialize GLAD");
     return;
@@ -32,6 +39,10 @@ void App::render_update() {
   // 双缓存 窗口回调
   Window::update();
   
+}
+
+void App::event_update() {
+  Clock::update();
 }
 
 App::App() {}

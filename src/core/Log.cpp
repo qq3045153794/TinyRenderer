@@ -6,8 +6,6 @@
 
 
 
-namespace core {
-
 std::shared_ptr<spdlog::logger> Log::logger;
 
 void Log::init() {
@@ -27,8 +25,9 @@ void Log::init() {
 
   // 日志等级
   logger->set_level(spdlog::level::trace);
+
+  logger->flush_on(spdlog::level::trace);
 }
 
 void Log::shut_down() { spdlog::shutdown(); }
 
-}  // namespace core

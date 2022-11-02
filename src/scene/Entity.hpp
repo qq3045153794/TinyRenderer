@@ -4,6 +4,8 @@
 #include <entt/entt.hpp>
 #include <string>
 
+#include "utils/ext.hpp"
+#include "core/Debug.h"
 #include "component/Camera.h"
 #include "component/Material.h"
 #include "component/Mesh.h"
@@ -31,7 +33,8 @@ class Entity {
   template <typename T, typename... Args>
   T& AddComponent(Args&&... args) {
     using namespace component;
-    if constexpr (std::is_same_v<T, Camera>) {
+    CORE_ASERT(!registry->all_of<T>(id), "{} already has component!", name);
+    if constexpr (std::is_same_v<T, Camera> || std::is_same_v<T, CameraFps>) {
       auto& transform = registry->get<Transform>(id);
       return registry->emplace<T>(id, &transform, std::forward<Args>(args)...);
     } else {

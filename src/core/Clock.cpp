@@ -12,3 +12,9 @@ void Clock::update() {
 
   dt = this_frame - last_frame;
 }
+
+void Clock::init() {
+  dt = 0.0;
+  this_frame = 0.0;
+  last_frame = 0.0;
+}

@@ -9,6 +9,7 @@ class App {
   static App& instand();
   void init();
   void render_update();
+  void event_update();
 
  private:
   App();

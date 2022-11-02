@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-10-27 17:39:11
  * @LastEditors  : xietao
- * @LastEditTime : 2022-10-28 10:32:45
+ * @LastEditTime : 2022-11-02 19:52:28
  * @FilePath     : /Learn_OpenGL/src/core/Log.h
  * @Description  : 日志格式 等级设置
  *
@@ -16,21 +16,20 @@
 
 #include <spdlog/spdlog.h>
 
-#define CORE_TRACE(...) SPDLOG_LOGGER_TRACE(::core::Log::get_logger(), __VA_ARGS__)
-#define CORE_DEBUG(...) SPDLOG_LOGGER_DEBUG(::core::Log::get_logger(), __VA_ARGS__)
-#define CORE_INFO(...)  SPDLOG_LOGGER_INFO(::core::Log::get_logger(), __VA_ARGS__)
-#define CORE_WARN(...)  SPDLOG_LOGGER_WARN(::core::Log::get_logger(), __VA_ARGS__)
-#define CORE_ERROR(...) SPDLOG_LOGGER_ERROR(::core::Log::get_logger(), __VA_ARGS__)
+#define CORE_TRACE(...) SPDLOG_LOGGER_TRACE(Log::get_logger(), __VA_ARGS__)
+#define CORE_DEBUG(...) SPDLOG_LOGGER_DEBUG(Log::get_logger(), __VA_ARGS__)
+#define CORE_INFO(...) SPDLOG_LOGGER_INFO(Log::get_logger(), __VA_ARGS__)
+#define CORE_WARN(...) SPDLOG_LOGGER_WARN(Log::get_logger(), __VA_ARGS__)
+#define CORE_ERROR(...) SPDLOG_LOGGER_ERROR(Log::get_logger(), __VA_ARGS__)
 
 #define CORE_ASERT(cond, ...)                           \
   {                                                     \
     if (!(cond)) {                                      \
-      ::core::Log::get_logger()->critical(__VA_ARGS__); \
-      assert(cnt);                                      \
+      Log::get_logger()->critical(__VA_ARGS__); \
+      assert(cond);                                     \
     }                                                   \
   }
 
-namespace core {
 class Log {
  public:
   static void init();
@@ -42,6 +41,5 @@ class Log {
   static std::shared_ptr<spdlog::logger> logger;
 };
 
-}  // namespace core
 
 #endif
