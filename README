@@ -1,0 +1,5 @@
+
+imgui依赖
+```bash
+apt-get install libsdl2-dev
+```
