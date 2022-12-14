@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:41:23
  * @LastEditors  : xietao
- * @LastEditTime : 2022-09-20 20:20:22
+ * @LastEditTime : 2022-12-13 12:21:45
  * @FilePath     : /Learn_OpenGL/src/component/Transform.h
  * @Description  : 变换组件 设置位置、旋转和大小 也能获取物体欧拉角
  *                 位置、欧拉角(Y -> X -> Z)、lookat、变换矩阵
@@ -24,6 +24,10 @@ class Transform {
   void rotation(const glm::quat& q);
   void rotation(const glm::vec3& eular);
   void ealar_ratation(const glm::vec3& eular);
+
+  void set_ealar_YZX(const glm::vec3& eular);
+  void set_position(const glm::vec3& position);
+  void set_scale(const glm::vec3& size);
 
   void translate(const glm::vec3& v);
   void scale(const glm::vec3& s);

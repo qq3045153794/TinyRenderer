@@ -56,7 +56,7 @@ void Transform::rotation(const glm::vec3& eular) {
   glm::mat4 RY = glm::rotate(glm::mat4(1.0), eular.y, world_up);
   glm::mat4 RZ = glm::rotate(glm::mat4(1.0), eular.z, -world_forward);
   
-  glm::mat4 R = glm::eulerAngleYZX(eular.y, eular.z, eular.x);
+  glm::mat4 R = glm::eulerAngleYZX(eular.x, eular.y, eular.z);
   // glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
 
   m_rotation = glm::quat_cast(R);
@@ -99,6 +99,21 @@ const glm::vec3& Transform::get_position() const { return m_position; }
 
 const glm::mat4 Transform::get_lookat() const {
   return glm::lookAt(m_position, m_position + m_forward, m_up);
+}
+
+// 纺射变换
+
+void Transform::set_ealar_YZX(const glm::vec3& eular) {
+  
+  
+}
+
+void Transform::set_position(const glm::vec3& position) {
+  m_transform[3] = glm::vec4(position, 1.0);
+}
+
+void Transform::set_scale(const glm::vec3& size) {
+
 }
 
 }  // namespace component
