@@ -1,3 +1,4 @@
+// clang-format off
 #include "core/App.h"
 
 #include <iostream>
@@ -10,8 +11,11 @@
 #include "core/Event.h"
 #include "scene/Render.h"
 #include "scene/ui.h"
+// clang-format on
 
-using  Render = scene::Render ;
+namespace core {
+
+using Render = scene::Render;
 
 App& App::instand() {
   static App i;
@@ -38,14 +42,18 @@ void App::init() {
 
 void App::render_update() {
   // 画面渲染
-  Render::draw_scene();  
-  
+  Render::draw_scene();
 }
 
 void App::event_update() {
+  if (Input::get_key_down('\r')) {
+    // 切换layer
+    Window::on_layer_switch();
+    Input::set_key_down('\r', false);
+  }
+  
   Clock::update();
   Render::draw_imGui();
-
   // 双缓存 窗口回调
   Window::update();
 }
@@ -53,3 +61,4 @@ void App::event_update() {
 App::App() {}
 
 App::~App() { Window::clear(); }
+}  // namespace core

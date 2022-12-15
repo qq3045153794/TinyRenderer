@@ -10,6 +10,7 @@ namespace scene {
 
 using namespace component;
 using namespace asset;
+using namespace core;
 class Scene1 : public Scene {
  public:
   Scene1(const std::string& title) : Scene(title) {}

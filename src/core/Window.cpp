@@ -1,5 +1,6 @@
 #include "core/Window.h"
-
+#include "core/Input.h"
+namespace core {
 
 Window::Window() {}
 
@@ -43,3 +44,25 @@ void Window::clear_buffer() {
 }
 
 void Window::rename(const std::string& title) { glfwSetWindowTitle(m_window, title.c_str()); }
+
+void Window::resize() {
+  glfwSetWindowPos(m_window, m_x, m_y);
+  glfwSetWindowSize(m_window, m_width, m_height);
+  glfwSetWindowAspectRatio(m_window, 16, 9);
+
+  // 渲染fame_buffer显示大小
+  glViewport(0, 0, m_width, m_height);
+}
+
+void Window::on_layer_switch() {
+  layer = (layer == Layer::ImGui) ? Layer::Scene : Layer::ImGui;
+  if (layer == Layer::ImGui) {
+    // Input::ShowCursor();
+  }
+  else {
+    // 重置输入
+    Input::clear();
+  }
+}
+
+}  // namespace core

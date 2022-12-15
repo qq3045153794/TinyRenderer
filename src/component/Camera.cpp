@@ -17,6 +17,8 @@
 #include "core/Log.h"
 namespace component {
 
+using namespace core;
+
 Camera::Camera(Transform* t, float fov, float aspect, float znear, float zfar)
     : T(t),
       m_fov(fov),

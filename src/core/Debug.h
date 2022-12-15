@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-10-27 19:58:03
  * @LastEditors  : xietao
- * @LastEditTime : 2022-10-28 14:02:27
+ * @LastEditTime : 2022-12-15 23:20:57
  * @FilePath     : /Learn_OpenGL/src/core/Debug.h
  * @Description  : 检测构建是否OpenGL构建错误
  *
@@ -10,11 +10,14 @@
  */
 #ifndef _SRC_CORE_DEBUG_H_
 #define _SRC_CORE_DEBUG_H_
-
+// clang-format off
 #include <string>
 
-#include "core/Log.h"
 #include "glad/glad.h"
+#include "core/Log.h"
+
+
+// clang-format on
 
 namespace core {
 

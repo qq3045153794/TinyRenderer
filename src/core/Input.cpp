@@ -4,14 +4,20 @@
 
 #include "core/Window.h"
 
+namespace core {
+// 键盘案件映射表
 std::unordered_map<uint8_t, bool> Input::keybook = {
-    {'w', false}, {'s', false}, {'a', false}, {'d', false}};
+    {'w', false}, {'s', false}, {'a', false}, {'d', false}, {'\r', false}};
 
 Input::Input() {}
 
 Input::~Input() {}
 
 void Input::init() {
+  clear();
+}
+
+void Input::clear() {
   for (auto& keystate : keybook) {
     keystate.second = 0;
   }
@@ -67,6 +73,7 @@ void Input::set_cursor(float new_x, float new_y) {
   cursor_dx = new_x - cursor_x;
   cursor_dy = new_y - cursor_y;
 
+  // 让鼠标一直居中
   glfwSetCursorPos(Window::m_window, cursor_x, cursor_y);
 }
 
@@ -82,4 +89,5 @@ float Input::get_offset_y() {
   int tmp = -cursor_dy;
   cursor_dy = 0;
   return tmp;
+}
 }

@@ -2,6 +2,8 @@
 
 #include "core/Log.h"
 
+namespace core {
+
 void Event::register_callback() {
   GLFWwindow* w_ptr = Window::m_window;
   glfwSetCursorEnterCallback(w_ptr, cursor_enter_callback);
@@ -12,7 +14,9 @@ void Event::register_callback() {
 }
 
 void Event::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
-  Input::set_cursor(xpos, ypos);
+  if (Window::layer == Layer::Scene) {
+    Input::set_cursor(xpos, ypos);
+  }
 }
 
 void Event::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -28,25 +32,31 @@ void Event::mouse_button_callback(GLFWwindow* window, int button, int action, in
 void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
   uint8_t _key = '0';
 
+  // clang-format off
   switch (key) {
-    case GLFW_KEY_W:
-      _key = 'w';
-      break;
-    case GLFW_KEY_S:
-      _key = 's';
-      break;
-    case GLFW_KEY_A:
-      _key = 'a';
-      break;
-    case GLFW_KEY_D:
-      _key = 'd';
-      break;
+    case GLFW_KEY_W: _key = 'w'; break;
+    case GLFW_KEY_S: _key = 's'; break;
+    case GLFW_KEY_A: _key = 'a'; break;
+    case GLFW_KEY_D: _key = 'd'; break;
+    case GLFW_KEY_ENTER: _key = '\r'; break;
+  }
+  // clang-format on
+
+  if (_key == '\r') {
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+      Input::set_key_down(_key, true);
+    }
+    return;
   }
 
-  Input::set_key_down(_key, action != GLFW_RELEASE);
+  if (Window::layer == Layer::Scene) {
+    Input::set_key_down(_key, action != GLFW_RELEASE);
+  }
 }
 
-void Event::window_size_callback(GLFWwindow* window, int width, int height) {}
+void Event::window_size_callback(GLFWwindow* window, int width, int height) {
+  // Window::resize();
+}
 
 void Event::cursor_enter_callback(GLFWwindow* window, int entered) {
   if (entered) {
@@ -55,3 +65,5 @@ void Event::cursor_enter_callback(GLFWwindow* window, int entered) {
     CORE_INFO("Cursor leaves window");
   }
 }
+
+}  // namespace core

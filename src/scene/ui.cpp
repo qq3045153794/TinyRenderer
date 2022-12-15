@@ -14,6 +14,8 @@
 
 namespace scene::ui {
 
+using namespace core;
+
 const char* glsl_version = "#version 130";
 
 void init() {
