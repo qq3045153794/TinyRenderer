@@ -3,6 +3,7 @@
 #include "core/Input.h"
 #include "core/Window.h"
 #include "scene/Scene.h"
+#include "scene/ui.h"
 #include "examples/Scene1.hpp"
 
 namespace scene {
@@ -52,6 +53,14 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
 }
 
 void Render::draw_scene() { curr_scene->on_scene_render(); }
+
+void Render::draw_imGui() {
+  if (ui::new_frame(); true) {
+    ui::draw_menu_bar();
+
+    ui::end_frame();
+  }
+}
 
 void Render::eable_depth_test() {
   glEnable(GL_DEPTH_TEST);

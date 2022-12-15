@@ -10,11 +10,13 @@ include(${PROJECT_SOURCE_DIR}/config/CMakeLists.txt)
 add_executable(demo
     ${PROJECT_SOURCE_DIR}/examples/demo/main.cpp
     ${MAIN_SRC}
+    ${ImGUI_SRC}
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
 target_include_directories(demo
     PUBLIC
+        ${ImGUI_INCLUDE}
         ${MAIN_INCLUDE}
         ${VEN_INCLUDE}
 )

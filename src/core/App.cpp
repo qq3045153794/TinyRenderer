@@ -9,6 +9,7 @@
 #include "core/Input.h"
 #include "core/Event.h"
 #include "scene/Render.h"
+#include "scene/ui.h"
 
 using  Render = scene::Render ;
 
@@ -24,6 +25,8 @@ void App::init() {
   Clock::init();
   Input::init();
   Event::register_callback();
+  scene::ui::init();
+  CORE_INFO("scene ui init success");
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     CORE_ERROR("Failed to initialize GLAD");
@@ -36,13 +39,15 @@ void App::init() {
 void App::render_update() {
   // 画面渲染
   Render::draw_scene();  
-  // 双缓存 窗口回调
-  Window::update();
   
 }
 
 void App::event_update() {
   Clock::update();
+  Render::draw_imGui();
+
+  // 双缓存 窗口回调
+  Window::update();
 }
 
 App::App() {}

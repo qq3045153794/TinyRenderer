@@ -29,6 +29,7 @@ set(MAIN_SRC
     ${PROJECT_SOURCE_DIR}/src/component/Material.cpp
     ${PROJECT_SOURCE_DIR}/src/scene/Render.cpp
     ${PROJECT_SOURCE_DIR}/src/scene/Scene.cpp
+    ${PROJECT_SOURCE_DIR}/src/scene/ui.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/File.cpp
     ${PROJECT_SOURCE_DIR}/src/utils/image.cpp
 )

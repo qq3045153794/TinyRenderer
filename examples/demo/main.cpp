@@ -1,4 +1,5 @@
 #include "core/App.h"
+#include "core/Log.h"
 
 int main() {
   App::instand().init();

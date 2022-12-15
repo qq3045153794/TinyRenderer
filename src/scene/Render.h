@@ -17,6 +17,7 @@ class Render {
   static void Attach(const std::string& title);
   static void render_scene(std::shared_ptr<asset::Shader> shader = nullptr);
   static void draw_scene();
+  static void draw_imGui();
 
   static void eable_depth_test();
   static void eable_alpha_blend();
