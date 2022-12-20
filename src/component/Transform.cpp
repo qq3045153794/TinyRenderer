@@ -5,9 +5,7 @@
 #include "iostream"
 namespace component {
 
-static const glm::vec3 world_right{1.0f, 0.0f, 0.0f};     // +x axis
-static const glm::vec3 world_up{0.0f, 1.0f, 0.0f};        // +y axis
-static const glm::vec3 world_forward{0.0f, 0.0f, -1.0f};  // -z axis
+
 
 Transform::Transform()
     : m_transform(1.0),
@@ -30,11 +28,8 @@ void Transform::translate(const glm::vec3& v) {
 }
 
 void Transform::scale(const glm::vec3& s) {
-  m_scale = m_scale + s;
-  m_transform[0][0] = m_scale.x;
-  m_transform[1][1] = m_scale.y;
-  m_transform[2][2] = m_scale.z;
-  m_transform[3][3] = 1.0f;
+  m_scale = m_scale * s;
+  m_transform = glm::scale(m_transform, s);
 
   culate_asix();
   culate_eular();
@@ -59,16 +54,18 @@ void Transform::rotation(const glm::vec3& eular) {
   glm::mat4 R = glm::eulerAngleYZX(eular.x, eular.y, eular.z);
   // glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
 
-  m_rotation = glm::quat_cast(R);
+  m_rotation = glm::normalize(glm::quat_cast(R) * m_rotation);
   m_transform = R * m_transform;
+  m_position = m_transform[3];
 
   culate_asix();
   culate_eular();
 }
 
 void Transform::rotation(const glm::quat& q) {
-  m_rotation = glm::normalize(q * m_rotation);
-  m_transform = glm::mat4_cast(q) * m_transform;
+  m_rotation = glm::normalize(glm::normalize(q) * m_rotation);
+  m_transform = glm::mat4_cast(glm::normalize(q)) * m_transform;
+  m_position = m_transform[3];
 
   culate_asix();
   culate_eular();
@@ -85,7 +82,7 @@ void Transform::culate_asix() {
 }
 
 void Transform::culate_eular() {
-  glm::extractEulerAngleYXZ(m_transform, m_eular.y, m_eular.x, m_eular.z);
+  glm::extractEulerAngleYZX(m_transform, m_eular.x, m_eular.y, m_eular.z);
   m_eular.x = glm::degrees(m_eular.x);
   m_eular.y = glm::degrees(m_eular.y);
   m_eular.z = glm::degrees(m_eular.z);

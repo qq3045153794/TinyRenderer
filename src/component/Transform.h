@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:41:23
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-13 12:21:45
+ * @LastEditTime : 2022-12-20 14:12:30
  * @FilePath     : /Learn_OpenGL/src/component/Transform.h
  * @Description  : 变换组件 设置位置、旋转和大小 也能获取物体欧拉角
  *                 位置、欧拉角(Y -> X -> Z)、lookat、变换矩阵
@@ -18,6 +18,9 @@
 
 namespace component {
 
+const glm::vec3 world_right{1.0f, 0.0f, 0.0f};     // +x axis
+const glm::vec3 world_up{0.0f, 1.0f, 0.0f};        // +y axis
+const glm::vec3 world_forward{0.0f, 0.0f, -1.0f};  // -z axis
 class Transform {
  public:
   void rotation(const glm::vec3& axis, float angle);

@@ -57,18 +57,18 @@ void CameraFps::update() {
 
   if (Input::get_key_down('w')) {
     T->translate(T->m_forward * velocity);
-    CORE_TRACE("camera get w");
   } else if (Input::get_key_down('s')) {
     T->translate(T->m_forward * velocity * -1.0f);
-    CORE_TRACE("camera get s");
   } else if (Input::get_key_down('a')) {
     T->translate(T->m_right * velocity * -1.0f);
-    CORE_TRACE("camera get a");
   } else if (Input::get_key_down('d')) {
     T->translate(T->m_right * velocity);
-    CORE_TRACE("camera get d");
   }
-  T->rotation(glm::vec3(Input::get_offset_x() * 0.02, Input::get_offset_y() * 0.02, 0.0));
+  // T->rotation(glm::vec3(Input::get_offset_y() * 0.02, 0.0, 0.0));
+  // T->rotation(glm::vec3(0.0, Input::get_offset_x() * 0.02, 0.0));
+  T->rotation(T->m_up, Input::get_offset_x() * 0.1);
+  T->rotation(T->m_right, Input::get_offset_y() * 0.1);
+
 }
 
 }  // namespace component
