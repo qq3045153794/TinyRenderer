@@ -5,8 +5,6 @@
 #include "iostream"
 namespace component {
 
-
-
 Transform::Transform()
     : m_transform(1.0),
       m_position(0.0),
@@ -50,7 +48,7 @@ void Transform::rotation(const glm::vec3& eular) {
   glm::mat4 RX = glm::rotate(glm::mat4(1.0), eular.x, world_right);
   glm::mat4 RY = glm::rotate(glm::mat4(1.0), eular.y, world_up);
   glm::mat4 RZ = glm::rotate(glm::mat4(1.0), eular.z, -world_forward);
-  
+
   glm::mat4 R = glm::eulerAngleYZX(eular.x, eular.y, eular.z);
   // glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
 
@@ -70,10 +68,6 @@ void Transform::rotation(const glm::quat& q) {
   culate_asix();
   culate_eular();
 }
-
-// Y -> Z -> X 顺序
-//接口显示为欧拉角 四元数实现
-void ealar_ratation(const glm::vec3& eular) {}
 
 void Transform::culate_asix() {
   m_right = glm::normalize(m_transform[0]);
@@ -98,19 +92,46 @@ const glm::mat4 Transform::get_lookat() const {
   return glm::lookAt(m_position, m_position + m_forward, m_up);
 }
 
-// 纺射变换
-
 void Transform::set_ealar_YZX(const glm::vec3& eular) {
+  auto& temp_pos = m_transform[3];
+
+  m_transform = glm::mat4(1.0);
+  m_transform[0][0] = m_scale.x;
+  m_transform[1][1] = m_scale.y;
+  m_transform[2][2] = m_scale.z;
+  m_transform[3][3] = 1.0;
+
+  m_rotation = glm::normalize(glm::quat_cast(glm::eulerAngleYZX(eular.x, eular.y, eular.z)));
+  m_transform = glm::mat4_cast(m_rotation) * m_transform;
+
+  m_transform[3] = temp_pos;
+  culate_asix();
+  culate_eular();
+}
+
+void Transform::set_rotation(const glm::quat& q) {
+  auto& temp_pos = m_transform[3];
+
+  m_transform = glm::mat4(1.0);
+  m_transform[0][0] = m_scale.x;
+  m_transform[1][1] = m_scale.y;
+  m_transform[2][2] = m_scale.z;
+  m_transform[3][3] = 1.0;
+
+  m_rotation = glm::normalize(glm::normalize(q) * m_rotation);
+  m_transform = glm::mat4_cast(m_rotation) * m_transform;
+
+  m_transform[3] = temp_pos;
   
-  
+  culate_asix();
+  culate_eular();
 }
 
 void Transform::set_position(const glm::vec3& position) {
+  m_position = position;
   m_transform[3] = glm::vec4(position, 1.0);
 }
 
-void Transform::set_scale(const glm::vec3& size) {
-
-}
+void Transform::set_scale(const glm::vec3& size) { scale(size / m_scale); }
 
 }  // namespace component
