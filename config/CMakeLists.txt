@@ -44,6 +44,18 @@ set(ImGUI_SRC
     ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_impl_opengl3.cpp
 )
 
+set(ImGuizmo_SRC
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include/ImGuizmo/GraphEditor.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include/ImGuizmo/ImCurveEdit.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include/ImGuizmo/ImGradient.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include/ImGuizmo/ImGuizmo.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include/ImGuizmo/ImSequencer.cpp
+)
+
+set(ImGuizmo_INCLUDE
+    ${PROJECT_SOURCE_DIR}/vendor/ImGuizmo/include
+)
+
 set(ImGUI_INCLUDE
     ${PROJECT_SOURCE_DIR}/vendor/imgui/include
 ) 

@@ -12,4 +12,6 @@ void show_down();
 
 void draw_menu_bar();
 
+void draw_Gizmo();
+
 }

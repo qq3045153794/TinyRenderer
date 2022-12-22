@@ -4,8 +4,11 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "ImGuizmo/ImGuizmo.h"
+
 #include <stdio.h>
 #define GL_SILENCE_DEPRECATION
+
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
@@ -76,21 +79,12 @@ void draw_menu_bar() {
     // ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
     
     if (ImGui::BeginMenu("Options")) {
-      // currently we only support a fixed resolution at 1600 x 900, this menu is simply
-      // a dummy functionality, other resolutions are not yet supported so clicking on
-      // them would have no effect. On desktop monitors, it would be more comfortable to
-      // adopt a full HD or QHD resolution instead, but we need to recalculate the pixel
-      // offsets of some UI panels to adapt the change. The real challenge of supporting
-      // multiple resolutions is that we also need to adjust the size of our framebuffer
-      // textures on the fly, which is expensive and takes quite a bit of work. If you'd
-      // like to do so, you should consider applying this function to the welcome screen
-      // exclusively, as we don't want to break the data state in the middle of a scene.
-      
+ 
       if (ImGui::BeginMenu(" Window Resolution")) {
         ImGui::MenuItem(" 1280 x 720",  NULL, false);
-        ImGui::MenuItem(" 1600 x 900",  NULL, true);   // active resolution
-        ImGui::MenuItem(" 1920 x 1080", NULL, false);  // Full HD
-        ImGui::MenuItem(" 2560 x 1440", NULL, false);  // QHD
+        ImGui::MenuItem(" 1600 x 900",  NULL, true);
+        ImGui::MenuItem(" 1920 x 1080", NULL, false);
+        ImGui::MenuItem(" 2560 x 1440", NULL, false);
         
         ImGui::EndMenu();
         
@@ -102,6 +96,15 @@ void draw_menu_bar() {
     
   }
   ImGui::End();
+}
+
+void draw_Gizmo() {
+  static const ImVec2 win_pos = ImVec2(0.0f, 50.0f);
+  static const ImVec2 win_size = ImVec2((float)Window::width, (float)Window::height - 82.0f);
+  
+  ImGuizmo::MODE mode = ImGuizmo::MODE::LOCAL;
+  ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
+
 }
 
 }
