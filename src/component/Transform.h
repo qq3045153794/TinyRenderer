@@ -2,11 +2,12 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:41:23
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-20 14:52:20
+ * @LastEditTime : 2022-12-20 14:57:46
  * @FilePath     : /Learn_OpenGL/src/component/Transform.h
  * @Description  : 变换组件 设置位置、旋转和大小 也能获取物体欧拉角
  *                 位置、欧拉角(Y -> X -> Z)、lookat、变换矩阵
  *                 物体变换顺序： 缩放->旋转->位移
+ *                 debug: https://www.andre-gaschler.com/rotationconverter/
  * Copyright (c) 2022, All Rights Reserved.
  */
 
