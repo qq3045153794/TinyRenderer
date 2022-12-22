@@ -23,6 +23,7 @@ class Scene {
 
   virtual void init();
   virtual void on_scene_render();
+  virtual void on_imgui_render();
 
  protected:
   // 相机 UBO

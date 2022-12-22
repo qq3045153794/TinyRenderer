@@ -5,7 +5,7 @@
 #include "core/Window.h"
 #include "scene/Render.h"
 #include "scene/Scene.h"
-
+#include "scene/ui.h"
 namespace scene {
 
 using namespace component;
@@ -97,6 +97,10 @@ class Scene1 : public Scene {
     nor_fbo->ubind();
     nor_fbo->draw();
   };
+
+  virtual void on_imgui_render() override {
+    ui::draw_Gizmo(main_camera, cube, ui::Gizmo::TRANSLATE);
+  }
 };
 
 }  // namespace scene

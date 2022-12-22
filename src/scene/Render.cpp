@@ -57,6 +57,10 @@ void Render::draw_scene() { curr_scene->on_scene_render(); }
 void Render::draw_imGui() {
   if (ui::new_frame(); true) {
     ui::draw_menu_bar();
+    
+    if (Window::layer == Layer::ImGui) {
+      curr_scene->on_imgui_render();
+    }
 
     ui::end_frame();
   }

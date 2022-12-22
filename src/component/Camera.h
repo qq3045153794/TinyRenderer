@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:38:56
  * @LastEditors  : xietao
- * @LastEditTime : 2022-10-26 20:29:25
+ * @LastEditTime : 2022-12-22 17:01:47
  * @FilePath     : /Learn_OpenGL/src/component/Camera.h
  * @Description  :
  *
@@ -28,9 +28,10 @@ class Camera {
 
   void set_position(const glm::vec3& position) { T->translate(position); }
 
-  void set_eular(const glm::vec3& eular) { T->ealar_ratation(eular); };
+  void set_eular(const glm::vec3& eular) { T->set_ealar_YZX(eular); };
 
   Transform* T;
+
  protected:
   enum CameraProjection { PERSPECTIVE, ORTHOGRAPHIC };
 
