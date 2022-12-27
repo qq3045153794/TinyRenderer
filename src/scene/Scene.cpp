@@ -4,6 +4,7 @@
 #include "core/Log.h"
 #include "scene/Render.h"
 
+
 namespace scene {
 
 Scene::Scene(const std::string& title) { m_title = title; }
@@ -12,9 +13,10 @@ Scene::~Scene() {}
 
 void Scene::init() {}
 
-Entity Scene::create_entity(const std::string& name) {
+Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   Entity e = {name, registry.create(), &registry};
   e.AddComponent<component::Transform>();
+  e.AddComponent<component::Tag>(tag);
   directory.emplace(e.id, e.name);
   return e;
 }

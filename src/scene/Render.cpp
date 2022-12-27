@@ -1,10 +1,11 @@
 #include "scene/Render.h"
 
+#include "component/Tag.hpp"
 #include "core/Input.h"
 #include "core/Window.h"
+#include "examples/Scene1.hpp"
 #include "scene/Scene.h"
 #include "scene/ui.h"
-#include "examples/Scene1.hpp"
 
 namespace scene {
 
@@ -31,7 +32,7 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
   using namespace component;
 
   auto& reg = curr_scene->registry;
-  auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material>);
+  auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
 
   while (!render_queue.empty()) {
     auto& e = render_queue.front();
@@ -40,6 +41,7 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
       auto& mesh = mesh_group.get<Mesh>(e);
       auto& transform = mesh_group.get<Transform>(e);
       auto& material = mesh_group.get<Material>(e);
+      auto& tag = mesh_group.get<Tag>(e);
       if (shader) {
         shader->bind();
         shader->set_uniform("model", transform.get_transform());
@@ -47,7 +49,9 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         material.bind();
         material.set_uniform("model", transform.get_transform());
       }
+      
       mesh.draw();
+      
     }
   }
 }
@@ -57,7 +61,7 @@ void Render::draw_scene() { curr_scene->on_scene_render(); }
 void Render::draw_imGui() {
   if (ui::new_frame(); true) {
     ui::draw_menu_bar();
-    
+
     if (Window::layer == Layer::ImGui) {
       curr_scene->on_imgui_render();
     }
@@ -68,6 +72,9 @@ void Render::draw_imGui() {
 
 void Render::eable_depth_test() {
   glEnable(GL_DEPTH_TEST);
+  glDepthMask(GL_TRUE);
+  glDepthFunc(GL_LEQUAL);
+  glDepthRange(0.0f, 1.0f);
 }
 
 void Render::eable_alpha_blend() {

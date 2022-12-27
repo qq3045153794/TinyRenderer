@@ -1,15 +1,26 @@
+/*
+ * @Author       : xietao
+ * @Date         : 2022-09-14 14:38:12
+ * @LastEditors  : xietao
+ * @LastEditTime : 2022-12-27 17:08:24
+ * @FilePath     : /Learn_OpenGL/src/asset/Texture.h
+ * @Description  :
+ *
+ * Copyright (c) 2022, All Rights Reserved.
+ */
 #ifndef _SRC_ASSET_TEXTURE_H_
 #define _SRC_ASSET_TEXTURE_H_
 
+#include <string>
 #include <vector>
-#include "glad/glad.h"
 
+#include "glad/glad.h"
 
 namespace asset {
 
 class Texture {
  public:
-  explicit Texture(const std::vector<GLchar*>& path_vec);
+  Texture(const std::vector<std::string>& path_vec);
   Texture(const GLchar* path, bool flip = false);
   Texture(const GLchar* path, GLuint sampler) {}
   Texture(GLuint width, GLuint height);

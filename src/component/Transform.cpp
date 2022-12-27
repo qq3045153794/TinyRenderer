@@ -49,7 +49,7 @@ void Transform::rotation(const glm::vec3& eular) {
   glm::mat4 RY = glm::rotate(glm::mat4(1.0), eular.y, world_up);
   glm::mat4 RZ = glm::rotate(glm::mat4(1.0), eular.z, -world_forward);
 
-  glm::mat4 R = glm::eulerAngleYZX(eular.x, eular.y, eular.z);
+  glm::mat4 R = glm::eulerAngleYZX(eular.y, eular.z, eular.x);
   // glm::mat4 R = RY * RZ * RX;  // Y -> Z -> X
 
   m_rotation = glm::normalize(glm::quat_cast(R) * m_rotation);
@@ -76,7 +76,7 @@ void Transform::culate_asix() {
 }
 
 void Transform::culate_eular() {
-  glm::extractEulerAngleYZX(m_transform, m_eular.x, m_eular.y, m_eular.z);
+  glm::extractEulerAngleYZX(m_transform, m_eular.y, m_eular.z, m_eular.x);
   m_eular.x = glm::degrees(m_eular.x);
   m_eular.y = glm::degrees(m_eular.y);
   m_eular.z = glm::degrees(m_eular.z);
@@ -93,6 +93,11 @@ const glm::mat4 Transform::get_lookat() const {
 }
 
 void Transform::set_ealar_YZX(const glm::vec3& eular) {
+  glm::vec3 temp_eular;
+  temp_eular.x = glm::radians(eular.x);
+  temp_eular.y = glm::radians(eular.y);
+  temp_eular.z = glm::radians(eular.z);
+  
   auto& temp_pos = m_transform[3];
 
   m_transform = glm::mat4(1.0);
@@ -101,7 +106,7 @@ void Transform::set_ealar_YZX(const glm::vec3& eular) {
   m_transform[2][2] = m_scale.z;
   m_transform[3][3] = 1.0;
 
-  m_rotation = glm::normalize(glm::quat_cast(glm::eulerAngleYZX(eular.x, eular.y, eular.z)));
+  m_rotation = glm::normalize(glm::quat_cast(glm::eulerAngleYZX(temp_eular.y, temp_eular.z, temp_eular.x)));
   m_transform = glm::mat4_cast(m_rotation) * m_transform;
 
   m_transform[3] = temp_pos;
@@ -122,7 +127,7 @@ void Transform::set_rotation(const glm::quat& q) {
   m_transform = glm::mat4_cast(m_rotation) * m_transform;
 
   m_transform[3] = temp_pos;
-  
+
   culate_asix();
   culate_eular();
 }
@@ -130,29 +135,31 @@ void Transform::set_rotation(const glm::quat& q) {
 void Transform::set_position(const glm::vec3& position) {
   m_position = position;
   m_transform[3] = glm::vec4(position, 1.0);
+
+  culate_asix();
+  culate_eular();
 }
 
-void Transform::set_scale(const glm::vec3& size) { scale(size / m_scale); }
+void Transform::set_scale(const glm::vec3& size) {
+  scale(size / m_scale);
+  culate_asix();
+  culate_eular();
+}
 
 void Transform::set_transform(const glm::mat4& transform) {
   m_scale.x = glm::length(transform[0]);
   m_scale.y = glm::length(transform[1]);
   m_scale.z = glm::length(transform[2]);
 
-  glm::mat3 pure_rotation_mat = {
-    transform[0] / m_scale.x,
-    transform[1] / m_scale.y,
-    transform[2] / m_scale.z
-  };
+  glm::mat3 pure_rotation_mat = {transform[0] / m_scale.x, transform[1] / m_scale.y,
+                                 transform[2] / m_scale.z};
 
   m_transform = transform;
   m_position = transform[3];
   m_rotation = glm::normalize(glm::quat_cast(pure_rotation_mat));
-  
+
   culate_asix();
   culate_eular();
-
 }
-
 
 }  // namespace component

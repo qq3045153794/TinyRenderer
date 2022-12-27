@@ -27,7 +27,8 @@ Camera::Camera(Transform* t, float fov, float aspect, float znear, float zfar)
       m_zfar(zfar),
       m_camera_projection(PERSPECTIVE) {}
 
-Camera::Camera(Transform* t, float left, float right, float bottom, float top, float znear, float zfar)
+Camera::Camera(Transform* t, float left, float right, float bottom, float top, float znear,
+               float zfar)
     : T(t),
       m_left(left),
       m_right(right),
@@ -48,7 +49,8 @@ glm::mat4 Camera::get_projection_mat() const {
 CameraFps::CameraFps(Transform* t, float fov, float aspect, float znear, float zfar)
     : Camera(t, fov, aspect, znear, zfar) {}
 
-CameraFps::CameraFps(Transform* t, float left, float right, float bottom, float top, float znear, float zfar)
+CameraFps::CameraFps(Transform* t, float left, float right, float bottom, float top, float znear,
+                     float zfar)
     : Camera(t, left, right, bottom, top, znear, zfar) {}
 
 void CameraFps::update() {
@@ -64,11 +66,11 @@ void CameraFps::update() {
   } else if (Input::get_key_down('d')) {
     T->translate(T->m_right * velocity);
   }
-  // T->rotation(glm::vec3(Input::get_offset_y() * 0.02, 0.0, 0.0));
-  // T->rotation(glm::vec3(0.0, Input::get_offset_x() * 0.02, 0.0));
-  T->rotation(T->m_up, Input::get_offset_x() * 0.1);
-  T->rotation(T->m_right, Input::get_offset_y() * 0.1);
 
+  auto eular_x = glm::clamp(T->get_eular().x + Input::get_offset_y() * 0.1f, -89.0f, 89.0f);
+  auto eular_y = T->get_eular().y + Input::get_offset_x() * 0.1;
+
+  T->set_ealar_YZX(glm::vec3(eular_x, eular_y, 0.0f));
 }
 
 }  // namespace component

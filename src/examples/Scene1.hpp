@@ -18,26 +18,45 @@ class Scene1 : public Scene {
   Entity main_camera;
   Entity cube;
   Entity sphere;
+  Entity skybox;
 
   std::shared_ptr<Shader> quad_shader;
+  std::shared_ptr<Shader> skybox_shader;
+
+  std::shared_ptr<Texture> skybox_texture;
   std::shared_ptr<Texture> quad_texture;
 
   virtual void init() override {
     add_fbo(Window::m_width, Window::m_height);
-    CHECK_ERROR();
 
     quad_shader =
         std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
+
+    skybox_shader = std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
+
     add_nor_ubo();
     set_nor_ubo(0U, quad_shader);
+
     quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
+
+    skybox_texture = std::make_shared<Texture>(std::vector<std::string>{
+        "../resource/texture/skybox/right.jpg", "../resource/texture/skybox/left.jpg",
+        "../resource/texture/skybox/top.jpg", "../resource/texture/skybox/bottom.jpg",
+        "../resource/texture/skybox/front.jpg", "../resource/texture/skybox/back.jpg"});
+
     CHECK_ERROR();
+
+    skybox = create_entity("skybox", ETag::Skybox);
+    skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
+    skybox.AddComponent<Material>(skybox_shader);
+    skybox.GetComponent<Material>().set_texture(0, skybox_texture);
+    // skybox.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 0.0));
 
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
     quad.AddComponent<Material>(quad_shader);
     quad.GetComponent<Material>().set_texture(0, quad_texture);
-    quad.GetComponent<Transform>().translate(glm::vec3(-4, 0.0, 0.0));
+    quad.GetComponent<Transform>().set_position(glm::vec3(-4, 0.0, 0.0));
     CHECK_ERROR();
     CORE_INFO("{} created", quad.name);
 
@@ -62,7 +81,7 @@ class Scene1 : public Scene {
         60.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
         100.f);
     // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
-    main_camera.GetComponent<Transform>().translate(glm::vec3(0.0, 0.0, 5.0));
+    main_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
     CHECK_ERROR();
     CORE_INFO("{} created", main_camera.name);
 
@@ -81,6 +100,11 @@ class Scene1 : public Scene {
 
       auto pos = main_camera.GetComponent<CameraFps>().T->get_position();
       auto forward = main_camera.GetComponent<CameraFps>().T->m_forward;
+      auto up = main_camera.GetComponent<CameraFps>().T->m_up;
+      CORE_INFO("m_pos = {} {} {}", pos.x, pos.y, pos.z);
+      CORE_INFO("m_forward = {} {} {}", forward.x, forward.y, forward.z);
+      CORE_INFO("m_up = {} {} {}", up.x, up.y, up.z);
+
     }
 
     Render::clear_buffer();
@@ -88,9 +112,12 @@ class Scene1 : public Scene {
     nor_fbo->bind();
     Render::clear_buffer();
     // 提交至渲染队列
+    
     Render::Submit(quad.id);
     Render::Submit(sphere.id);
     Render::Submit(cube.id);
+
+    Render::Submit(skybox.id);
 
     Render::render_scene();
 

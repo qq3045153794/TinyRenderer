@@ -29,6 +29,7 @@ GLuint Image::get_height() const {
 }
 
 GLuint Image::get_img_format() const {
+  // clang-format off
   switch(n_channels) {
     case 1 : return GL_RED;
     case 2 : return GL_RG;
@@ -36,9 +37,11 @@ GLuint Image::get_img_format() const {
     case 4 : return GL_RGBA;
     default: return 0;
   }
+  // clang-format on
 }
 
 GLuint Image::get_ine_format() const {
+  // clang-format off
   switch(n_channels) {
     case 1 : return GL_RED;
     case 2 : return GL_RG;
@@ -46,6 +49,7 @@ GLuint Image::get_ine_format() const {
     case 4 : return GL_RGBA;
     default: return 0;
   }
+  // clang-format on
 }
 
 uint8_t* Image::get_buffer() const {

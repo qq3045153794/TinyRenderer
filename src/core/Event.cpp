@@ -34,7 +34,6 @@ void Event::mouse_button_callback(GLFWwindow* window, int button, int action, in
 }
 
 void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-  CORE_TRACE("callback key");
   
   uint8_t _key = '0';
 

@@ -20,21 +20,20 @@ Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
   set_sampler_state();
 }
 
-Texture::Texture(const std::vector<GLchar*>& path_vec) : m_target(GL_TEXTURE_CUBE_MAP) {
+Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE_CUBE_MAP) {
   glGenTextures(1, &m_id);
+  glBindTexture(m_target, m_id);
 
   int idx = 0;
   for (const auto& img_path : path_vec) {
-    this->bind(idx);
-    glBindTexture(m_target, m_id);
     const auto& image = utils::Image(img_path);
     m_width = image.get_width();
     m_height = image.get_height();
     m_image_format = image.get_img_format();
     m_internal_format = image.get_ine_format();
 
-    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-                 GL_UNSIGNED_BYTE, image.get_buffer());
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + idx, 0, m_internal_format, m_width, m_height, 0,
+                 m_image_format, GL_UNSIGNED_BYTE, image.get_buffer());
     ++idx;
   }
   glBindTexture(m_target, 0);

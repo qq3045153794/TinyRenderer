@@ -21,12 +21,14 @@ Mesh::Mesh(primitive obj) {
 Mesh::~Mesh() {}
 
 void Mesh::create_quat() {
+  // clang-format off
   static GLfloat data[] = {
-    0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 0.0, 
-    0.0, 1.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0,
-    1.0, 0.0, 0.0,  0.0, 0.0, 1.0,  1.0, 0.0, 
-    1.0, 1.0, 0.0,  0.0, 0.0, 1.0,  1.0, 1.0,
+    0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0, 0.0,   // left bottom
+    0.0, 1.0, 0.0,  0.0, 0.0, 1.0,  0.0, 1.0,   // left top
+    1.0, 0.0, 0.0,  0.0, 0.0, 1.0,  1.0, 0.0,   // right bottom
+    1.0, 1.0, 0.0,  0.0, 0.0, 1.0,  1.0, 1.0,   // right top
   };
+  // clang-format on
 
   std::vector<Vertex> vertices;
   

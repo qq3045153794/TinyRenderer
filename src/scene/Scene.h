@@ -5,6 +5,7 @@
 
 #include "scene/Entity.hpp"
 #include "asset/FBO.h"
+#include "component/Tag.hpp"
 
 namespace scene {
 
@@ -15,7 +16,7 @@ class Scene {
   std::string m_title;
   Scene(const std::string& title);
   virtual ~Scene();
-  Entity create_entity(const std::string& name);
+  Entity create_entity(const std::string& name, component::ETag tag = component::ETag::Untagged);
   void add_nor_ubo();
   void set_nor_ubo(GLuint uid, std::shared_ptr<asset::Shader> shader);
 
