@@ -98,6 +98,8 @@ class Input {
   static inline bool mouse_button_l = false;
   static inline bool mouse_button_mid = false;
   static inline bool mouse_button_r = false;
+
+  // 判断是否鼠标开始进入窗口 防止刚开始进入窗口鼠标距离窗口中央过大
   static inline bool first_enter_window = true;
 };
 }  // namespace core
