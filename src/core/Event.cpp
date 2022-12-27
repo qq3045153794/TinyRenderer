@@ -18,6 +18,8 @@ void Event::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   if (Window::layer == Layer::Scene) {
     CORE_TRACE("callback pos is {} {}", xpos, ypos);
     Input::set_cursor(xpos, ypos);
+  } else if (Window::layer == Layer::ImGui) {
+    
   }
 }
 

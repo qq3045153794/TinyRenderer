@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-07-28 16:41:23
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-20 14:57:46
+ * @LastEditTime : 2022-12-22 17:53:39
  * @FilePath     : /Learn_OpenGL/src/component/Transform.h
  * @Description  : 变换组件 设置位置、旋转和大小 也能获取物体欧拉角
  *                 位置、欧拉角(Y -> X -> Z)、lookat、变换矩阵
@@ -88,6 +88,13 @@ class Transform {
    * @return       {*}
    */
   void set_scale(const glm::vec3& size);
+
+  /**
+   * @description : 设置变换矩阵 
+   * @param        {mat4&} transform
+   * @return       {*}
+   */
+  void set_transform(const glm::mat4& transform);
 
   /**
    * @description : 获取物体的变换矩阵

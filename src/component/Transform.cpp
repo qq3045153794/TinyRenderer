@@ -134,4 +134,25 @@ void Transform::set_position(const glm::vec3& position) {
 
 void Transform::set_scale(const glm::vec3& size) { scale(size / m_scale); }
 
+void Transform::set_transform(const glm::mat4& transform) {
+  m_scale.x = glm::length(transform[0]);
+  m_scale.y = glm::length(transform[1]);
+  m_scale.z = glm::length(transform[2]);
+
+  glm::mat3 pure_rotation_mat = {
+    transform[0] / m_scale.x,
+    transform[1] / m_scale.y,
+    transform[2] / m_scale.z
+  };
+
+  m_transform = transform;
+  m_position = transform[3];
+  m_rotation = glm::normalize(glm::quat_cast(pure_rotation_mat));
+  
+  culate_asix();
+  culate_eular();
+
+}
+
+
 }  // namespace component

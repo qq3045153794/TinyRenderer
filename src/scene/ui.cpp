@@ -48,6 +48,8 @@ void new_frame() {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
+
+  ImGuizmo::BeginFrame();
 }
 
 void end_frame() {
@@ -145,6 +147,10 @@ void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
   ImGuizmo::SetRect(win_pos.x, win_pos.y, win_size.x, win_size.y);
 
   ImGuizmo::Manipulate(value_ptr(V), value_ptr(P), operation, mode, value_ptr(transform));
+
+  if (ImGuizmo::IsUsing()) {
+    T.set_transform(transform);
+  }
 
   ImGui::End();
 }
