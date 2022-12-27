@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-08-03 20:22:11
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-15 23:00:32
+ * @LastEditTime : 2022-12-27 23:54:44
  * @FilePath     : /Learn_OpenGL/src/core/Input.h
  * @Description  : 插入系统 通过事件(Event)系统获取窗口事件
  *                 的数据，供全局调用
@@ -63,6 +63,12 @@ class Input {
   static void set_cursor(float new_x, float new_y);
 
   /**
+   * @description : 设置是否是第一次进入窗口
+   * @param        {bool} is_first_enter
+   * @return       {*}
+   */
+  static void set_first_enter_window(bool is_first_enter);
+  /**
    * @description : 获取鼠标光标在像素坐标下位置
    * @return       {*}
    */
@@ -80,7 +86,6 @@ class Input {
    */
   static float get_offset_y();
 
-  
   static void clear();
 
  private:
@@ -93,6 +98,7 @@ class Input {
   static inline bool mouse_button_l = false;
   static inline bool mouse_button_mid = false;
   static inline bool mouse_button_r = false;
+  static inline bool first_enter_window = true;
 };
 }  // namespace core
 #endif

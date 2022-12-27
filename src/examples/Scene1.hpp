@@ -87,6 +87,7 @@ class Scene1 : public Scene {
 
     Render::eable_depth_test();
     Render::eable_alpha_blend();
+    Render::eable_face_culling();
   }
 
   virtual void on_scene_render() override {
@@ -101,9 +102,9 @@ class Scene1 : public Scene {
       auto pos = main_camera.GetComponent<CameraFps>().T->get_position();
       auto forward = main_camera.GetComponent<CameraFps>().T->m_forward;
       auto up = main_camera.GetComponent<CameraFps>().T->m_up;
-      CORE_INFO("m_pos = {} {} {}", pos.x, pos.y, pos.z);
-      CORE_INFO("m_forward = {} {} {}", forward.x, forward.y, forward.z);
-      CORE_INFO("m_up = {} {} {}", up.x, up.y, up.z);
+      // CORE_INFO("m_pos = {} {} {}", pos.x, pos.y, pos.z);
+      // CORE_INFO("m_forward = {} {} {}", forward.x, forward.y, forward.z);
+      // CORE_INFO("m_up = {} {} {}", up.x, up.y, up.z);
 
     }
 

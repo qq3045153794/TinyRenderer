@@ -7,7 +7,7 @@
 namespace core {
 // 键盘案件映射表
 std::unordered_map<uint8_t, bool> Input::keybook = {
-    {'w', false}, {'s', false}, {'a', false}, {'d', false}, {'\r', false}};
+    {'w', false}, {'s', false}, {'a', false}, {'d', false}, {'q', false}, {'e', false}, {'\r', false}};
 
 Input::Input() {}
 
@@ -32,6 +32,7 @@ void Input::clear() {
   mouse_button_l = false;
   mouse_button_mid = false;
   mouse_button_r = false;
+  first_enter_window = true;
 }
 
 void Input::set_key_down(uint8_t key, bool pressed) {
@@ -70,11 +71,20 @@ bool Input::get_mouse_down(MouceButton button) {
 }
 
 void Input::set_cursor(float new_x, float new_y) {
-  cursor_dx = new_x - cursor_x;
-  cursor_dy = new_y - cursor_y;
-
+  if (first_enter_window) {
+    cursor_dx = 0.0;
+    cursor_dy = 0.0;
+    first_enter_window = false;
+  } else {
+    cursor_dx = new_x - cursor_x;
+    cursor_dy = new_y - cursor_y;
+  }
   // 让鼠标一直居中
   glfwSetCursorPos(Window::m_window, cursor_x, cursor_y);
+}
+
+void Input::set_first_enter_window(bool is_first_enter) {
+  first_enter_window = is_first_enter;
 }
 
 glm::vec2 Input::get_cursor() { return glm::vec2(cursor_x, cursor_y); }

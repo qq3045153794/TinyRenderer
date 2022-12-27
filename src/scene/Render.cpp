@@ -49,9 +49,13 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         material.bind();
         material.set_uniform("model", transform.get_transform());
       }
-      
-      mesh.draw();
-      
+      if(tag.contains(ETag::Skybox)) {
+        set_front_is_ccw(false);
+        mesh.draw();
+        set_front_is_ccw(true);
+      } else {
+        mesh.draw();
+      }
     }
   }
 }
@@ -80,6 +84,20 @@ void Render::eable_depth_test() {
 void Render::eable_alpha_blend() {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Render::eable_face_culling() {
+  glEnable(GL_CULL_FACE);
+  // 设置连接顺序 GL_CCW为逆时针 GL_CW为顺时针
+  glFrontFace(GL_CCW);
+
+  // 剔除背面 (剔除顺时针)
+  glCullFace(GL_BACK);
+
+}
+
+void Render::set_front_is_ccw(bool is_ccw) {
+  glFrontFace(is_ccw? GL_CCW : GL_CW);
 }
 
 }  // namespace scene

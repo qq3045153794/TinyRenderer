@@ -43,6 +43,8 @@ void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, 
     case GLFW_KEY_S: _key = 's'; break;
     case GLFW_KEY_A: _key = 'a'; break;
     case GLFW_KEY_D: _key = 'd'; break;
+    case GLFW_KEY_Q: _key = 'q'; break;
+    case GLFW_KEY_E: _key = 'e'; break;
     case GLFW_KEY_ENTER: _key = '\r'; break;
   }
   // clang-format on
@@ -65,6 +67,7 @@ void Event::window_size_callback(GLFWwindow* window, int width, int height) {
 
 void Event::cursor_enter_callback(GLFWwindow* window, int entered) {
   if (entered) {
+    Input::set_first_enter_window(true);
     CORE_INFO("Cursor enters window");
   } else {
     CORE_INFO("Cursor leaves window");

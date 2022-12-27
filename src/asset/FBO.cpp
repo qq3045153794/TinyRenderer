@@ -36,17 +36,19 @@ FBO::~FBO() {
 }
 
 void FBO::set_buffer() {
+  // clang-format off
   GLfloat data [] = {
-    -1.0f,  1.0f,  0.0f, 0.0f, 1.0f,
-     1.0f,  1.0f,  0.0f, 1.0f, 1.0f,
-     1.0f, -1.0f,  0.0f, 1.0f, 0.0f,
-    -1.0f, -1.0f,  0.0f, 0.0f, 0.0f
+    -1.0f,  1.0f,  0.0f, 0.0f, 1.0f,  // left top
+     1.0f,  1.0f,  0.0f, 1.0f, 1.0f,  // right top
+     1.0f, -1.0f,  0.0f, 1.0f, 0.0f,  // right bottom
+    -1.0f, -1.0f,  0.0f, 0.0f, 0.0f   // left bottom
   };
 
   GLuint index [] = {
-    0, 1, 2,
-    0, 3, 2
+    0, 2, 1,  // CCW
+    0, 3, 2   // CCW 
   };
+  // clang-format on
 
   m_vbo = std::make_unique<VBO> (sizeof(data), data, GL_STATIC_DRAW);
   m_ibo = std::make_unique<IBO> (sizeof(index), index, GL_STATIC_DRAW, 6U);

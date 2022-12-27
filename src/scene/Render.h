@@ -21,6 +21,9 @@ class Render {
 
   static void eable_depth_test();
   static void eable_alpha_blend();
+  static void eable_face_culling();
+
+  static void set_front_is_ccw(bool is_ccw);
 
   template <typename... Args>
   static void Submit(Args&&... args) {

@@ -41,8 +41,12 @@ void Mesh::create_quat() {
     vec.uv = glm::vec2(data[offset + 6], data[offset + 7]);
     vertices.push_back(vec);
   }
-
-  std::vector<GLuint> indices = { 0U, 1U, 2U, 2U, 3U, 1U };
+  // clang-format off
+  std::vector<GLuint> indices = { 
+    0U, 2U, 1U, // CCW 
+    2U, 3U, 1U  // CCW
+  };
+  // clang-format on
   create_buffer(vertices, indices);
 }
 
