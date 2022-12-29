@@ -1,4 +1,5 @@
 #include "component/Model.h"
+#include "component/Material.h"
 
 #include <bitset>
 #include <chrono>
@@ -37,8 +38,29 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : m_a
 
   auto end_time = std::chrono::high_resolution_clock::now();
 
+  CORE_TRACE("Generating model loading report...... (for reference)");
+  CORE_TRACE("-----------------------------------------------------");
+
   std::chrono::duration<double, std::milli> loading_time = end_time - start_time;
   CORE_DEBUG("load model use time {} ms", loading_time.count());
+
+  CORE_DEBUG("total # of meshes:     {0}", n_meshes);
+  CORE_DEBUG("total # of vertices:   {0:.2f}k ({1})", n_verts * 0.001f, n_verts);
+  CORE_DEBUG("total # of triangles:  {0:.2f}k ({1})", n_tris * 0.001f, n_tris);
+  CORE_TRACE("-----------------------------------------------------");
+
+  CORE_DEBUG("vertex has position ? [{0}]", vtx_format.test(0) ? "Y" : "N");
+  CORE_DEBUG("vertex has normal   ? [{0}]", vtx_format.test(1) ? "Y" : "N");
+  CORE_DEBUG("vertex has uv set 1 ? [{0}]", vtx_format.test(2) ? "Y" : "N");
+  CORE_DEBUG("vertex has uv set 2 ? [{0}]", vtx_format.test(3) ? "Y" : "N");
+  CORE_DEBUG("vertex has tan/btan ? [{0}]", vtx_format.test(4) ? "Y" : "N");
+  CORE_TRACE("-----------------------------------------------------");
+
+  CORE_DEBUG(" internal materials");
+  for (const auto& it : materials_cache) {
+    CORE_DEBUG("{} (id = {})", it.first, it.second);
+  }
+  CORE_TRACE("-----------------------------------------------------");
 }
 
 void Model::process_tree(aiNode* ai_node, int parent) {}
@@ -114,6 +136,9 @@ void Model::process_mesh(aiMesh* ai_mesh) {
     }
 
     vertices.push_back(vertex);
+
+    // 统计顶点数
+    n_verts++;
   }
 
   for (size_t i = 0; i < ai_mesh->mNumFaces; i++) {
@@ -124,15 +149,49 @@ void Model::process_mesh(aiMesh* ai_mesh) {
     indices.push_back(triangle.mIndices[0]);
     indices.push_back(triangle.mIndices[1]);
     indices.push_back(triangle.mIndices[2]);
+    // 统计三角形面数
+    n_tris++;
   }
 
-  if(m_animated) {
+  if (m_animated) {
     // TODO
   }
+
+  auto& mesh = meshes.emplace_back(vertices, indices);
+
+  aiMaterial* ai_material = ai_root->mMaterials[ai_mesh->mMaterialIndex];
+  process_material(ai_material, mesh);
+
+  // 统计mesh数
+  n_meshes++;
 }
 
-void process_material(aiMaterial* ai_material, const Mesh& mesh) {
-  
+void Model::process_material(aiMaterial* ai_material, const Mesh& mesh) {
+  CORE_ASERT(ai_material != nullptr, "material is nullptr");
+  aiString name;
+  if (ai_material->Get(AI_MATKEY_NAME, name) != AI_SUCCESS) {
+    CORE_ERROR("unable to load mesh's material (vao = {})", mesh.material_id);
+  }
+
+  std::string matkey(name.C_Str());
+
+  // 绑定的材质存在
+  if (materials_cache.find(matkey) != materials_cache.end()) {
+    GLuint matid = materials_cache[matkey];
+    mesh.set_material_id(matid);
+    return;
+  }
+
+  GLuint matid = mesh.material_id;
+  materials_cache[matkey] = matid;
+}
+
+std::shared_ptr<Material> Model::SetMatermial(const std::string& matkey, std::shared_ptr<Material> material) {
+  CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}", matkey);
+  GLuint matid = materials_cache[matkey];
+  materials.insert_or_assign(matid, material);
+
+  return materials.at(matid);
 }
 
 }  // namespace component

@@ -19,9 +19,11 @@ class Scene1 : public Scene {
   Entity cube;
   Entity sphere;
   Entity skybox;
+  Entity paimon;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
+  std::shared_ptr<Shader> paimon_shader;
 
   std::shared_ptr<Texture> skybox_texture;
   std::shared_ptr<Texture> quad_texture;
@@ -33,6 +35,8 @@ class Scene1 : public Scene {
         std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
 
     skybox_shader = std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
+
+    // paimon_shader = std::make_shared<Shader>("", "");
 
     add_nor_ubo();
     set_nor_ubo(0U, quad_shader);
@@ -83,7 +87,9 @@ class Scene1 : public Scene {
     // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
     main_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
     CHECK_ERROR();
-    CORE_INFO("{} created", main_camera.name);
+    
+    paimon = create_entity("paimon");
+    paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj", Quality::Auto);
 
     Render::eable_depth_test();
     Render::eable_alpha_blend();

@@ -1,5 +1,5 @@
-#ifndef _LEARN_OPENGL_SRC_SCENE_ENTITY_HPP_
-#define _LEARN_OPENGL_SRC_SCENE_ENTITY_HPP_
+#ifndef _SRC_SCENE_ENTITY_HPP_
+#define _SRC_SCENE_ENTITY_HPP_
 
 #include <entt/entt.hpp>
 #include <string>
@@ -9,6 +9,7 @@
 #include "component/Camera.h"
 #include "component/Material.h"
 #include "component/Mesh.h"
+#include "component/Model.h"
 #include "component/Transform.h"
 
 namespace scene {

@@ -24,9 +24,14 @@ class Mesh {
   };
 
   Mesh(primitive obj);
+  Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices);
   ~Mesh();
+  
   void draw() const;
 
+  void set_material_id(GLuint mid) const;
+
+  mutable GLuint material_id;
  private:
   std::shared_ptr<asset::VAO> m_vao;
   std::shared_ptr<asset::VBO> m_vbo;

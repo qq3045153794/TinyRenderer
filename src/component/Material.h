@@ -13,9 +13,7 @@ namespace component {
 class Material {
  public:
   Material(std::shared_ptr<asset::Shader> shader);
-  // Material(const Material&) = delete;
-  // Material& operator=(const Material&) = delete;
-
+  
   void set_texture(GLuint u_id, std::shared_ptr<asset::Texture> texture);
   template <typename T>
   void set_uniform(const GLchar* name, const T& val) {
@@ -28,7 +26,7 @@ class Material {
 
  private:
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
-  // std::shared_ptr<asset::Shader> m_shader;
+  
 };
 
 }  // namespace component
