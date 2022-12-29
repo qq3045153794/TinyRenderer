@@ -2,6 +2,8 @@
 #include "component/Mesh.h"
 #include "core/Log.h"
 #include <cmath>
+namespace component {
+
 static const std::vector<GLuint> va_offset = {
     offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal), offsetof(Mesh::Vertex, uv)};
 
@@ -192,5 +194,7 @@ void Mesh::create_buffer(const std::vector<Vertex>& vertices, const std::vector<
                    va_offset[i], GL_FLOAT);   
   }
   m_vao->set_ibo(*m_ibo);
+
+}
 
 }

@@ -4,7 +4,7 @@
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-22 17:01:47
  * @FilePath     : /Learn_OpenGL/src/component/Camera.h
- * @Description  :
+ * @brief  :
  *
  * Copyright (c) 2022, All Rights Reserved.
  */

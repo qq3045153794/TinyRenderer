@@ -4,7 +4,7 @@
  * @LastEditors: xietao
  * @LastEditTime: 2022-08-30 16:21:12
  * @FilePath: /Learn_OpenGL/src/component/Camera.cpp
- * @Description:
+ * @brief:
  *
  * Copyright (c) 2022, All Rights Reserved.
  */
@@ -60,26 +60,26 @@ void CameraFps::update() {
   if (Input::get_key_down('w')) {
     T->translate(T->m_forward * velocity);
   }
-  
+
   if (Input::get_key_down('s')) {
     T->translate(T->m_forward * velocity * -1.0f);
   }
-  
+
   if (Input::get_key_down('a')) {
     T->translate(T->m_right * velocity * -1.0f);
   }
-  
+
   if (Input::get_key_down('d')) {
     T->translate(T->m_right * velocity);
   }
-  
+
   if (Input::get_key_down('q')) {
     CORE_TRACE("input q");
     T->translate(world_up * velocity);
   }
-  
+
   if (Input::get_key_down('e')) {
-    T->translate(world_up  * velocity * -1.0f);
+    T->translate(world_up * velocity * -1.0f);
   }
 
   auto eular_x = glm::clamp(T->get_eular().x + Input::get_offset_y() * 0.1f, -89.0f, 89.0f);

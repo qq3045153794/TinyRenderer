@@ -10,6 +10,7 @@
 namespace component {
 
 class Mesh;
+class Material
 
 class Node {};
 
@@ -22,17 +23,31 @@ enum Quality {
 
 class Model {
  public:
-  Model(const std::string& file_path, Quality quality);
+  Model(const std::string& file_path, Quality quality, bool m_animated = false);
+  
+  /**
+   * @brief       : 
+   * @param        {string&} matkey
+   * @param        {shared_ptr<Material>} material
+   * @return       {*}
+   */
+  Material& SetMatermial(const std::string& matkey, std::shared_ptr<Material> material);
 
   const aiScene* ai_root = nullptr;
+
+  std::bitset<6> vtx_format;
 
   std::vector<Node> nodes;
   std::vector<Mesh> meshes;
 
  private:
+  
   void process_tree(aiNode* ai_node, int parent);
   void process_node(aiNode* ai_node);
-  void process_mesh(aiNode* ai_mesh);
+  void process_mesh(aiMesh* ai_mesh);
+  void process_material(aiMaterial* ai_material, const Mesh& mesh);
+
+  bool m_animated;
 };
 
 }  // namespace component

@@ -6,7 +6,7 @@
 #include "asset/Buffer.h"
 #include "asset/VAO.h"
 #include "glm/glm.hpp"
-
+namespace component {
 
 class Mesh {
  public:
@@ -16,6 +16,11 @@ class Mesh {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 uv;
+    glm::vec2 uv2;
+    glm::vec3 tangent;
+    glm::vec3 binormal;
+    glm::ivec4 bone_id;  
+    glm::vec4 bone_wt;   
   };
 
   Mesh(primitive obj);
@@ -33,4 +38,5 @@ class Mesh {
   void create_buffer(const std::vector<Vertex>& vertex, const std::vector<GLuint>& indices);
 };
 
+}  // namespace component
 #endif

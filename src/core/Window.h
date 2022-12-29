@@ -4,7 +4,7 @@
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-15 23:20:16
  * @FilePath     : /Learn_OpenGL/src/core/Window.h
- * @Description  : 窗口系统 储存和设置各种窗口事件供调用
+ * @brief  : 窗口系统 储存和设置各种窗口事件供调用
  *
  * Copyright (c) 2022, All Rights Reserved.
  */
@@ -24,31 +24,31 @@ enum Layer { Scene = 0, ImGui, Win32 };
 class Window {
  public:
   /**
-   * @description : 初始化资源
+   * @brief : 初始化资源
    * @return       {*}
    */
   static void init();
 
   /**
-   * @description : 执行双缓存和窗口事件回调
+   * @brief : 执行双缓存和窗口事件回调
    * @return       {*}
    */
   static void update();
 
   /**
-   * @description : 清空颜色缓冲和深度缓冲
+   * @brief : 清空颜色缓冲和深度缓冲
    * @return       {*}
    */
   static void clear_buffer();
 
   /**
-   * @description : 结束程序
+   * @brief : 结束程序
    * @return       {*}
    */
   static void clear();
 
   /**
-   * @description : 窗口重命名
+   * @brief : 窗口重命名
    * @param        {string&} title
    * @return       {*}
    */
@@ -57,7 +57,7 @@ class Window {
   static void resize();
 
   /**
-   * @description : 切换layer
+   * @brief : 切换layer
    * @return       {*}
    */
   static void on_layer_switch();

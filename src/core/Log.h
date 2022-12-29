@@ -4,7 +4,7 @@
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-29 15:39:45
  * @FilePath     : /Learn_OpenGL/src/core/Log.h
- * @Description  : 日志格式 等级设置
+ * @brief  : 日志格式 等级设置
  *
  * Copyright (c) 2022, All Rights Reserved.
  */

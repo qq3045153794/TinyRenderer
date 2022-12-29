@@ -4,7 +4,7 @@
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-15 23:20:57
  * @FilePath     : /Learn_OpenGL/src/core/Debug.h
- * @Description  : 检测构建是否OpenGL构建错误
+ * @brief  : 检测构建是否OpenGL构建错误
  *
  * Copyright (c) 2022, All Rights Reserved.
  */

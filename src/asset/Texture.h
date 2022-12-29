@@ -4,7 +4,7 @@
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-27 17:08:24
  * @FilePath     : /Learn_OpenGL/src/asset/Texture.h
- * @Description  :
+ * @brief  :
  *
  * Copyright (c) 2022, All Rights Reserved.
  */
