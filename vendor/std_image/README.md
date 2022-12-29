@@ -1,8 +1,8 @@
 包含头需要宏定义
-...cpp
+```cpp
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-...
+```
 
 
 注意官方说明

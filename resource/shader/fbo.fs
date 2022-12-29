@@ -11,5 +11,5 @@ void main () {
     float B = RGB.b;
     // Y 范围[0 1] 灰阶值
     float Y = 0.2627 * R + 0.6780 * G + 0.0593 * B;
-    color = vec4(Y, Y, Y, 1.0);
+    color = vec4(RGB, 1.0);
 }
