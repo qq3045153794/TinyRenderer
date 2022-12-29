@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-10-27 17:39:11
  * @LastEditors  : xietao
- * @LastEditTime : 2022-11-02 19:52:28
+ * @LastEditTime : 2022-12-29 15:39:45
  * @FilePath     : /Learn_OpenGL/src/core/Log.h
  * @Description  : 日志格式 等级设置
  *
@@ -22,12 +22,12 @@
 #define CORE_WARN(...) SPDLOG_LOGGER_WARN(Log::get_logger(), __VA_ARGS__)
 #define CORE_ERROR(...) SPDLOG_LOGGER_ERROR(Log::get_logger(), __VA_ARGS__)
 
-#define CORE_ASERT(cond, ...)                           \
-  {                                                     \
-    if (!(cond)) {                                      \
+#define CORE_ASERT(cond, ...)                   \
+  {                                             \
+    if (!(cond)) {                              \
       Log::get_logger()->critical(__VA_ARGS__); \
-      assert(cond);                                     \
-    }                                                   \
+      assert(cond);                             \
+    }                                           \
   }
 
 class Log {
@@ -40,6 +40,5 @@ class Log {
   // 日志打印对象
   static std::shared_ptr<spdlog::logger> logger;
 };
-
 
 #endif

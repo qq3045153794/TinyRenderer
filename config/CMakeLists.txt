@@ -11,6 +11,7 @@ set(MAIN_LIBS
     GL m Xrandr  X11  pthread dl
 )
 
+
 set(MAIN_SRC
     ${PROJECT_SOURCE_DIR}/src/asset/Buffer.cpp      
     ${PROJECT_SOURCE_DIR}/src/asset/Shader.cpp
@@ -23,6 +24,7 @@ set(MAIN_SRC
     ${PROJECT_SOURCE_DIR}/src/core/Event.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Input.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Log.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Model.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Transform.cpp
@@ -67,6 +69,7 @@ set(MAIN_INCLUDE
 set(VEN_INCLUDE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
+    ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include
     ${PROJECT_SOURCE_DIR}/vendor/glm
     ${PROJECT_SOURCE_DIR}/vendor/std_image
