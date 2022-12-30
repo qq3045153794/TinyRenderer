@@ -7,9 +7,12 @@
 namespace component {
 
 static const std::vector<GLuint> va_offset = {
-    offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal), offsetof(Mesh::Vertex, uv)};
+    offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal),
+    offsetof(Mesh::Vertex, uv),       offsetof(Mesh::Vertex, uv2),
+    offsetof(Mesh::Vertex, tangent),  offsetof(Mesh::Vertex, binormal),
+    offsetof(Mesh::Vertex, bone_id),  offsetof(Mesh::Vertex, bone_wt)};
 
-static const std::vector<GLuint> va_sz{3U, 3U, 2U};
+static const std::vector<GLuint> va_sz{3U, 3U, 2U, 2U, 3U, 3U, 4U, 4U};
 
 Mesh::Mesh(primitive obj) {
   // clang-format off
@@ -200,8 +203,9 @@ void Mesh::create_buffer(const std::vector<Vertex>& vertices, const std::vector<
                                        GL_STATIC_DRAW, indices.size());
   m_vao = std::make_shared<asset::VAO>();
 
-  for (size_t i = 0; i < 3; i++) {
-    m_vao->set_vbo(*m_vbo, i, va_sz[i], sizeof(Vertex), va_offset[i], GL_FLOAT);
+  for (size_t i = 0; i < 8; i++) {
+    GLenum va_type = i == 6 ? GL_INT : GL_FLOAT;
+    m_vao->set_vbo(*m_vbo, i, va_sz[i], sizeof(Vertex), va_offset[i], va_type);
   }
   m_vao->set_ibo(*m_ibo);
 }

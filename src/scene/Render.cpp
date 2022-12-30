@@ -33,6 +33,7 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
 
   auto& reg = curr_scene->registry;
   auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
+  auto model_group = reg.group<Model>(entt::get<Transform, Tag>);
 
   while (!render_queue.empty()) {
     auto& e = render_queue.front();
@@ -49,11 +50,24 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
         material.bind();
         material.set_uniform("model", transform.get_transform());
       }
-      if(tag.contains(ETag::Skybox)) {
+      if (tag.contains(ETag::Skybox)) {
         set_front_is_ccw(false);
         mesh.draw();
         set_front_is_ccw(true);
       } else {
+        mesh.draw();
+      }
+    } else if (model_group.contains(e)) {
+      auto& model = model_group.get<Model>(e);
+      auto& transform = model_group.get<Transform>(e);
+      for (auto& mesh : model.meshes) {
+        auto& material = model.materials.at(mesh.material_id);
+        if (shader) {
+          // TODO
+        } else {
+          material.bind();
+          material.set_uniform("model", transform.get_transform());
+        }
         mesh.draw();
       }
     }
@@ -93,11 +107,8 @@ void Render::eable_face_culling() {
 
   // 剔除背面 (剔除顺时针)
   glCullFace(GL_BACK);
-
 }
 
-void Render::set_front_is_ccw(bool is_ccw) {
-  glFrontFace(is_ccw? GL_CCW : GL_CW);
-}
+void Render::set_front_is_ccw(bool is_ccw) { glFrontFace(is_ccw ? GL_CCW : GL_CW); }
 
 }  // namespace scene

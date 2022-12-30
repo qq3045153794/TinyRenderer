@@ -186,7 +186,7 @@ void Model::process_material(aiMaterial* ai_material, const Mesh& mesh) {
   materials_cache[matkey] = matid;
 }
 
-std::shared_ptr<Material> Model::SetMatermial(const std::string& matkey, std::shared_ptr<Material> material) {
+Material& Model::SetMatermial(const std::string& matkey, const Material& material) {
   CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}", matkey);
   GLuint matid = materials_cache[matkey];
   materials.insert_or_assign(matid, material);

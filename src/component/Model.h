@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-12-29 14:36:02
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-29 23:51:11
+ * @LastEditTime : 2022-12-30 19:45:51
  * @FilePath     : /Learn_OpenGL/src/component/Model.h
  * @Description  : 加载模型文件
  *
@@ -57,8 +57,7 @@ class Model {
    * @param        {shared_ptr<Material>} material
    * @return       {*}
    */
-  std::shared_ptr<Material> SetMatermial(const std::string& matkey,
-                                         std::shared_ptr<Material> material);
+  Material& SetMatermial(const std::string& matkey, const Material& material);
 
   const aiScene* ai_root = nullptr;
 
@@ -68,7 +67,7 @@ class Model {
   std::vector<Mesh> meshes;
 
   // mesh的材质id与材质的映射
-  std::map<GLuint, std::shared_ptr<Material>> materials;
+  std::map<GLuint, Material> materials;
 
  private:
   void process_tree(aiNode* ai_node, int parent);

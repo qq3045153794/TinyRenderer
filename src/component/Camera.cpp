@@ -74,7 +74,6 @@ void CameraFps::update() {
   }
 
   if (Input::get_key_down('q')) {
-    CORE_TRACE("input q");
     T->translate(world_up * velocity);
   }
 
