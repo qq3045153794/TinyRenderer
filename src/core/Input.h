@@ -2,8 +2,8 @@
  * @Author       : xietao
  * @Date         : 2022-08-03 20:22:11
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-29 19:42:54
- * @FilePath     : /Learn_OpenGL/src/core/Input.h
+ * @LastEditTime : 2022-12-31 21:23:48
+ * @FilePath     : /TinyRenderer/src/core/Input.h
  * @brief  : 插入系统 通过事件(Event)系统获取窗口事件
  *                 的数据，供全局调用
  *
