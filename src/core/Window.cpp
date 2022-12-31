@@ -28,6 +28,9 @@ void Window::init() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  // 开启 MSAA
+  glfwWindowHint(GLFW_SAMPLES, 4);
+
   m_window = glfwCreateWindow(m_width, m_height, title.c_str(), NULL, NULL);
 
   glfwMakeContextCurrent(m_window);

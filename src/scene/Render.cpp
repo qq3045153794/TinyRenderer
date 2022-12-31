@@ -168,6 +168,28 @@ void Render::eable_face_culling(bool enable) {
   }
 }
 
+void Render::eable_msaa(bool enalbe) {
+  static GLint buffers = 0, samples = 0, max_samples = 0;
+
+  if (samples == 0) {
+    glGetIntegerv(GL_SAMPLE_BUFFERS, &buffers);
+    glGetIntegerv(GL_SAMPLES, &samples);
+    glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+    CORE_TRACE("MSAA buffers {}", buffers);
+    CORE_TRACE("MSAA samples {}", samples);
+    CORE_TRACE("MSAA max_samples {}", max_samples);
+    
+    CORE_ASERT(buffers > 0, "MSAA buffers are not available! Check your window context...");
+    // CORE_ASERT(samples == 4, "Invalid MSAA buffer size! 4 samples per pixel is not available...");
+  }
+
+  if (enalbe) {
+    glEnable(GL_MULTISAMPLE);
+  } else {
+    glDisable(GL_MULTISAMPLE);
+  }
+}
+
 void Render::set_front_is_ccw(bool is_ccw) { glFrontFace(is_ccw ? GL_CCW : GL_CW); }
 
 }  // namespace scene

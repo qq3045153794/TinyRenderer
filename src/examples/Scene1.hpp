@@ -127,6 +127,7 @@ class Scene1 : public Scene {
     Render::eable_depth_test(true);
     Render::eable_alpha_blend(true);
     Render::eable_face_culling(true);
+    Render::eable_msaa(true);
   }
 
   virtual void on_scene_render() override {

@@ -28,6 +28,7 @@ class Render {
   static void eable_depth_test(bool enable);
   static void eable_alpha_blend(bool enable);
   static void eable_face_culling(bool enable);
+  static void eable_msaa(bool enalbe);
 
   static void set_front_is_ccw(bool is_ccw);
 
