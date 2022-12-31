@@ -13,6 +13,8 @@ class Render {
  public:
   Render();
   ~Render();
+  static Scene* get_scene();
+
   static void clear_buffer();
   static void attach(const std::string& title);
   static void detach();

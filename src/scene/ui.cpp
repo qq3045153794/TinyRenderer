@@ -2,11 +2,15 @@
 #include "scene/ui.h"
 
 #include <stdio.h>
+#include <iostream>
+#include <iomanip>
 
 #define IMGUI_DISABLE_METRICS_WINDOW
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "core/Log.h"
+#include "scene/Factory.hpp"
+#include "scene/Render.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -31,13 +35,102 @@ static const ImGuiWindowFlags invisible_window_flags =
 
 const char* glsl_version = "#version 330";
 
+ImFont* truetype_font;  // TrueType, Lato-Regular, 18pt (main font)
+
 void init() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
   (void)io;
+  ImGuiStyle& style = ImGui::GetStyle();
 
+  std::string ttf_main = "../resource/fronts/Lato.ttf";
+
+  float font_main_sz = 18.0f;
+
+  ImFontConfig config_main;
+  config_main.PixelSnapH = true;
+  config_main.OversampleH = 4;
+  config_main.OversampleV = 4;
+  config_main.RasterizerMultiply = 1.2f;  // brighten up the font to make them more readable
+  config_main.GlyphExtraSpacing.x = 0.0f;
+
+  truetype_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
+
+  // load default dark theme
   ImGui::StyleColorsDark();
+
+  // setup custom styles
+  style.WindowBorderSize = 0.0f;
+  style.FrameBorderSize = 1.0f;
+  style.PopupBorderSize = 1.0f;
+  style.ChildBorderSize = 1.0f;
+  style.TabBorderSize = 0.0f;
+  style.ScrollbarSize = 18.0f;
+  style.GrabMinSize = 10.0f;
+
+  style.WindowPadding = ImVec2(8.0f, 8.0f);
+  style.FramePadding = ImVec2(4.0f, 6.0f);
+  style.ItemSpacing = ImVec2(10.0f, 10.0f);
+  style.ItemInnerSpacing = ImVec2(10.0f, 10.0f);
+  style.IndentSpacing = 16.0f;
+
+  style.WindowRounding = 0.0f;
+  style.ChildRounding = 0.0f;
+  style.FrameRounding = 4.0f;
+  style.PopupRounding = 0.0f;
+  style.TabRounding = 4.0f;
+  style.GrabRounding = 4.0f;
+  style.ScrollbarRounding = 12.0f;
+
+  style.WindowMenuButtonPosition = ImGuiDir_Left;
+  style.ColorButtonPosition = ImGuiDir_Right;
+
+  style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
+  style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
+  style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
+
+  style.AntiAliasedLines = true;
+  style.AntiAliasedFill = true;
+  style.AntiAliasedLinesUseTex = true;
+
+  // setup custom colors
+  auto& c = ImGui::GetStyle().Colors;
+
+  c[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.85f);
+  c[ImGuiCol_ChildBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.85f);
+  c[ImGuiCol_PopupBg] = ImVec4(0.1f, 0.1f, 0.1f, 0.85f);
+
+  c[ImGuiCol_FrameBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
+  c[ImGuiCol_FrameBgHovered] = ImVec4(0.2f, 0.2f, 0.2f, 0.75f);
+  c[ImGuiCol_FrameBgActive] = ImVec4(0.3f, 0.3f, 0.3f, 0.75f);
+
+  c[ImGuiCol_TitleBg] = ImVec4(0.2f, 0.2f, 0.2f, 0.75f);
+  c[ImGuiCol_TitleBgActive] = ImVec4(0.0f, 0.3f, 0.0f, 0.9f);
+  c[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
+
+  c[ImGuiCol_ScrollbarBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
+  c[ImGuiCol_ScrollbarGrab] = ImVec4(0.2f, 0.2f, 0.2f, 0.9f);
+  c[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.3f, 0.3f, 0.3f, 0.9f);
+  c[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.4f, 0.4f, 0.4f, 0.9f);
+
+  c[ImGuiCol_CheckMark] = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+  c[ImGuiCol_SliderGrab] = ImVec4(0.0f, 0.4f, 0.0f, 0.9f);
+  c[ImGuiCol_SliderGrabActive] = ImVec4(0.0f, 0.5f, 0.0f, 0.9f);
+
+  c[ImGuiCol_Button] = ImVec4(0.0f, 0.3f, 0.0f, 0.9f);
+  c[ImGuiCol_ButtonHovered] = ImVec4(0.0f, 0.55f, 0.0f, 0.9f);
+  c[ImGuiCol_ButtonActive] = ImVec4(0.0f, 0.5f, 0.0f, 0.9f);
+
+  c[ImGuiCol_Header] = ImVec4(0.5f, 0.0f, 1.0f, 0.5f);
+  c[ImGuiCol_HeaderHovered] = ImVec4(0.5f, 0.0f, 1.0f, 0.8f);
+  c[ImGuiCol_HeaderActive] = ImVec4(0.5f, 0.0f, 1.0f, 0.7f);
+
+  c[ImGuiCol_Tab] = ImVec4(0.0f, 0.3f, 0.0f, 0.8f);
+  c[ImGuiCol_TabHovered] = ImVec4(0.0f, 0.4f, 0.0f, 0.8f);
+  c[ImGuiCol_TabActive] = ImVec4(0.0f, 0.4f, 0.0f, 0.8f);
+  c[ImGuiCol_TabUnfocused] = ImVec4(0.2f, 0.2f, 0.2f, 0.9f);
+  c[ImGuiCol_TabUnfocusedActive] = ImVec4(0.2f, 0.2f, 0.2f, 0.9f);
 
   ImGui_ImplGlfw_InitForOpenGL(Window::m_window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
@@ -64,20 +157,22 @@ void show_down() {
   ImGui::DestroyContext();
 }
 
-void draw_menu_bar() {
+void draw_menu_bar(std::string& new_title) {
+  const auto& curr_scene_title = Render::get_scene()->m_title;
+
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
   ImGui::SetNextWindowSize(ImVec2((float)Window::m_width, 0.01f));
   ImGui::SetNextWindowBgAlpha(0.0f);
 
-  // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
-  // ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 10));
-  // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12, 10));
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 10));
+  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12, 10));
   //
 
-  // ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
-  // ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.55f));
-  // ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.39f, 0.61f, 0.8f));
-  // ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.24f, 0.54f, 0.89f, 0.8f));
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
+  ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.55f));
+  ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.39f, 0.61f, 0.8f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.24f, 0.54f, 0.89f, 0.8f));
 
   //
 
@@ -85,9 +180,24 @@ void draw_menu_bar() {
                ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
 
   if (ImGui::BeginMenuBar()) {
-    // ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.7f, 0.7f, 0.7f, 0.3f));
-    //
-    // ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.7f, 0.7f, 0.7f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+
+    if (ImGui::BeginMenu("Open")) {
+      for (unsigned int i = 0; i < scene::factory::titles.size(); i++) {
+        std::string title = scene::factory::titles[i];
+        std::ostringstream id;
+        id << " " << std::setfill('0') << std::setw(2) << i;
+        bool selected = (curr_scene_title == title);
+
+        if (ImGui::MenuItem((" " + title).c_str(), id.str().c_str(), selected)) {
+          if (!selected) {
+            new_title = title;
+          }
+        }
+      }
+      ImGui::EndMenu();
+    }
 
     if (ImGui::BeginMenu("Options")) {
       if (ImGui::BeginMenu(" Window Resolution")) {
@@ -101,8 +211,13 @@ void draw_menu_bar() {
       ImGui::EndMenu();
     }
     ImGui::EndMenuBar();
+    ImGui::PopStyleColor(2);
   }
+
   ImGui::End();
+
+  ImGui::PopStyleColor(4);
+  ImGui::PopStyleVar(3);
 }
 
 void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {

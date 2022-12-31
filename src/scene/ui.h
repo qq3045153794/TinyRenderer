@@ -17,7 +17,7 @@ void end_frame();
 
 void show_down();
 
-void draw_menu_bar();
+void draw_menu_bar(std::string& new_title);
 
 void draw_Gizmo(Entity& camera, Entity& target, Gizmo z);
 

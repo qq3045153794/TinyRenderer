@@ -15,7 +15,7 @@ Scene::~Scene() {
 }
 
 void Scene::init() {
-  welcome_screen = std::make_unique<asset::Texture>("../resource/texture/001.jpg", false);
+  welcome_screen = std::make_unique<asset::Texture>("../resource/texture/welcome (original).png", false);
   welcome_screen_texture_id = (void*) welcome_screen->get_id();
 }
 
@@ -43,7 +43,6 @@ void Scene::add_fbo(GLuint width, GLuint height) {
   nor_fbo = std::make_shared<asset::FBO>(width, height);
   nor_fbo->set_color_texture();
   nor_fbo->set_depth_texture();
-  CORE_INFO("add FBO widht :{} height: {}", width, height);
 }
 
 void Scene::on_scene_render() { Render::clear_buffer(); }

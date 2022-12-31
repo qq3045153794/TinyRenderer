@@ -19,6 +19,8 @@ Render::Render() {}
 
 Render::~Render() {}
 
+Scene* Render::get_scene() { return curr_scene; }
+
 void Render::clear_buffer() {
   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -36,8 +38,8 @@ void Render::attach(const std::string& title) {
   curr_scene->init();
 }
 
-void Render::detach() { 
-  CORE_TRACE("Detaching scene \"{0}\" ......", curr_scene->m_title); 
+void Render::detach() {
+  CORE_TRACE("Detaching scene \"{0}\" ......", curr_scene->m_title);
   last_scene = curr_scene;
   curr_scene = nullptr;
 
@@ -102,14 +104,26 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
 void Render::draw_scene() { curr_scene->on_scene_render(); }
 
 void Render::draw_imGui() {
+  bool switch_scene = false;
+  std::string next_scene_title;
   if (ui::new_frame(); true) {
-    ui::draw_menu_bar();
+    // 渲染菜单栏
+    ui::draw_menu_bar(next_scene_title);
+
+    if (!next_scene_title.empty()) {
+      switch_scene = true;
+    }
 
     if (Window::layer == Layer::ImGui) {
       curr_scene->on_imgui_render();
     }
 
     ui::end_frame();
+  }
+
+  if (switch_scene) {
+    detach();
+    attach(next_scene_title);
   }
 }
 
@@ -132,8 +146,6 @@ void Render::eable_alpha_blend(bool enable) {
     glDisable(GL_BLEND);
   }
 }
-
-
 
 void Render::eable_face_culling(bool enable) {
   if (enable) {
