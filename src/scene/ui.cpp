@@ -37,6 +37,13 @@ const char* glsl_version = "#version 330";
 
 ImFont* truetype_font;  // TrueType, Lato-Regular, 18pt (main font)
 
+static ImVec2 window_center;
+static ImVec4 red = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+static ImVec4 yellow = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+static ImVec4 green = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+static ImVec4 blue = ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+static ImVec4 cyan = ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+
 void init() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -52,8 +59,8 @@ void init() {
   config_main.PixelSnapH = true;
   config_main.OversampleH = 4;
   config_main.OversampleV = 4;
-  config_main.RasterizerMultiply = 1.2f;  // brighten up the font to make them more readable
-  config_main.GlyphExtraSpacing.x = 0.0f;
+  config_main.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
+  config_main.GlyphExtraSpacing.x = 0.0f;  // 字间距离
 
   truetype_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
 
@@ -275,6 +282,42 @@ void draw_welcome_scene(ImTextureID id) {
   const static float win_w = (float)Window::m_width;
   const static float win_h = (float)Window::m_height;
   draw_list->AddImage(id, ImVec2(0.0f, 0.0f), ImVec2(win_w, win_h));
+}
+
+void draw_loading_screen() {
+  const static float win_w = (float)Window::m_width;
+  const static float win_h = (float)Window::m_height;
+  const static float bar_w = 268.0f;
+  const static float bar_h = 80.0f;
+
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+  ImGui::SetNextWindowSize(ImVec2(win_w, win_h));
+  ImGui::SetNextWindowBgAlpha(1.0f);
+
+  // ImGui::PushFont(opentype_font);
+  ImGui::Begin("Loading Bar", 0, ImGuiWindowFlags_NoDecoration);
+
+  ImDrawList* draw_list = ImGui::GetWindowDrawList();
+  draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.3f,
+                     ImVec2((win_w - bar_w) * 0.5f, (win_h - bar_h) * 0.5f),
+                     ImGui::ColorConvertFloat4ToU32(yellow), "LOADING, PLEASE WAIT ......");
+
+  float x = 505.0f;  // not magic number, it's simple math!
+  float y = 465.0f;  // not magic number, it's simple math!
+  const static float size = 20.0f;
+  float r, g, b;
+
+  for (float i = 0.0f; i < 1.0f; i += 0.05f, x += size * 1.5f) {
+    r = (i <= 0.33f) ? 1.0f : ((i <= 0.66f) ? 1 - (i - 0.33f) * 3 : 0.0f);
+    g = (i <= 0.33f) ? i * 3 : 1.0f;
+    b = (i > 0.66f) ? (i - 0.66f) * 3 : 0.0f;
+
+    draw_list->AddTriangleFilled(ImVec2(x, y - 0.5f * size), ImVec2(x, y + 0.5f * size),
+                                 ImVec2(x + size, y), IM_COL32(r * 255, g * 255, b * 255, 255.0f));
+  }
+
+  ImGui::End();
+  // ImGui::PopFont();
 }
 
 }  // namespace scene::ui

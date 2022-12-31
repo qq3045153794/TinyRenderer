@@ -23,6 +23,8 @@ void draw_Gizmo(Entity& camera, Entity& target, Gizmo z);
 
 void draw_welcome_scene(ImTextureID id);
 
+void draw_loading_screen();
+
 }  // namespace scene::ui
 
 #endif

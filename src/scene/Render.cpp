@@ -111,11 +111,13 @@ void Render::draw_imGui() {
     ui::draw_menu_bar(next_scene_title);
 
     if (!next_scene_title.empty()) {
+      Render::clear_buffer();
+      void draw_loading_screen();
       switch_scene = true;
-    }
-
-    if (Window::layer == Layer::ImGui) {
-      curr_scene->on_imgui_render();
+    } else {
+      if (Window::layer == Layer::ImGui) {
+        curr_scene->on_imgui_render();
+      }
     }
 
     ui::end_frame();
