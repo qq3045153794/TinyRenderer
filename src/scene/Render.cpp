@@ -2,8 +2,10 @@
 
 #include "component/Tag.hpp"
 #include "core/Input.h"
+#include "core/Log.h"
 #include "core/Window.h"
 #include "examples/Scene1.hpp"
+#include "scene/Factory.hpp"
 #include "scene/Scene.h"
 #include "scene/ui.h"
 
@@ -11,6 +13,7 @@ namespace scene {
 
 std::queue<entt::entity> Render::render_queue;
 Scene* Render::curr_scene = nullptr;
+Scene* Render::last_scene = nullptr;
 
 Render::Render() {}
 
@@ -21,11 +24,33 @@ void Render::clear_buffer() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Render::Attach(const std::string& title) {
+void Render::attach(const std::string& title) {
   Window::rename(title);
-  Input::init();
-  curr_scene = new Scene1(title);
+  Input::clear();
+
+  Window::layer = Layer::ImGui;
+
+  Scene* new_scene = factory::LoadScene(title);
+  std::swap(curr_scene, new_scene);
+  // curr_scene = new_scene;
   curr_scene->init();
+}
+
+void Render::detach() { 
+  CORE_TRACE("Detaching scene \"{0}\" ......", curr_scene->m_title); 
+  last_scene = curr_scene;
+  curr_scene = nullptr;
+
+  delete last_scene;
+  last_scene = nullptr;
+
+  Render::reset();
+}
+
+void Render::reset() {
+  eable_alpha_blend(false);
+  eable_depth_test(false);
+  eable_face_culling(false);
 }
 
 void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
@@ -88,25 +113,38 @@ void Render::draw_imGui() {
   }
 }
 
-void Render::eable_depth_test() {
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(GL_TRUE);
-  glDepthFunc(GL_LEQUAL);
-  glDepthRange(0.0f, 1.0f);
+void Render::eable_depth_test(bool enable) {
+  if (enable) {
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
+  } else {
+    glDisable(GL_DEPTH_TEST);
+  }
 }
 
-void Render::eable_alpha_blend() {
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+void Render::eable_alpha_blend(bool enable) {
+  if (enable) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  } else {
+    glDisable(GL_BLEND);
+  }
 }
 
-void Render::eable_face_culling() {
-  glEnable(GL_CULL_FACE);
-  // 设置连接顺序 GL_CCW为逆时针 GL_CW为顺时针
-  glFrontFace(GL_CCW);
 
-  // 剔除背面 (剔除顺时针)
-  glCullFace(GL_BACK);
+
+void Render::eable_face_culling(bool enable) {
+  if (enable) {
+    glEnable(GL_CULL_FACE);
+    // 设置连接顺序 GL_CCW为逆时针 GL_CW为顺时针
+    glFrontFace(GL_CCW);
+    // 剔除背面 (剔除顺时针)
+    glCullFace(GL_BACK);
+  } else {
+    glDisable(GL_CULL_FACE);
+  }
 }
 
 void Render::set_front_is_ccw(bool is_ccw) { glFrontFace(is_ccw ? GL_CCW : GL_CW); }

@@ -37,7 +37,7 @@ void App::init() {
     return;
   }
   // 渲染器绑定场景
-  Render::Attach("hellow word");
+  Render::attach("Welcome Screen");
 }
 
 void App::render_update() {

@@ -124,9 +124,9 @@ class Scene1 : public Scene {
 
     CHECK_ERROR();
 
-    Render::eable_depth_test();
-    Render::eable_alpha_blend();
-    Render::eable_face_culling();
+    Render::eable_depth_test(true);
+    Render::eable_alpha_blend(true);
+    Render::eable_face_culling(true);
   }
 
   virtual void on_scene_render() override {

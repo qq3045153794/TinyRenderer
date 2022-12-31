@@ -29,7 +29,7 @@ static const ImGuiColorEditFlags color3_flags =
 static const ImGuiWindowFlags invisible_window_flags =
     ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
 
-const char* glsl_version = "#version 130";
+const char* glsl_version = "#version 330";
 
 void init() {
   IMGUI_CHECKVERSION();
@@ -131,12 +131,12 @@ void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
       return;
     }
   }
-  
+
   auto& T = target.GetComponent<component::Transform>();
   auto& C = camera.GetComponent<component::CameraFps>();
   glm::mat4 V = C.get_view_mat();
   glm::mat4 P = C.get_projection_mat();
-  
+
   glm::mat4 transform = T.get_transform();
 
   ImGui::SetNextWindowPos(win_pos);
@@ -153,6 +153,13 @@ void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
   }
 
   ImGui::End();
+}
+
+void draw_welcome_scene(ImTextureID id) {
+  ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
+  const static float win_w = (float)Window::m_width;
+  const static float win_h = (float)Window::m_height;
+  draw_list->AddImage(id, ImVec2(0.0f, 0.0f), ImVec2(win_w, win_h));
 }
 
 }  // namespace scene::ui

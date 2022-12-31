@@ -3,6 +3,7 @@
 
 #include "core/Window.h"
 #include "scene/Entity.hpp"
+#include "imgui.h"
 
 namespace scene::ui {
 
@@ -19,6 +20,8 @@ void show_down();
 void draw_menu_bar();
 
 void draw_Gizmo(Entity& camera, Entity& target, Gizmo z);
+
+void draw_welcome_scene(ImTextureID id);
 
 }  // namespace scene::ui
 
