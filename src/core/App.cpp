@@ -54,8 +54,6 @@ void App::event_update() {
   
   Clock::update();
   Render::draw_imGui();
-  // 双缓存 窗口回调
-  Window::update();
 }
 
 App::App() {}

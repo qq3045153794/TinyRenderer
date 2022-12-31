@@ -16,6 +16,7 @@ class Render {
   static Scene* get_scene();
 
   static void clear_buffer();
+  static void flush();
   static void attach(const std::string& title);
   static void detach();
   static void reset();

@@ -26,6 +26,11 @@ void Render::clear_buffer() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Render::flush() {
+  glfwSwapBuffers(Window::m_window);
+  glfwPollEvents();
+}
+
 void Render::attach(const std::string& title) {
   Window::rename(title);
   Input::clear();
@@ -111,17 +116,19 @@ void Render::draw_imGui() {
     ui::draw_menu_bar(next_scene_title);
 
     if (!next_scene_title.empty()) {
-      Render::clear_buffer();
-      void draw_loading_screen();
       switch_scene = true;
+      Render::clear_buffer();
+      ui::draw_loading_screen();
+
     } else {
       if (Window::layer == Layer::ImGui) {
         curr_scene->on_imgui_render();
       }
     }
-
     ui::end_frame();
   }
+  // 双缓存 将渲染画面提交到窗口
+  Render::flush();
 
   if (switch_scene) {
     detach();
