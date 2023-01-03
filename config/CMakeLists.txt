@@ -20,6 +20,7 @@ set(MAIN_SRC
     ${PROJECT_SOURCE_DIR}/src/core/Event.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Input.cpp
     ${PROJECT_SOURCE_DIR}/src/core/Log.cpp
+    ${PROJECT_SOURCE_DIR}/src/component/Light.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Model.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Mesh.cpp
     ${PROJECT_SOURCE_DIR}/src/component/Camera.cpp
