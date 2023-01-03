@@ -1,8 +1,5 @@
-project(DEMO)
+project(DEMO VERSION 0.0.1 LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
 
 include(${PROJECT_SOURCE_DIR}/config/CMakeLists.txt)
 
@@ -13,6 +10,16 @@ add_executable(demo
     ${ImGuizmo_SRC}
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
+
+# 编译选项 https://blog.csdn.net/zhizhengguan/article/details/111743586
+target_compile_options(demo
+    # Diagnose
+    PUBLIC -Wall
+    # Debug
+    PUBLIC -O0
+    PUBLIC -ggdb
+)
+
 
 target_include_directories(demo
     PUBLIC
