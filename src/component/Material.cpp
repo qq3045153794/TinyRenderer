@@ -21,10 +21,11 @@ std::map<GLuint, std::string> Material::texture_dictionary{
     {2, "texture_2"},
     {3, "texture_3"},
     {4, "texture_4"},
-    {5, "albedo"},
-    {6, "metalness"},
-    {7, "roughness"},
-    {8, "ao"}
+    {5, "albedo_texture"},
+    {6, "metalness_texture"},
+    {7, "roughness_texture"},
+    {8, "ao_texture"},
+    {9, "normal_texture"}
 };
 // clang-format on
 

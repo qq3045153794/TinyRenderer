@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-12-29 14:09:16
  * @LastEditors  : xietao
- * @LastEditTime : 2023-01-04 22:54:26
+ * @LastEditTime : 2023-01-05 00:46:33
  * @FilePath     : /TinyRenderer/src/component/Material.h
  * @Description  :
  *
@@ -38,7 +38,8 @@ class Material {
     albedo = 0U,  // 反射率 向量 sRGB 主要体现纹理和颜色
     metalness,    // 金属度 标量 [0..1]
     roughness,    // 粗糙度 标量 [0..1]
-    ao            // 反射率 标量 [0..1]
+    ao,           // 反射率 标量 [0..1]
+    normal        // 法线贴图 向量 切线空间
   };
 
   static std::map<GLuint, std::string> uniform_dictionary;
