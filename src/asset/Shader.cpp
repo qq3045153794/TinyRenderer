@@ -87,7 +87,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
     if (!success) {
       int len;
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
-      char *message = reinterpret_cast<char*>(alloca(sizeof(char) * len));
+      char *message = reinterpret_cast<char *>(alloca(sizeof(char) * len));
       glGetShaderInfoLog(object, len, &len, message);
       CORE_ERROR("ERROR::SHADER: Compile-time error: Type: ");
       std::cout << message << "\n";
@@ -97,7 +97,7 @@ void Shader::check_compile_errors(GLuint object, const std::string &type) {
     if (!success) {
       int len;
       glGetShaderiv(object, GL_INFO_LOG_LENGTH, &len);
-      char *message = reinterpret_cast<char*>(alloca(sizeof(char) * len));
+      char *message = reinterpret_cast<char *>(alloca(sizeof(char) * len));
       glGetShaderInfoLog(object, len, &len, message);
       CORE_ERROR("ERROR::Shader: Link-time error: Type: ");
       std::cout << message << "\n";
@@ -109,7 +109,15 @@ template <typename T>
 void Shader::set_uniform(const GLchar *name, const T &val) {
   using namespace glm;
   GLuint block_idx = glGetUniformLocation(m_id, name);
+
+  if (block_idx == -1) {
+    CORE_ERROR("Can't find valid uniform location for {}", name);
+    return;
+  }
+
   if constexpr (std::is_same_v<T, GLint>) {
+    glUniform1i(block_idx, val);
+  } else if constexpr (std::is_same_v<T, bool>) {
     glUniform1i(block_idx, val);
   } else if constexpr (std::is_same_v<T, GLfloat>) {
     glUniform1f(block_idx, val);
@@ -138,6 +146,7 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
 using namespace glm;
 
 INSTANTIATE_TEMPLATE(int)
+INSTANTIATE_TEMPLATE(bool)
 INSTANTIATE_TEMPLATE(GLfloat)
 INSTANTIATE_TEMPLATE(GLuint)
 INSTANTIATE_TEMPLATE(vec2)

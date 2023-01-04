@@ -1,8 +1,48 @@
 #include "Material.h"
 
+#include "core/App.h"
 namespace component {
 
-Material::Material(std::shared_ptr<asset::Shader> shader) { set_shader(shader); }
+// clang-format off
+std::map<GLuint, std::string> Material::uniform_dictionary{
+    {0, "albedo"},
+    {1, "metalness"},
+    {2, "roughness"},
+    {3, "ao"},
+    {100, "sample_albedo"},
+    {101, "sample_metalness"},
+    {102, "sample_roughness"},
+    {103, "sample_ao"},
+};
+
+std::map<GLuint, std::string> Material::texture_dictionary{
+    {0, "texture_0"},
+    {1, "texture_1"},
+    {2, "texture_2"},
+    {3, "texture_3"},
+    {4, "texture_4"},
+    {5, "albedo"},
+    {6, "metalness"},
+    {7, "roughness"},
+    {8, "ao"}
+};
+// clang-format on
+
+Material::Material(std::shared_ptr<asset::Shader> shader) {
+  set_shader(shader);
+  if (m_shader != nullptr) {
+    set_uniform(100U, false);
+    set_uniform(101U, false);
+    set_uniform(102U, false);
+    set_uniform(103U, false);
+
+    // 标准模型
+    set_uniform(0U, glm::vec4(1.0f));
+    set_uniform(1U, 0.0f);
+    set_uniform(2U, 1.0f);
+    set_uniform(3U, 1.0f);
+  }
+}
 
 void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
@@ -11,10 +51,23 @@ void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   GLint n_uniforms;
 }
 
-void Material::set_texture(GLuint u_id, std::shared_ptr<asset::Texture> texture) {
+void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) {
   m_shader->bind();
-  m_shader->set_uniform(("texture_" + std::to_string(u_id)).c_str(), u_id);
-  m_textures[u_id] = texture;
+
+  int n_texture = m_textures.size();
+  int max_saplers = core::App::instand().gl_max_texture_units;
+
+  if (n_texture > max_saplers) {
+    CORE_ERROR("{0} samplers limit has reached, failed to add texture", max_saplers);
+    return;
+  }
+
+  if (texture_dictionary.count(uid) > 0) {
+    m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
+    m_textures.insert_or_assign(uid, texture);
+  } else {
+    CORE_ERROR("Can't find valid texture units (uid = {})", uid);
+  }
 }
 
 void Material::bind() const {
