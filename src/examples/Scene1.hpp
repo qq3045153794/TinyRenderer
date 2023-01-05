@@ -23,25 +23,24 @@ class Scene1 : public Scene {
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
-  std::shared_ptr<Shader> paimon_shader;
 
   std::shared_ptr<Texture> skybox_texture;
   std::shared_ptr<Texture> quad_texture;
-  
+
   std::shared_ptr<Material> paimon_1;
-  
+
   virtual void init() override {
     add_fbo(Window::m_width, Window::m_height);
 
     quad_shader =
         std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
 
-    skybox_shader = std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
-
-    
+    skybox_shader =
+        std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
 
     add_nor_ubo();
     set_nor_ubo(0U, quad_shader);
+    set_nor_ubo(0U, skybox_shader);
 
     quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
 
@@ -51,7 +50,6 @@ class Scene1 : public Scene {
         "../resource/texture/skybox/front.jpg", "../resource/texture/skybox/back.jpg"});
 
     paimon_1 = std::make_shared<Material>(quad_shader);
-    
 
     CHECK_ERROR();
 
@@ -92,35 +90,43 @@ class Scene1 : public Scene {
     // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
     main_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
     CHECK_ERROR();
-    
+
     paimon = create_entity("paimon");
     paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj", Quality::Auto);
     paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
     paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
 
     auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
-    temp_mat_1.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/披风2.jpg"));
+    temp_mat_1.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/披风2.jpg"));
 
     auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
-    temp_mat_2.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
+    temp_mat_2.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
 
     auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
-    temp_mat_3.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
+    temp_mat_3.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
 
     auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
-    temp_mat_4.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
+    temp_mat_4.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
 
     auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
-    temp_mat_5.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
+    temp_mat_5.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
 
     auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
-    temp_mat_6.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/表情.png"));
+    temp_mat_6.set_texture(
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/表情.png"));
 
     auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
-    temp_mat_7.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
+    temp_mat_7.set_texture(0,
+                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
 
     auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
-    temp_mat_8.set_texture(0, std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
+    temp_mat_8.set_texture(0,
+                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
 
     CHECK_ERROR();
 
@@ -136,13 +142,13 @@ class Scene1 : public Scene {
     if (nor_ubo != nullptr) {
       glm::mat4 proj = main_camera.GetComponent<CameraFps>().get_projection_mat();
       glm::mat4 view = main_camera.GetComponent<CameraFps>().get_view_mat();
+      glm::vec4 pos = glm::vec4(main_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
+      glm::vec4 forward = glm::vec4(main_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
+      auto up = main_camera.GetComponent<CameraFps>().T->m_up;
       nor_ubo->set_uniform(0, glm::value_ptr(proj));
       nor_ubo->set_uniform(1, glm::value_ptr(view));
-
-      auto pos = main_camera.GetComponent<CameraFps>().T->get_position();
-      auto forward = main_camera.GetComponent<CameraFps>().T->m_forward;
-      auto up = main_camera.GetComponent<CameraFps>().T->m_up;
-
+      nor_ubo->set_uniform(2, glm::value_ptr(pos));
+      nor_ubo->set_uniform(3, glm::value_ptr(forward));
     }
 
     Render::clear_buffer();
@@ -150,7 +156,7 @@ class Scene1 : public Scene {
     nor_fbo->bind();
     Render::clear_buffer();
     // 提交至渲染队列
-    
+
     Render::Submit(quad.id);
     Render::Submit(sphere.id);
     Render::Submit(cube.id);

@@ -1,5 +1,5 @@
 #include "asset/Buffer.h"
-
+#include "core/Log.h"
 namespace asset {
 
 VBO::VBO(GLuint sz, void* data, GLenum usage) : BufferBase() {
@@ -28,6 +28,7 @@ UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz)
 }
 
 void UBO::set_uniform(GLuint uid, void* data) {
+  CORE_ASERT(uid < m_offset_vec.size(), "uid more then vector size");
   this->bind();
   glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid], m_length_vec[uid], data);
   this->ubind();

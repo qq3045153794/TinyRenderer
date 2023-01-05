@@ -28,15 +28,15 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
 }
 
 void Scene::add_nor_ubo() {
-  std::vector<GLuint> offset = {0U, 64U};
-  std::vector<GLuint> lenght = {64U, 64U};
-  GLuint sz = 128U;
+  std::vector<GLuint> offset = {0U, 64U, 128U, 144U};
+  std::vector<GLuint> lenght = {64U, 64U, 16U, 16U};
+  GLuint sz = 160U;
 
   nor_ubo = std::make_shared<asset::UBO>(offset, lenght, sz);
 }
 
 void Scene::set_nor_ubo(GLuint uid, std::shared_ptr<asset::Shader> shader) {
-  nor_ubo->set_binding(0, "Matrices", shader->get_id());
+  nor_ubo->set_binding(uid, "Matrices", shader->get_id());
 }
 
 void Scene::add_fbo(GLuint width, GLuint height) {
