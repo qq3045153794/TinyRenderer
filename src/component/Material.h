@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-12-29 14:09:16
  * @LastEditors  : xietao
- * @LastEditTime : 2023-01-05 00:46:33
+ * @LastEditTime : 2023-01-05 17:38:44
  * @FilePath     : /TinyRenderer/src/component/Material.h
  * @Description  :
  *
@@ -30,7 +30,8 @@ class Material {
     albedo = 5U,     // 反射率 向量 sRGB 主要体现纹理和颜色
     metalness = 6U,  // 金属度 标量 [0..1]
     roughness = 6U,  // 粗糙度 标量 [0..1]
-    ao = 6U          // 反射率 标量 [0..1]
+    ao = 6U,          // 反射率 标量 [0..1]
+    specular = 7U
   };
 
   // 纹理采样数据

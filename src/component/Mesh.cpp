@@ -155,19 +155,19 @@ void Mesh::create_sphere() {
       float y = sin(theta);
       float z = sin(phi) * cos(theta) * (-1);
 
-      // for a unit sphere centered at the origin, normal = position
-      // binormal is normal rotated by 90 degrees along the latitude (+theta)
-      // theta += PI_2;
-      // float r = cos(phi) * cos(theta);
-      // float s = sin(theta);
-      // float t = sin(phi) * cos(theta) * (-1);
+      // 对于球来说, normal = position
+      // 切线就是旋转90度后的球的法线
+      theta += PI_2;
+      float r = cos(phi) * cos(theta);
+      float s = sin(theta);
+      float t = sin(phi) * cos(theta) * (-1);
 
       Vertex vertex{};
       vertex.position = glm::vec3(x, y, z) * radius;
       vertex.normal = glm::vec3(x, y, z);
       vertex.uv = glm::vec2(u, v);
-      // vertex.binormal = glm::vec3(r, s, t);
-      // vertex.tangent  = glm::cross(vertex.binormal, vertex.normal);
+      vertex.binormal = glm::vec3(r, s, t);
+      vertex.tangent  = glm::cross(vertex.binormal, vertex.normal);
 
       vertices.push_back(vertex);
     }

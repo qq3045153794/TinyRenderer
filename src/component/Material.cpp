@@ -9,6 +9,7 @@ std::map<GLuint, std::string> Material::uniform_dictionary{
     {1, "metalness"},
     {2, "roughness"},
     {3, "ao"},
+    {4, "specular"},
     {100, "sample_albedo"},
     {101, "sample_metalness"},
     {102, "sample_roughness"},
