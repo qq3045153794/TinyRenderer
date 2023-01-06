@@ -2,8 +2,8 @@
  * @Author       : xietao
  * @Date         : 2022-12-29 14:09:16
  * @LastEditors  : xietao
- * @LastEditTime : 2023-01-05 17:38:44
- * @FilePath     : /TinyRenderer/src/component/Material.h
+ * @LastEditTime : 2023-01-06 16:30:24
+ * @FilePath     : TinyRenderer/src/component/Material.h
  * @Description  :
  *
  * Copyright (c) 2022, All Rights Reserved.
@@ -27,11 +27,11 @@ class Material {
  public:
   // 引用 : https://zhuanlan.zhihu.com/p/260973533
   enum class pbr_u : uint16_t {
-    albedo = 5U,     // 反射率 向量 sRGB 主要体现纹理和颜色
-    metalness = 6U,  // 金属度 标量 [0..1]
-    roughness = 6U,  // 粗糙度 标量 [0..1]
-    ao = 6U,          // 反射率 标量 [0..1]
-    specular = 7U
+    albedo = 0U,     // 反射率 向量 sRGB 主要体现纹理和颜色
+    metalness = 1U,  // 金属度 标量 [0..1]
+    roughness = 2U,  // 粗糙度 标量 [0..1]
+    ao = 3U,         // 反射率 标量 [0..1]
+    specular = 4U
   };
 
   // 纹理采样数据

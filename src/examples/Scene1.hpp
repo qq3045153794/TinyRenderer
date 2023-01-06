@@ -3,6 +3,7 @@
 
 #include "core/Debug.h"
 #include "core/Window.h"
+#include "component/Light.h"
 #include "scene/Render.h"
 #include "scene/Scene.h"
 #include "scene/ui.h"
@@ -14,7 +15,7 @@ using namespace core;
 
 static glm::vec4 sphere_albedo{0.22f, 0.0f, 1.0f, 1.0f};
 static float sphere_metalness = 0.05f;
-static float sphere_roughness = 0.05f;
+static float sphere_roughness = 0.5f;
 static float sphere_ao = 1.0f;
 static float plane_roughness = 0.1f;
 
@@ -27,7 +28,7 @@ class Scene1 : public Scene {
   Entity sphere;
   Entity skybox;
   Entity paimon;
-  Entity sun;
+  Entity sun_light;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
@@ -84,6 +85,22 @@ class Scene1 : public Scene {
 
     CHECK_ERROR();
 
+    sun_light = create_entity("sum light");
+    sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
+    sun_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+    // sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(60, 0.0, 0.0));
+    if (auto& ubo = UBOs[1]; true) {
+      auto& dl = sun_light.GetComponent<DirectionLight>();
+      auto& dt = sun_light.GetComponent<Transform>();
+      auto color = glm::vec4(dl.m_color, 1.0);
+      auto directionl = glm::vec4(-dt.m_forward, 0.0);
+      auto intensity = dl.m_intensity;
+      ubo.set_uniform(0, glm::value_ptr(color));
+      ubo.set_uniform(1, glm::value_ptr(directionl));
+      ubo.set_uniform(2, &intensity);
+      CORE_DEBUG("sun light directionl {} {} {}", directionl.x, directionl.y, directionl.z);
+    }
+
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
@@ -106,11 +123,17 @@ class Scene1 : public Scene {
     CHECK_ERROR();
     CORE_INFO("{} created", cube.name);
 
+    CORE_INFO("sphere loading...");
     sphere = create_entity("sphere");
     sphere.AddComponent<Mesh>(Mesh::primitive::SPHERE);
-    sphere.AddComponent<Material>(quad_shader);
-    sphere.GetComponent<Material>().set_texture(0, quad_texture);
     sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
+    sphere.AddComponent<Material>(ptr_shader);
+    auto& sphere_mat = sphere.GetComponent<Material>();
+    sphere_mat.bing_uniform(Material::pbr_u::albedo, sphere_albedo);
+    sphere_mat.bing_uniform(Material::pbr_u::metalness, sphere_metalness);
+    sphere_mat.bing_uniform(Material::pbr_u::roughness, sphere_roughness);
+    sphere_mat.bing_uniform(Material::pbr_u::ao, sphere_ao);
+        
     CHECK_ERROR();
     CORE_INFO("{} created", sphere.name);
 

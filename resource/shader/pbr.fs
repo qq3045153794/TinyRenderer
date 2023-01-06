@@ -231,7 +231,8 @@ vec3 EvalLobe(const Pixel px, vec3 L) {
     Fr = EvalSpecularLobe(px, L, H, NoV, NoL, NoH, HoL);  // compensate energy
     Fd = EvalDiffuseLobe(px, NoV, NoL, HoL);
     Lo = (Fd + Fr) * NoL;
-
+    
+    return Lo;
 }
 
 

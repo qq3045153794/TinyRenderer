@@ -14,6 +14,7 @@ std::map<GLuint, std::string> Material::uniform_dictionary{
     {101, "sample_metalness"},
     {102, "sample_roughness"},
     {103, "sample_ao"},
+    {104, "sample_normal"}
 };
 
 std::map<GLuint, std::string> Material::texture_dictionary{
@@ -37,12 +38,14 @@ Material::Material(std::shared_ptr<asset::Shader> shader) {
     set_uniform(101U, false);
     set_uniform(102U, false);
     set_uniform(103U, false);
+    set_uniform(104U, false);
 
     // 标准模型
     set_uniform(0U, glm::vec4(1.0f));
     set_uniform(1U, 0.0f);
     set_uniform(2U, 1.0f);
     set_uniform(3U, 1.0f);
+    set_uniform(4U, 0.5f);
   }
 }
 
