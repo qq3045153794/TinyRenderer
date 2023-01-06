@@ -2,7 +2,7 @@
  * @Author       : xietao
  * @Date         : 2022-12-29 14:09:16
  * @LastEditors  : xietao
- * @LastEditTime : 2022-12-31 18:32:18
+ * @LastEditTime : 2023-01-06 15:25:17
  * @FilePath     : /TinyRenderer/src/scene/Scene.h
  * @Description  :
  *
@@ -28,8 +28,8 @@ class Scene {
   Scene(const std::string& title);
   virtual ~Scene();
   Entity create_entity(const std::string& name, component::ETag tag = component::ETag::Untagged);
-  void add_nor_ubo();
-  void set_nor_ubo(GLuint uid, std::shared_ptr<asset::Shader> shader);
+
+  virtual void add_ubo(std::shared_ptr<asset::Shader> shader){};
 
   void add_fbo(GLuint width, GLuint height);
 
@@ -39,7 +39,8 @@ class Scene {
 
  protected:
   // 相机 UBO
-  std::shared_ptr<asset::UBO> nor_ubo;
+  // std::shared_ptr<asset::UBO> nor_ubo;
+  std::map<GLuint, asset::UBO> UBOs;
   // 后期处理
   std::shared_ptr<asset::FBO> nor_fbo;
 

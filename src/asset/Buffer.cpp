@@ -1,4 +1,5 @@
 #include "asset/Buffer.h"
+
 #include "core/Log.h"
 namespace asset {
 
@@ -36,6 +37,10 @@ void UBO::set_uniform(GLuint uid, void* data) {
 
 void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
   GLuint block_idx = glGetUniformBlockIndex(shader_id, name.c_str());
+  if (block_idx == GL_INVALID_INDEX) {
+    CORE_ERROR("{} does not identify an active uniform block of program", name);
+    return;
+  }
   glUniformBlockBinding(shader_id, block_idx, uid);
   glBindBufferBase(GL_UNIFORM_BUFFER, uid, m_id);
 }

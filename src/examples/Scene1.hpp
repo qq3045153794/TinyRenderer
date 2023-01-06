@@ -11,6 +11,13 @@ namespace scene {
 using namespace component;
 using namespace asset;
 using namespace core;
+
+static glm::vec4 sphere_albedo{0.22f, 0.0f, 1.0f, 1.0f};
+static float sphere_metalness = 0.05f;
+static float sphere_roughness = 0.05f;
+static float sphere_ao = 1.0f;
+static float plane_roughness = 0.1f;
+
 class Scene1 : public Scene {
  public:
   Scene1(const std::string& title) : Scene(title) {}
@@ -20,14 +27,36 @@ class Scene1 : public Scene {
   Entity sphere;
   Entity skybox;
   Entity paimon;
+  Entity sun;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
+  std::shared_ptr<Shader> ptr_shader;
 
   std::shared_ptr<Texture> skybox_texture;
   std::shared_ptr<Texture> quad_texture;
 
   std::shared_ptr<Material> paimon_1;
+
+  void add_ubo(std::shared_ptr<asset::Shader> shader) override {
+    // camera
+    {
+      std::vector<GLuint> offset = {0U, 64U, 128U, 144U};
+      std::vector<GLuint> lenght = {64U, 64U, 16U, 16U};
+      GLuint sz = 160U;
+      UBOs.try_emplace(0U, offset, lenght, sz);
+      UBOs[0].set_binding(0U, "Matrices", shader->get_id());
+    }
+
+    // 平行光照
+    {
+      std::vector<GLuint> offset = {0U, 16U, 32U};
+      std::vector<GLuint> lenght = {16U, 16U, 4U};
+      GLuint sz = 36U;
+      UBOs.try_emplace(1U, offset, lenght, sz);
+      UBOs[1].set_binding(1U, "DL", shader->get_id());
+    }
+  }
 
   virtual void init() override {
     add_fbo(Window::m_width, Window::m_height);
@@ -38,9 +67,11 @@ class Scene1 : public Scene {
     skybox_shader =
         std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
 
-    add_nor_ubo();
-    set_nor_ubo(0U, quad_shader);
-    set_nor_ubo(0U, skybox_shader);
+    ptr_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
+
+    add_ubo(quad_shader);
+    add_ubo(skybox_shader);
+    add_ubo(ptr_shader);
 
     quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
 
@@ -139,16 +170,16 @@ class Scene1 : public Scene {
   virtual void on_scene_render() override {
     auto& camera = main_camera.GetComponent<CameraFps>();
     camera.update();
-    if (nor_ubo != nullptr) {
+    if (asset::UBO& ubo = UBOs[0]; true) {
       glm::mat4 proj = main_camera.GetComponent<CameraFps>().get_projection_mat();
       glm::mat4 view = main_camera.GetComponent<CameraFps>().get_view_mat();
       glm::vec4 pos = glm::vec4(main_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
       glm::vec4 forward = glm::vec4(main_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
       auto up = main_camera.GetComponent<CameraFps>().T->m_up;
-      nor_ubo->set_uniform(0, glm::value_ptr(proj));
-      nor_ubo->set_uniform(1, glm::value_ptr(view));
-      nor_ubo->set_uniform(2, glm::value_ptr(pos));
-      nor_ubo->set_uniform(3, glm::value_ptr(forward));
+      ubo.set_uniform(0, glm::value_ptr(proj));
+      ubo.set_uniform(1, glm::value_ptr(view));
+      ubo.set_uniform(2, glm::value_ptr(pos));
+      ubo.set_uniform(3, glm::value_ptr(forward));
     }
 
     Render::clear_buffer();

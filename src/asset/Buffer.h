@@ -47,6 +47,7 @@ class UBO : public BufferBase {
   using u_vec = std::vector<GLuint>;
 
  public:
+  UBO() = default;
   UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz);
   virtual ~UBO(){};
   void set_binding(GLuint uid, const std::string& name, GLuint shader_id);
