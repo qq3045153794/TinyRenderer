@@ -83,6 +83,15 @@ layout(std140) uniform DL {
     float intensity;
 } dl;
 
+layout(std140) uniform PL {
+    vec4  color;
+    vec4  position;
+    float intensity;
+    float linear;
+    float quadratic;
+    float range;
+} pl;
+
 /*********************************** camera ***********************************/
 layout (std140) uniform Matrices {
     mat4 projection;
@@ -228,11 +237,26 @@ vec3 EvalLobe(const Pixel px, vec3 L) {
     float NoH = max(dot(px.N, H), 0.0);
     float HoL = max(dot(H, L), 0.0);
 
-    Fr = EvalSpecularLobe(px, L, H, NoV, NoL, NoH, HoL);  // compensate energy
+    Fr = EvalSpecularLobe(px, L, H, NoV, NoL, NoH, HoL);
     Fd = EvalDiffuseLobe(px, NoV, NoL, HoL);
     Lo = (Fd + Fr) * NoL;
     
     return Lo;
+}
+
+// 计算平行光下的BRDF
+vec3 EvalDL(const Pixel px, vec3 L) {
+    return EvalLobe(px, L);
+}
+
+// 计算点光源下的BRDF
+vec3 EvalPL(const Pixel px, const vec3 position, float range, float linear, float quadratic) {
+    vec3 L = normalize(position - px.position);
+
+    float d = distance(position, px.position);
+    float attenuation = (d >= range) ? 0.0 : (1.0 / (1.0 + linear * d + quadratic * d * d));
+    
+    return (attenuation <= 0.0)? vec3(0.0) : EvalLobe(px, L);
 }
 
 
@@ -278,7 +302,8 @@ void main() {
     
     vec3 Lo = vec3(0.0);
 
-    Lo += EvalLobe(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
-    
+    Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
+
+    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * dl.intensity;    
     color = vec4(Lo, px.albedo.a);
 }

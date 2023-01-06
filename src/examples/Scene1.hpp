@@ -1,9 +1,9 @@
 #ifndef _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
 #define _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
 
+#include "component/Light.h"
 #include "core/Debug.h"
 #include "core/Window.h"
-#include "component/Light.h"
 #include "scene/Render.h"
 #include "scene/Scene.h"
 #include "scene/ui.h"
@@ -15,7 +15,7 @@ using namespace core;
 
 static glm::vec4 sphere_albedo{0.22f, 0.0f, 1.0f, 1.0f};
 static float sphere_metalness = 0.05f;
-static float sphere_roughness = 0.5f;
+static float sphere_roughness = 0.2f;
 static float sphere_ao = 1.0f;
 static float plane_roughness = 0.1f;
 
@@ -29,6 +29,7 @@ class Scene1 : public Scene {
   Entity skybox;
   Entity paimon;
   Entity sun_light;
+  Entity point_light;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
@@ -56,6 +57,15 @@ class Scene1 : public Scene {
       GLuint sz = 36U;
       UBOs.try_emplace(1U, offset, lenght, sz);
       UBOs[1].set_binding(1U, "DL", shader->get_id());
+    }
+
+    // 点光源
+    {
+      std::vector<GLuint> offset = {0U, 16U, 32U, 36U, 40U, 44U};
+      std::vector<GLuint> lenght = {16U, 16U, 4U, 4U, 4U, 4U};
+      GLuint sz = 48U;
+      UBOs.try_emplace(2U, offset, lenght, sz);
+      UBOs[2].set_binding(2U, "PL", shader->get_id());
     }
   }
 
@@ -87,8 +97,7 @@ class Scene1 : public Scene {
 
     sun_light = create_entity("sum light");
     sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
-    sun_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
-    // sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(60, 0.0, 0.0));
+    sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
     if (auto& ubo = UBOs[1]; true) {
       auto& dl = sun_light.GetComponent<DirectionLight>();
       auto& dt = sun_light.GetComponent<Transform>();
@@ -99,6 +108,29 @@ class Scene1 : public Scene {
       ubo.set_uniform(1, glm::value_ptr(directionl));
       ubo.set_uniform(2, &intensity);
       CORE_DEBUG("sun light directionl {} {} {}", directionl.x, directionl.y, directionl.z);
+    }
+
+    point_light = create_entity("point light");
+    point_light.AddComponent<PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
+    point_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
+    point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
+    if (auto& ubo = UBOs[2]; true) {
+      auto& dl = point_light.GetComponent<PointLight>();
+      auto& dt = point_light.GetComponent<Transform>();
+      auto color = glm::vec4(dl.m_color, 1.0);
+      auto position = glm::vec4(dt.get_position(), 1.0);
+      auto intensity = dl.m_intensity;
+      auto linear = dl.m_linear;
+      auto quadratic = dl.m_quadratic;
+      auto range = dl.m_range;
+
+      ubo.set_uniform(0, glm::value_ptr(color));
+      ubo.set_uniform(1, glm::value_ptr(position));
+      ubo.set_uniform(2, &intensity);
+      ubo.set_uniform(3, &linear);
+      ubo.set_uniform(4, &quadratic);
+      ubo.set_uniform(5, &range);
+      
     }
 
     skybox = create_entity("skybox", ETag::Skybox);
@@ -123,7 +155,6 @@ class Scene1 : public Scene {
     CHECK_ERROR();
     CORE_INFO("{} created", cube.name);
 
-    CORE_INFO("sphere loading...");
     sphere = create_entity("sphere");
     sphere.AddComponent<Mesh>(Mesh::primitive::SPHERE);
     sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
@@ -133,7 +164,7 @@ class Scene1 : public Scene {
     sphere_mat.bing_uniform(Material::pbr_u::metalness, sphere_metalness);
     sphere_mat.bing_uniform(Material::pbr_u::roughness, sphere_roughness);
     sphere_mat.bing_uniform(Material::pbr_u::ao, sphere_ao);
-        
+
     CHECK_ERROR();
     CORE_INFO("{} created", sphere.name);
 
