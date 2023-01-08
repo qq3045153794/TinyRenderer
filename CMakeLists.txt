@@ -19,3 +19,5 @@ project(TinyRenderer VERSION 0.0.1 LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/examples/demo_imgui/CMakeLists.txt)
 
 include(${PROJECT_SOURCE_DIR}/examples/demo/CMakeLists.txt)
+
+include (${PROJECT_SOURCE_DIR}/test/CMakeLists.txt)
