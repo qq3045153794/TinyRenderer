@@ -56,7 +56,9 @@ void Window::resize() {
   // 渲染fame_buffer显示大小
   glViewport(0, 0, m_width, m_height);
 }
-
+bool Window::should_close() {
+  glfwWindowShouldClose(m_window);
+}
 void Window::on_layer_switch() {
   layer = (layer == Layer::ImGui) ? Layer::Scene : Layer::ImGui;
   if (layer == Layer::ImGui) {

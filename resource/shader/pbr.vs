@@ -23,12 +23,14 @@ layout (std140) uniform Matrices {
     vec4 direction;
 }camera;
 
+
+
 uniform mat4 model;
 
 void main()
 {
     gl_Position = camera.projection * camera.view * model * vec4(position, 1.0);
-    
+
     _position = vec3(model * vec4(position, 1.0));
     _normal   = normalize(vec3(model * vec4(normal, 0.0)));
     _tangent  = normalize(vec3(model * vec4(tangent, 0.0)));

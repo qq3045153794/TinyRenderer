@@ -22,9 +22,9 @@ int main() {
   std::cout << "  Geometry shader: " << app.gl_maxg_ubos << std::endl;
   std::cout << "  Fragment shader: " << app.gl_maxf_ubos << std::endl;
 
-  bool run = true;
-  while (run) {
+  while (app.run()) {
     core::App::instand().render_update();
     core::App::instand().event_update();
   }
+  app.clear();
 }

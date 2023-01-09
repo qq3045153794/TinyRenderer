@@ -1,6 +1,5 @@
 #ifndef _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
 #define _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
-
 #include "component/Light.h"
 #include "core/Debug.h"
 #include "core/Window.h"
@@ -30,6 +29,7 @@ class Scene1 : public Scene {
   Entity paimon;
   Entity sun_light;
   Entity point_light;
+  Entity camera_light; 
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
@@ -66,6 +66,14 @@ class Scene1 : public Scene {
       GLuint sz = 48U;
       UBOs.try_emplace(2U, offset, lenght, sz);
       UBOs[2].set_binding(2U, "PL", shader->get_id());
+    }
+
+    {
+      std::vector<GLuint> offset = {0U, 16U, 32U, 48U, 52U, 56U, 60U};
+      std::vector<GLuint> lenght = {16U, 16U, 16U, 4U, 4U, 4U, 4U};
+      GLuint sz = 64U;
+      UBOs.try_emplace(3U, offset, lenght, sz);
+      UBOs[3].set_binding(3U, "SL", shader->get_id());
     }
   }
 
@@ -130,8 +138,11 @@ class Scene1 : public Scene {
       ubo.set_uniform(3, &linear);
       ubo.set_uniform(4, &quadratic);
       ubo.set_uniform(5, &range);
-      
+
     }
+    camera_light = create_entity("camera light");
+    camera_light.AddComponent<Spotlight>(glm::vec3(1.0, 0.553, 0.0), 3.8);
+    camera_light.GetComponent<Spotlight>().set_cutoff(12.0f);
 
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
@@ -218,7 +229,8 @@ class Scene1 : public Scene {
     Render::eable_depth_test(true);
     Render::eable_alpha_blend(true);
     Render::eable_face_culling(true);
-    Render::eable_msaa(true);
+    // WSL不支持MSAA 暂时注释
+    // Render::eable_msaa(true);
   }
 
   virtual void on_scene_render() override {
@@ -229,11 +241,29 @@ class Scene1 : public Scene {
       glm::mat4 view = main_camera.GetComponent<CameraFps>().get_view_mat();
       glm::vec4 pos = glm::vec4(main_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
       glm::vec4 forward = glm::vec4(main_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
-      auto up = main_camera.GetComponent<CameraFps>().T->m_up;
       ubo.set_uniform(0, glm::value_ptr(proj));
       ubo.set_uniform(1, glm::value_ptr(view));
       ubo.set_uniform(2, glm::value_ptr(pos));
       ubo.set_uniform(3, glm::value_ptr(forward));
+    }
+
+    if(auto& ubo = UBOs[3]; true) {
+      auto& camera = main_camera.GetComponent<Transform>();
+      auto& sp = camera_light.GetComponent<Spotlight>();
+      auto color =glm::vec4(sp.m_color, 1.0);
+      auto pos = glm::vec4(camera.get_position(), 1.0);
+      auto direction = glm::vec4(-camera.m_forward, 0.0);
+      float intensity = sp.m_intensity;
+      float inner_cos = sp.get_inner_cosine();
+      float outer_cos = sp.get_outer_cosine();
+      float range = sp.m_range;
+      ubo.set_uniform(0, glm::value_ptr(color));
+      ubo.set_uniform(1, glm::value_ptr(pos));
+      ubo.set_uniform(2, glm::value_ptr(direction));
+      ubo.set_uniform(3, &intensity);
+      ubo.set_uniform(4, &inner_cos);
+      ubo.set_uniform(5, &outer_cos);
+      ubo.set_uniform(6, &range);
     }
 
     Render::clear_buffer();

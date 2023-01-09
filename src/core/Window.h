@@ -53,7 +53,9 @@ class Window {
    * @return       {*}
    */
   static void rename(const std::string& title);
-
+  
+  static bool should_close();
+ 
   static void resize();
 
   /**

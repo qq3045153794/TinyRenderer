@@ -92,6 +92,15 @@ layout(std140) uniform PL {
     float range;
 } pl;
 
+layout(std140) uniform SL {
+      vec4  color;
+      vec4  position;
+      vec4  direction;
+      float intensity;
+      float inner_cos;
+      float outer_cos;
+      float range;
+} sl;
 /*********************************** camera ***********************************/
 layout (std140) uniform Matrices {
     mat4 projection;
@@ -118,7 +127,7 @@ mat3 ComputeTBN(const vec3 position, const vec3 normal, const vec2 uv) {
     vec3 dp1perp = cross(N, dp1); 
     vec3 T = dp2perp * duv1.x + dp1perp * duv2.x; 
     vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;   
-    
+
     float invmax = inversesqrt(max(dot(T,T), dot(B,B))); 
     return mat3( T * invmax, B * invmax, N);
 
@@ -255,10 +264,25 @@ vec3 EvalPL(const Pixel px, const vec3 position, float range, float linear, floa
 
     float d = distance(position, px.position);
     float attenuation = (d >= range) ? 0.0 : (1.0 / (1.0 + linear * d + quadratic * d * d));
-    
+
     return (attenuation <= 0.0)? vec3(0.0) : EvalLobe(px, L);
 }
 
+vec3 EvalSL(const Pixel px, const vec3 pos, const vec3 dir, float range, float inner_cos, float outer_cos) {
+    vec3 l = pos - px.position;
+    vec3 L = normalize(l);
+
+    // distance attenuation uses a cheap linear falloff (does not follow the inverse square law)
+    float ds = dot(dir, l);  // projected distance along the spotlight beam direction
+    float da = 1.0 - clamp(ds / range, 0.0, 1.0);
+
+    // angular attenuation fades out from the inner to the outer cone
+    float cosine = dot(dir, L);
+    float aa = clamp((cosine - outer_cos) / (inner_cos - outer_cos), 0.0, 1.0);
+    float attenuation = da * aa;
+
+    return attenuation <= 0.0 ? vec3(0.0) : (EvalLobe(px, L) * attenuation);
+}
 
 void InitPixel(inout Pixel px, const vec3 camera_pos) {
     px.position = px._position;
@@ -297,13 +321,16 @@ void main() {
     px._normal   = _normal;
     px._uv       = _uv;
     px._has_tbn  = true;
-    
+
     InitPixel(px, camera.position.xyz);
-    
+
     vec3 Lo = vec3(0.0);
 
     Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
 
-    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * dl.intensity;    
+    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
+
+    Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
+
     color = vec4(Lo, px.albedo.a);
 }

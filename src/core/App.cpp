@@ -60,6 +60,16 @@ void App::init() {
   Render::attach("Welcome Screen");
 }
 
+void App::clear() {
+  Window::clear();
+  Render::detach();
+  scene::ui::show_down(); 
+}
+
+bool App::run() {
+  return !Window::should_close();
+}
+
 void App::render_update() {
   // 画面渲染
   Render::draw_scene();
