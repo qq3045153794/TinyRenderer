@@ -1,0 +1,9 @@
+libdir=/home/xietao/git/TinyRenderer/vendor/googletest/ubuntu-20.04/lib
+includedir=/home/xietao/git/TinyRenderer/vendor/googletest/ubuntu-20.04/include
+
+Name: gtest
+Description: GoogleTest (without main() function)
+Version: 1.12.1
+URL: https://github.com/google/googletest
+Libs: -L${libdir} -lgtest -lpthread
+Cflags: -I${includedir} -DGTEST_HAS_PTHREAD=1

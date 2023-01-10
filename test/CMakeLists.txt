@@ -27,10 +27,11 @@ target_include_directories(test
         ${MAIN_INCLUDE}
         ${ImGuizmo_INCLUDE}
         ${VEN_INCLUDE}
-        ${VEN_INCLUDE}
+        ${GTEST_INCLUDE}
 )
 
 target_link_libraries(test
     PUBLIC
         ${MAIN_LIBS}
+        ${GTEST_LIB}
 )

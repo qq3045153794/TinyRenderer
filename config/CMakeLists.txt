@@ -73,3 +73,18 @@ set(VEN_INCLUDE
     ${PROJECT_SOURCE_DIR}/vendor/EnTT/include
     ${PROJECT_SOURCE_DIR}/vendor/stdlog/include
 )
+
+set(GTEST_INCLUDE
+  ${PROJECT_SOURCE_DIR}/vendor/googletest/ubuntu-20.04/include
+)
+
+set(GTEST_LIB
+  ${PROJECT_SOURCE_DIR}/vendor/googletest/ubuntu-20.04/lib/libgmock.a
+
+  ${PROJECT_SOURCE_DIR}/vendor/googletest/ubuntu-20.04/lib/libgmock_main.a
+
+  ${PROJECT_SOURCE_DIR}/vendor/googletest/ubuntu-20.04/lib/libgtest.a
+
+  ${PROJECT_SOURCE_DIR}/vendor/googletest/ubuntu-20.04/lib/libgtest_main.a
+)
+
