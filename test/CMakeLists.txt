@@ -4,7 +4,7 @@ project(test VERSION 0.0.1 LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/config/CMakeLists.txt)
 
 add_executable(test
-    ${PROJECT_SOURCE_DIR}/test/test.cpp
+    ${PROJECT_SOURCE_DIR}/test/TransformTest.cpp
     ${MAIN_SRC}
     ${ImGUI_SRC}
     ${ImGuizmo_SRC}
