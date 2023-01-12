@@ -88,5 +88,5 @@ void App::event_update() {
 
 App::App() {}
 
-App::~App() { Window::clear(); }
+App::~App() {}
 }  // namespace core

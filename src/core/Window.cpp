@@ -1,14 +1,11 @@
 #include "core/Window.h"
 #include "core/Input.h"
+#include "core/Log.h""
 namespace core {
 
 Window::Window() {}
 
 Window::~Window() {
-  if (m_window) {
-    glfwDestroyWindow(m_window);
-    glfwTerminate();
-  }
 }
 
 void Window::clear() {
@@ -23,7 +20,11 @@ void Window::init() {
   m_height = 900U;
   m_x = m_y = 0U;
   title = "LearnOpenGL";
-  glfwInit();
+  if (!glfwInit()) {
+    CORE_ERROR("GLFW init failed...");
+    exit(-1);
+  }
+  
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -32,6 +33,12 @@ void Window::init() {
   glfwWindowHint(GLFW_SAMPLES, 4);
 
   m_window = glfwCreateWindow(m_width, m_height, title.c_str(), NULL, NULL);
+
+  if (m_window == NULL) {
+    CORE_ERROR("Create window failed...");
+    glfwTerminate();
+    exit(-1);
+  }
 
   glfwMakeContextCurrent(m_window);
 }
