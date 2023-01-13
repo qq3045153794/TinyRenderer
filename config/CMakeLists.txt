@@ -64,7 +64,6 @@ set(MAIN_INCLUDE
 )
 
 set(VEN_INCLUDE
-    ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
     ${PROJECT_SOURCE_DIR}/vendor/assimp_ubuntu/include
     ${PROJECT_SOURCE_DIR}/vendor/glfw-3.3.7/include

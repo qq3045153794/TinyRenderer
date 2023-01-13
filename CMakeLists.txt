@@ -20,4 +20,8 @@ include(${PROJECT_SOURCE_DIR}/examples/demo_imgui/CMakeLists.txt)
 
 include(${PROJECT_SOURCE_DIR}/examples/demo/CMakeLists.txt)
 
+include (${PROJECT_SOURCE_DIR}/examples/demo_GLFW/CMakeLists.txt)
+
 include (${PROJECT_SOURCE_DIR}/test/CMakeLists.txt)
+
+include (${PROJECT_SOURCE_DIR}/examples/demo_valgrind/CMakeLists.txt)
