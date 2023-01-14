@@ -3,7 +3,7 @@
  * @Date         : 2022-09-14 14:38:12
  * @LastEditors  : xietao
  * @LastEditTime : 2022-12-27 17:08:24
- * @FilePath     : /Learn_OpenGL/src/asset/Texture.h
+ * @FilePath     : TinyRender/src/asset/Texture.h
  * @brief  :
  *
  * Copyright (c) 2022, All Rights Reserved.
@@ -22,8 +22,8 @@ class Texture {
  public:
   Texture(const std::vector<std::string>& path_vec);
   Texture(const GLchar* path, bool flip = false);
-  Texture(const GLchar* path, GLuint sampler) {}
   Texture(GLuint width, GLuint height);
+  Texture(const GLchar* path, int resolution);
   ~Texture();
   GLuint get_id();
   void bind(GLuint unit) const;

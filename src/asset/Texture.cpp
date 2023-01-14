@@ -40,6 +40,25 @@ Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE
   set_sampler_state();
 }
 
+Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_2D){
+
+
+  const auto& image = utils::Image(path, false);
+
+  m_width = image.get_width();
+  m_height = image.get_height();
+  m_image_format = image.get_img_format();
+  m_internal_format = image.get_ine_format();
+  glGenTextures(1, &m_id);
+  glBindTexture(m_target, m_id);
+  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+               GL_UNSIGNED_BYTE, image.get_buffer());
+  glBindTexture(m_target, 0);
+
+  set_sampler_state();
+
+
+}
 Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
   m_width = width;
   m_height = height;

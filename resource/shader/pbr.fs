@@ -117,24 +117,24 @@ layout (std140) uniform Matrices {
 
 mat3 ComputeTBN(const vec3 position, const vec3 normal, const vec2 uv) {
 
-    vec3 dp1 = dFdx(position); 
-    vec3 dp2 = dFdy(position); 
-    vec2 duv1 = dFdx(uv); 
-    vec2 duv2 = dFdy(uv);   
-    
+    vec3 dp1 = dFdx(position);
+    vec3 dp2 = dFdy(position);
+    vec2 duv1 = dFdx(uv);
+    vec2 duv2 = dFdy(uv);
     vec3 N = normalize(normal);
+
     vec3 dp2perp = cross(dp2, N); 
     vec3 dp1perp = cross(N, dp1); 
-    vec3 T = dp2perp * duv1.x + dp1perp * duv2.x; 
-    vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;   
+    vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
+    vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
 
-    float invmax = inversesqrt(max(dot(T,T), dot(B,B))); 
+    float invmax = inversesqrt(max(dot(T,T), dot(B,B)));
     return mat3( T * invmax, B * invmax, N);
 
 }
 
 
-/* 材质的基色受材质自身的"金属度"影响. 电介质具有单色镜面反射, 
+/* 材质的基色受材质自身的"金属度"影响. 电介质具有单色镜面反射,
    但仍保留其基色作为漫反射颜色. 
    另一方面, 导体使用其基色作为镜面反射颜色, 但没有漫反射分量
    应用 : fliament 4.11.8.1 基色重映射 
@@ -182,7 +182,7 @@ float Fd_Burley(float alpha, float NoV, float NoL, float HoL) {
 /* 法向分布函数(镜面D) GGX分布是一种在高光中具有长尾衰减和短峰的分布
    公式 : fliament (4)
    参考 : fliament 4.7.1 法向分布函数(镜面D)
-*/ 
+*/
 float D_GGX(float NoH, float alpha) {
     float a = NoH * alpha;
     float k = alpha / (1.0 - NoH * NoH + a * a);
@@ -233,7 +233,7 @@ vec3 EvalDiffuseLobe(const Pixel px, float NoV, float NoL, float HoL) {
 }
 
 vec3 EvalLobe(const Pixel px, vec3 L) {
-    
+
     float NoL = dot(px.N, L);
     if (NoL <= 0.0) return vec3(0.0);
 
@@ -249,7 +249,7 @@ vec3 EvalLobe(const Pixel px, vec3 L) {
     Fr = EvalSpecularLobe(px, L, H, NoV, NoL, NoH, HoL);
     Fd = EvalDiffuseLobe(px, NoV, NoL, HoL);
     Lo = (Fd + Fr) * NoL;
-    
+
     return Lo;
 }
 
