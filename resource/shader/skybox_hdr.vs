@@ -17,5 +17,6 @@ void main()
     vec4 pos = projection * rectified_view * model * vec4(a_pos, 1.0);
 
     gl_Position = pos.xyww;
+    // gl_Position = pos.xyzw;
     tex_coords = a_pos;
 }

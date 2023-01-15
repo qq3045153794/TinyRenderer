@@ -18,12 +18,12 @@ Image::Image(const std::string& img_path, bool flip) : m_width(0), m_height(0), 
 
     int n_pixels = m_width * m_height;
 
-    float luminance_min = std::numeric_limits<float>::min();
+    float luminance_min = std::numeric_limits<float>::max();
 
-    float luminance_max = std::numeric_limits<float>::max();
+    float luminance_max = std::numeric_limits<float>::min();
     for (int i = 0; i < n_pixels; i ++) {
       const float* pixels_ptr = buffer + i * 3;
-      glm::vec3 color(pixels_ptr[0], pixels_ptr[2], pixels_ptr[3]);
+      glm::vec3 color(pixels_ptr[0], pixels_ptr[1], pixels_ptr[2]);
       auto luminance = glm::dot(color, glm::vec3(0.2126,0.7152,0.0722));
       luminance_max = std::max(luminance_max, luminance);
       luminance_min = std::min(luminance_min, luminance);

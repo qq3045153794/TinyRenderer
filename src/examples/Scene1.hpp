@@ -105,7 +105,7 @@ class Scene1 : public Scene {
         "../resource/texture/skybox/top.jpg", "../resource/texture/skybox/bottom.jpg",
         "../resource/texture/skybox/front.jpg", "../resource/texture/skybox/back.jpg"});
 
-    skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/hotel_room_4k2.hdr", 512);
+    skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/Milkyway_small.hdr", 512);
 
     paimon_1 = std::make_shared<Material>(quad_shader);
 
@@ -123,7 +123,6 @@ class Scene1 : public Scene {
       ubo.set_uniform(0, glm::value_ptr(color));
       ubo.set_uniform(1, glm::value_ptr(directionl));
       ubo.set_uniform(2, &intensity);
-      CORE_DEBUG("sun light directionl {} {} {}", directionl.x, directionl.y, directionl.z);
     }
 
     point_light = create_entity("point light");
