@@ -1,7 +1,9 @@
 #include "asset/Texture.h" 
 #include <iostream>
+#include <memory>
 #include "stb_image.h"
 #include "utils/image.h"
+#include "asset/FBO.h"
 namespace asset {
 
 Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
@@ -39,7 +41,7 @@ Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE
   set_sampler_state();
 }
 
-Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_2D){
+Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_MAP){
 
 
   const auto& image = utils::Image(path, true);
@@ -47,11 +49,21 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_2D){
   m_height = image.get_height();
   m_image_format = image.get_img_format();
   m_internal_format = image.get_ine_format();
+  // 创建2D texture
   glGenTextures(1, &m_id);
-  glBindTexture(m_target, m_id);
-  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+  glBindTexture(GL_TEXTURE_2D, m_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format,
                GL_FLOAT, image.get_buffer());
-  glBindTexture(m_target, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  std::unique_ptr<FBO> cubemap_fbo = std::make_unique<FBO>(resolution, resolution);
+  
+  cubemap_fbo->set_depth_texture();
+
+  for (size_t i = 0; i < 6; i++) {
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
+                 resolution, resolution, 0, GL_RGB, GL_FLOAT, nullptr);
+  }
 
   set_sampler_state();
 
