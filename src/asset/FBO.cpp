@@ -82,6 +82,14 @@ void FBO::set_depth_texture() {
   CORE_INFO("attach depth texture");
 }
 
+void FBO::change_shader(std::unique_ptr<Shader> shader) {
+  m_shader = std::move(shader);
+}
+
+const std::unique_ptr<Shader>& FBO::get_shader() const {
+  return m_shader;
+}
+
 void FBO::draw() const{
   m_texture->bind(0);
   m_shader->bind();

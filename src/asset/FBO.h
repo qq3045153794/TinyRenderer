@@ -23,6 +23,8 @@ class FBO : public Asset {
   virtual ~FBO();
   void set_color_texture();
   void set_depth_texture();
+  void change_shader(std::unique_ptr<Shader> shader);
+  const std::unique_ptr<Shader>& get_shader() const;
   const Texture& get_color_texture();
   void draw() const;
   void bind() const override;
