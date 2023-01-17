@@ -4,6 +4,7 @@
 #include "stb_image.h"
 #include "utils/image.h"
 #include "asset/FBO.h"
+#include "core/Log.h"
 namespace asset {
 
 Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
@@ -137,7 +138,7 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
 
   cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
 
-  cubemap_fbo->change_shader(std::make_unique<Shader>("../TinyRenderer/resource/shader/hdr2cubemap", "../TinyRenderer/resource/shader/hdr2cubemap"));
+  cubemap_fbo->change_shader(std::make_unique<Shader>("../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs"));
 
   auto& cubemap_shader = cubemap_fbo->get_shader();
 
@@ -167,8 +168,10 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
     cube_vao->ubind();
 
   }
-  
+
 }
+
+
 Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
   m_width = width;
   m_height = height;

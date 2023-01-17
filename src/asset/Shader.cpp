@@ -14,6 +14,7 @@ Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file,
 Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file) {
   const std::string &vertex_code = File::read_file(vertex_file);
   const std::string &fragment_code = File::read_file(fragment_file);
+  CORE_INFO("track");
   compile(vertex_code.c_str(), fragment_code.c_str());
 }
 

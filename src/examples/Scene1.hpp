@@ -154,7 +154,7 @@ class Scene1 : public Scene {
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
-    skybox.GetComponent<Material>().set_texture(0, skybox_texture);
+    skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
     // skybox.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 0.0));
 
     skybox_hdr = create_entity("skybox hdr", ETag::Skybox);
@@ -241,6 +241,7 @@ class Scene1 : public Scene {
     Render::eable_depth_test(true);
     Render::eable_alpha_blend(true);
     Render::eable_face_culling(true);
+    Window::resize();
     // WSL不支持MSAA 暂时注释
     // Render::eable_msaa(true);
   }
@@ -289,8 +290,8 @@ class Scene1 : public Scene {
     Render::Submit(cube.id);
     Render::Submit(paimon.id);
 
-    // Render::Submit(skybox.id);
-    Render::Submit(skybox_hdr.id);
+    Render::Submit(skybox.id);
+    // Render::Submit(skybox_hdr.id);
     Render::render_scene();
 
     nor_fbo->ubind();
