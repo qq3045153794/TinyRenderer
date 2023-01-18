@@ -9,9 +9,7 @@ namespace utils {
 std::string File::read_file(const std::string& file_path) {
   std::string out;
   std::ifstream file;
-  CORE_INFO("track");
   file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-  CORE_INFO("track");
   try {
     file.open(file_path);
     std::stringstream file_stream;

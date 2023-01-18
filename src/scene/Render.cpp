@@ -178,7 +178,6 @@ void Render::eable_msaa(bool enalbe) {
     CORE_TRACE("MSAA buffers {}", buffers);
     CORE_TRACE("MSAA samples {}", samples);
     CORE_TRACE("MSAA max_samples {}", max_samples);
-    
     CORE_ASERT(buffers > 0, "MSAA buffers are not available! Check your window context...");
     // CORE_ASERT(samples == 4, "Invalid MSAA buffer size! 4 samples per pixel is not available...");
   }

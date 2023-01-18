@@ -1,5 +1,5 @@
-#ifndef _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
-#define _LRARN_OPENGL_SRC_EAXMPLES_SCENE1_H_
+#ifndef _SRC_EAXMPLES_SCENE1_H_
+#define _SRC_EAXMPLES_SCENE1_H_
 #include "component/Light.h"
 #include "core/Debug.h"
 #include "core/Window.h"
@@ -26,7 +26,7 @@ class Scene1 : public Scene {
   Entity cube;
   Entity sphere;
   Entity skybox;
-  Entity skybox_hdr;
+  // Entity skybox_hdr;
   Entity paimon;
   Entity sun_light;
   Entity point_light;
@@ -35,7 +35,7 @@ class Scene1 : public Scene {
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
   std::shared_ptr<Shader> ptr_shader;
-  std::shared_ptr<Shader> skybox_hdr_shader;
+  // std::shared_ptr<Shader> skybox_hdr_shader;
 
   std::shared_ptr<Texture> skybox_texture;
   std::shared_ptr<Texture> skybox_hdr_texutre;
@@ -92,7 +92,7 @@ class Scene1 : public Scene {
 
     ptr_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
 
-    skybox_hdr_shader = std::make_shared<Shader>("../resource/shader/skybox_hdr.vs", "../resource/shader/skybox_hdr.fs");
+    // skybox_hdr_shader = std::make_shared<Shader>("../resource/shader/skybox_hdr.vs", "../resource/shader/skybox_hdr.fs");
 
     add_ubo(quad_shader);
     add_ubo(skybox_shader);
@@ -157,10 +157,10 @@ class Scene1 : public Scene {
     skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
     // skybox.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 0.0));
 
-    skybox_hdr = create_entity("skybox hdr", ETag::Skybox);
-    skybox_hdr.AddComponent<Mesh>(Mesh::primitive::CUBE);
-    skybox_hdr.AddComponent<Material>(skybox_hdr_shader);
-    skybox_hdr.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
+    // skybox_hdr = create_entity("skybox hdr", ETag::Skybox);
+    // skybox_hdr.AddComponent<Mesh>(Mesh::primitive::CUBE);
+    // skybox_hdr.AddComponent<Material>(skybox_hdr_shader);
+    // skybox_hdr.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
 
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
@@ -240,7 +240,7 @@ class Scene1 : public Scene {
 
     Render::eable_depth_test(true);
     Render::eable_alpha_blend(true);
-    Render::eable_face_culling(true);
+    // Render::eable_face_culling(true);
     Window::resize();
     // WSL不支持MSAA 暂时注释
     // Render::eable_msaa(true);

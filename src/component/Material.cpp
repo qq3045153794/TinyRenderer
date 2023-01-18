@@ -51,9 +51,6 @@ Material::Material(std::shared_ptr<asset::Shader> shader) {
 
 void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
-
-  GLuint id = m_shader->get_id();
-  GLint n_uniforms;
 }
 
 void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) {
@@ -77,14 +74,14 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
 
 void Material::bind() const {
   m_shader->bind();
-  for (const auto item : m_textures) {
+  for (const auto& item : m_textures) {
     item.second->bind(item.first);
   }
 }
 
 void Material::ubind() const {
   m_shader->ubind();
-  for (const auto item : m_textures) {
+  for (const auto& item : m_textures) {
     item.second->ubind(item.first);
   }
 }

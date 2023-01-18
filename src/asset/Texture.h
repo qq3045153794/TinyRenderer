@@ -13,11 +13,10 @@
 
 #include <string>
 #include <vector>
-
+#include <memory>
 #include "glad/glad.h"
 
 namespace asset {
-
 class Texture {
  public:
   Texture(const std::vector<std::string>& path_vec);
@@ -31,7 +30,6 @@ class Texture {
 
  private:
   void set_sampler_state();
-
   GLuint m_id;
   GLuint m_width, m_height;
   GLuint m_internal_format;

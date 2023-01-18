@@ -43,7 +43,8 @@ Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE
 }
 
 Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_MAP){
-
+  // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
+  // (不会进行归一化) 转换成的cubemap也是float
 
   const auto& image = utils::Image(path, true);
   m_width = image.get_width();
@@ -54,24 +55,26 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   GLuint hdr_id;
   glGenTextures(1, &hdr_id);
   glBindTexture(GL_TEXTURE_2D, hdr_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-               GL_FLOAT, image.get_buffer());
+  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_FLOAT, image.get_buffer());
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
 
-  std::unique_ptr<FBO> cubemap_fbo = std::make_unique<FBO>(resolution, resolution);
+  auto cubemap_fbo = std::make_unique<FBO>(resolution, resolution);
 
   cubemap_fbo->set_depth_texture();
-
   const size_t faces = 6;
-
-  // 创建cube
+  // 创建 cube_texture_map
   glGenTextures(1, &m_id);
-  glBindBuffer(m_target, m_id);
+  glBindTexture(m_target, m_id);
   for (size_t i = 0; i < faces; i++) {
+    // 我们存储的是float格式 由于采样的纹理是hdr
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
                  resolution, resolution, 0, GL_RGB, GL_FLOAT, nullptr);
   }
-
   set_sampler_state();
 
   glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
@@ -86,7 +89,8 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
   };
 
- float data[] = {
+  // 创建cubek
+ static float data[] = {
     // back face
     -1.0f, -1.0f, -1.0f,
      1.0f,  1.0f, -1.0f,
@@ -130,45 +134,40 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
     -1.0f,  1.0f, -1.0f,
     -1.0f,  1.0f,  1.0f,
   };
-
-
   auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
-
   auto cube_vao = std::make_unique<VAO>();
 
   cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
 
-  cubemap_fbo->change_shader(std::make_unique<Shader>("../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs"));
 
-  auto& cubemap_shader = cubemap_fbo->get_shader();
+  auto cubemap_shader = std::make_unique<Shader>("../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs");
 
   cubemap_shader->bind();
   cubemap_shader->set_uniform("projection", proj);
+  cubemap_shader->set_uniform("texture_0", 0);
 
+  
+  // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
+  glViewport(0, 0, resolution, resolution);
+  cubemap_fbo->bind();
   glActiveTexture(GL_TEXTURE0);
 
   glBindTexture(GL_TEXTURE_2D, hdr_id);
-
-  glViewport(0, 0, resolution, resolution);
-  cubemap_fbo->bind();
-
   for (size_t i = 0; i < faces; i++) {
     cubemap_shader->set_uniform("view", views[i]);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
                            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_id, 0);
 
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(1.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     cube_vao->bind();
-
     glDrawArrays(GL_TRIANGLES, 0, 36);
-
     cube_vao->ubind();
-
   }
+  cubemap_fbo->ubind();
 
+  glDeleteTextures(1, &hdr_id);
 }
 
 
