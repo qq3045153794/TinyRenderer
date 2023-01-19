@@ -56,7 +56,7 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   glGenTextures(1, &hdr_id);
   glBindTexture(GL_TEXTURE_2D, hdr_id);
   glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_FLOAT, image.get_buffer());
-  
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -146,7 +146,7 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   cubemap_shader->set_uniform("projection", proj);
   cubemap_shader->set_uniform("texture_0", 0);
 
-  
+
   // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
   glViewport(0, 0, resolution, resolution);
   cubemap_fbo->bind();
@@ -168,6 +168,24 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   cubemap_fbo->ubind();
 
   glDeleteTextures(1, &hdr_id);
+}
+
+Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format): m_width(width), m_height(height), m_internal_format(i_format), m_image_format(i_format), m_target(target){
+
+  switch(m_target) {
+    case GL_TEXTURE_2D:
+    case GL_TEXTURE_CUBE_MAP: {
+
+      glGenTextures(1, &m_id);
+      glBindTexture(m_target, m_id);
+      glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+                   GL_UNSIGNED_BYTE, NULL);
+      glBindTexture(m_target, 0);
+      break;
+    }
+  }
+
+  set_sampler_state();
 }
 
 

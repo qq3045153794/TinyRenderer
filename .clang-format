@@ -1,4 +1,3 @@
----
 Language:        Cpp
 # BasedOnStyle:  Google
 AccessModifierOffset: -1
@@ -208,5 +207,5 @@ WhitespaceSensitiveMacros:
   - BOOST_PP_STRINGIZE
   - NS_SWIFT_NAME
   - CF_SWIFT_NAME
-...
+
 

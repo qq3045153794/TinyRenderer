@@ -22,6 +22,7 @@ class Texture {
   Texture(const std::vector<std::string>& path_vec);
   Texture(const GLchar* path, bool flip = false);
   Texture(GLuint width, GLuint height);
+  Texture(GLenum target, GLuint width, GLuint height, GLuint i_format);
   Texture(const GLchar* path, int resolution);
   ~Texture();
   GLuint get_id();
