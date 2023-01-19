@@ -81,7 +81,7 @@ class Scene1 : public Scene {
 
   void set_BIL() {
 
-    GLuint low_resolution = 32;
+    GLuint low_resolution = 128;
     irradian = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution , low_resolution, GL_RGB);
 
     auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
@@ -150,7 +150,7 @@ class Scene1 : public Scene {
     cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
 
 
-    auto irradian_shader = std::make_unique<Shader>("", "");
+    auto irradian_shader = std::make_unique<Shader>("../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
 
     irradian_shader->bind();
     irradian_shader->set_uniform("projection", proj);
@@ -203,6 +203,8 @@ class Scene1 : public Scene {
 
     CHECK_ERROR();
 
+    set_BIL();
+
     sun_light = create_entity("sum light");
     sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
     sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
@@ -246,7 +248,7 @@ class Scene1 : public Scene {
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
-    skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
+    skybox.GetComponent<Material>().set_texture(0, irradian);
 
 
     quad = create_entity("quad");
