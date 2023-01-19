@@ -75,6 +75,7 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
     glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
                  resolution, resolution, 0, GL_RGB, GL_FLOAT, nullptr);
   }
+  glBindTexture(m_target, 0);
   set_sampler_state();
 
   glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
@@ -173,13 +174,22 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
 Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format): m_width(width), m_height(height), m_internal_format(i_format), m_image_format(i_format), m_target(target){
 
   switch(m_target) {
-    case GL_TEXTURE_2D:
-    case GL_TEXTURE_CUBE_MAP: {
-
+    case GL_TEXTURE_2D: {
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
       glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
                    GL_UNSIGNED_BYTE, NULL);
+      glBindTexture(m_target, 0);
+      break;
+    }
+    case GL_TEXTURE_CUBE_MAP: {
+      int faces = 6;
+      glGenTextures(1, &m_id);
+      glBindTexture(m_target, m_id);
+        for (size_t i = 0; i < faces; i++) {
+          glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
+                       m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
+        }
       glBindTexture(m_target, 0);
       break;
     }

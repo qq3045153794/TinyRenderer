@@ -37,6 +37,7 @@ class Scene1 : public Scene {
 
   std::shared_ptr<Texture> skybox_hdr_texutre;
   std::shared_ptr<Texture> quad_texture;
+  std::shared_ptr<Texture> irradian;
 
   std::shared_ptr<Material> paimon_1;
 
@@ -76,6 +77,105 @@ class Scene1 : public Scene {
       UBOs.try_emplace(3U, offset, lenght, sz);
       UBOs[3].set_binding(3U, "SL", shader->get_id());
     }
+  }
+
+  void set_BIL() {
+
+    GLuint low_resolution = 32;
+    irradian = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution , low_resolution, GL_RGB);
+
+    auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
+
+    glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
+
+    glm::mat4 views[] = 
+    {
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+
+    // 创建cubek
+   static float data[] = {
+      // back face
+      -1.0f, -1.0f, -1.0f,
+       1.0f,  1.0f, -1.0f,
+       1.0f, -1.0f, -1.0f,
+       1.0f,  1.0f, -1.0f,
+      -1.0f, -1.0f, -1.0f,
+      -1.0f,  1.0f, -1.0f,
+      // front face
+      -1.0f, -1.0f,  1.0f,
+       1.0f, -1.0f,  1.0f,
+       1.0f,  1.0f,  1.0f,
+       1.0f,  1.0f,  1.0f,
+      -1.0f,  1.0f,  1.0f,
+      -1.0f, -1.0f,  1.0f,
+      // left face
+      -1.0f,  1.0f,  1.0f,
+      -1.0f,  1.0f, -1.0f,
+      -1.0f, -1.0f, -1.0f,
+      -1.0f, -1.0f, -1.0f,
+      -1.0f, -1.0f,  1.0f,
+      -1.0f,  1.0f,  1.0f,
+      // right face
+       1.0f,  1.0f,  1.0f,
+       1.0f, -1.0f, -1.0f,
+       1.0f,  1.0f, -1.0f,
+       1.0f, -1.0f, -1.0f,
+       1.0f,  1.0f,  1.0f,
+       1.0f, -1.0f,  1.0f,
+      // bottom face
+      -1.0f, -1.0f, -1.0f,
+       1.0f, -1.0f, -1.0f,
+       1.0f, -1.0f,  1.0f,
+       1.0f, -1.0f,  1.0f,
+      -1.0f, -1.0f,  1.0f,
+      -1.0f, -1.0f, -1.0f,
+      // top face
+      -1.0f,  1.0f, -1.0f,
+       1.0f,  1.0f , 1.0f,
+       1.0f,  1.0f, -1.0f,
+       1.0f,  1.0f,  1.0f,
+      -1.0f,  1.0f, -1.0f,
+      -1.0f,  1.0f,  1.0f,
+    };
+
+    auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
+    auto cube_vao = std::make_unique<VAO>();
+
+    cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
+
+
+    auto irradian_shader = std::make_unique<Shader>("", "");
+
+    irradian_shader->bind();
+    irradian_shader->set_uniform("projection", proj);
+    irradian_shader->set_uniform("texture_0", 0);
+
+
+    // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
+    glViewport(0, 0, low_resolution, low_resolution);
+    irradian_fbo->bind();
+
+    skybox_hdr_texutre->bind(0);
+    int faces = 6;
+    for (size_t i = 0; i < faces; i++) {
+      irradian_shader->set_uniform("view", views[i]);
+
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                             GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradian->get_id(), 0);
+
+      glClearColor(1.0, 0.0, 0.0, 1.0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      cube_vao->bind();
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+      cube_vao->ubind();
+    }
+    irradian_fbo->ubind();
   }
 
   virtual void init() override {
