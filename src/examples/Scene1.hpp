@@ -248,7 +248,7 @@ class Scene1 : public Scene {
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
-    skybox.GetComponent<Material>().set_texture(0, irradian);
+    skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
 
 
     quad = create_entity("quad");
@@ -272,6 +272,7 @@ class Scene1 : public Scene {
     sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
     sphere.AddComponent<Material>(ptr_shader);
     auto& sphere_mat = sphere.GetComponent<Material>();
+    sphere_mat.set_texture(2U, irradian);
     sphere_mat.bing_uniform(Material::pbr_u::albedo, sphere_albedo);
     sphere_mat.bing_uniform(Material::pbr_u::metalness, sphere_metalness);
     sphere_mat.bing_uniform(Material::pbr_u::roughness, sphere_roughness);

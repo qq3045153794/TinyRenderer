@@ -17,6 +17,9 @@ in _vtx {
     in vec3 _tangent;
     in vec3 _binormal;
 };
+
+/*********************************** BIL ***********************************/
+uniform samplerCube irradiance_map;
 /*********************************** 材质属性 ***********************************/
 uniform bool sample_albedo;
 uniform bool sample_metalness;
@@ -49,10 +52,10 @@ struct Pixel {
     vec2 _uv2;
     vec3 _tangent;
     vec3 _binormal;
-    
+
     bool _has_tbn;
     bool _has_uv2;
-    
+
     vec3 position;
     vec3 normal;
     vec2 uv;
@@ -212,6 +215,11 @@ vec3 F_Schlick(float VoH, vec3 f0) {
     return f0 + (vec3(1.0) - f0) * pow(1.0 - VoH, 5.0);
 }
 
+
+vec3 F_SchlickRoughness(float VoH, vec3 F0, float alpha) {
+    return F0 + (max(vec3(1.0 - alpha), F0) - F0) * pow(1.0 - VoH, 5.0);
+}
+
 /* 镜面BRDF
    fr(v,l)=D(h,α)G(v,l,α)F(v,h,f0) / 4(n⋅v)(n⋅l)
 */
@@ -268,6 +276,7 @@ vec3 EvalPL(const Pixel px, const vec3 position, float range, float linear, floa
     return (attenuation <= 0.0)? vec3(0.0) : EvalLobe(px, L);
 }
 
+// 计算聚光灯
 vec3 EvalSL(const Pixel px, const vec3 pos, const vec3 dir, float range, float inner_cos, float outer_cos) {
     vec3 l = pos - px.position;
     vec3 L = normalize(l);
@@ -282,6 +291,24 @@ vec3 EvalSL(const Pixel px, const vec3 pos, const vec3 dir, float range, float i
     float attenuation = da * aa;
 
     return attenuation <= 0.0 ? vec3(0.0) : (EvalLobe(px, L) * attenuation);
+}
+
+vec3 EvalIBL(const Pixel px) {
+    vec3 Fr = vec3(0.0);
+    vec3 Fd = vec3(0.0);
+    vec3 Lo = vec3(0.0);
+
+    float NoV = px.NoV;
+    // 漫反射光
+    vec3 KS = F_SchlickRoughness(NoV, px.F0, px.albedo.a);
+    vec3 KD = 1.0 - KS;
+    Fd = texture(irradiance_map, px.N).rgb * px.diffuse_color * KD * px.ao;
+
+    // TODO
+    Lo = Fd;
+
+    return Lo;
+
 }
 
 void InitPixel(inout Pixel px, const vec3 camera_pos) {
@@ -332,5 +359,9 @@ void main() {
 
     Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
 
+    Lo += EvalIBL(px);
+
+    Lo = Lo / (Lo + vec3(1.0));
+    Lo = pow(Lo, vec3(1.0 / 2.2));
     color = vec4(Lo, px.albedo.a);
 }

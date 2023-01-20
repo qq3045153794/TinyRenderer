@@ -14,13 +14,14 @@ std::map<GLuint, std::string> Material::uniform_dictionary{
     {101, "sample_metalness"},
     {102, "sample_roughness"},
     {103, "sample_ao"},
-    {104, "sample_normal"}
+    {104, "sample_normal"},
+    {997, "irradiance_map"}
 };
 
 std::map<GLuint, std::string> Material::texture_dictionary{
     {0, "texture_0"},
     {1, "texture_1"},
-    {2, "texture_2"},
+    {2, "irradiance_map"},
     {3, "texture_3"},
     {4, "texture_4"},
     {5, "albedo_texture"},

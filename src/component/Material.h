@@ -37,10 +37,11 @@ class Material {
   // 纹理采样数据
   enum class pbr_t : uint16_t {
     albedo = 0U,  // 反射率 向量 sRGB 主要体现纹理和颜色
-    metalness,    // 金属度 标量 [0..1]
-    roughness,    // 粗糙度 标量 [0..1]
-    ao,           // 反射率 标量 [0..1]
-    normal        // 法线贴图 向量 切线空间
+    metalness = 1U,    // 金属度 标量 [0..1]
+    roughness = 2U,    // 粗糙度 标量 [0..1]
+    ao = 3U,           // 反射率 标量 [0..1]
+    normal = 4U,        // 法线贴图 向量 切线空间
+    irradiance_map = 997
   };
 
   static std::map<GLuint, std::string> uniform_dictionary;
