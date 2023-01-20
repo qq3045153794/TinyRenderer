@@ -46,7 +46,7 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
   // (不会进行归一化) 转换成的cubemap也是float
 
-  const auto& image = utils::Image(path, true);
+  const auto& image = utils::Image(path);
   m_width = image.get_width();
   m_height = image.get_height();
   m_image_format = image.get_img_format();

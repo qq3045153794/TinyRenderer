@@ -25,6 +25,7 @@ class Scene1 : public Scene {
   Entity main_camera;
   Entity cube;
   Entity sphere;
+  Entity sphere_pbr;
   Entity skybox;
   Entity paimon;
   Entity sun_light;
@@ -34,6 +35,7 @@ class Scene1 : public Scene {
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
   std::shared_ptr<Shader> ptr_shader;
+  std::shared_ptr<Shader> pbr_texture_shader;
 
   std::shared_ptr<Texture> skybox_hdr_texutre;
   std::shared_ptr<Texture> quad_texture;
@@ -41,6 +43,11 @@ class Scene1 : public Scene {
 
   std::shared_ptr<Material> paimon_1;
 
+  std::shared_ptr<Texture> albedo_pbr;
+  std::shared_ptr<Texture> normal_pbr;
+  std::shared_ptr<Texture> metalness_pbr;
+  std::shared_ptr<Texture> roughness_pbr;
+  std::shared_ptr<Texture> ao_pbr;
   void add_ubo(std::shared_ptr<asset::Shader> shader) override {
     // camera
     {
@@ -188,11 +195,18 @@ class Scene1 : public Scene {
         std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
 
     ptr_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
+    pbr_texture_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
 
+    albedo_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
+    normal_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
+    metalness_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
+    roughness_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
+    ao_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
 
     add_ubo(quad_shader);
     add_ubo(skybox_shader);
     add_ubo(ptr_shader);
+    add_ubo(pbr_texture_shader);
 
     quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
 
@@ -272,11 +286,26 @@ class Scene1 : public Scene {
     sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
     sphere.AddComponent<Material>(ptr_shader);
     auto& sphere_mat = sphere.GetComponent<Material>();
-    sphere_mat.set_texture(2U, irradian);
+    sphere_mat.set_texture(Material::pbr_t::irradiance_map, irradian);
     sphere_mat.bing_uniform(Material::pbr_u::albedo, sphere_albedo);
     sphere_mat.bing_uniform(Material::pbr_u::metalness, sphere_metalness);
     sphere_mat.bing_uniform(Material::pbr_u::roughness, sphere_roughness);
     sphere_mat.bing_uniform(Material::pbr_u::ao, sphere_ao);
+
+    CHECK_ERROR();
+    CORE_INFO("{} created", sphere.name);
+
+
+    sphere_pbr = create_entity("sphere pbr");
+    sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
+    sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
+    sphere_pbr.AddComponent<Material>(pbr_texture_shader);
+    auto& sphere_mat_pbr = sphere_pbr.GetComponent<Material>();
+    sphere_mat_pbr.set_texture(Material::pbr_t::irradiance_map, irradian);
+    sphere_mat_pbr.set_texture(Material::pbr_t::albedo, albedo_pbr);
+    sphere_mat_pbr.set_texture(Material::pbr_t::metalness, metalness_pbr);
+    sphere_mat_pbr.set_texture(Material::pbr_t::roughness, roughness_pbr);
+    sphere_mat_pbr.set_texture(Material::pbr_t::ao, ao_pbr);
 
     CHECK_ERROR();
     CORE_INFO("{} created", sphere.name);
@@ -377,6 +406,7 @@ class Scene1 : public Scene {
 
     Render::Submit(quad.id);
     Render::Submit(sphere.id);
+    Render::Submit(sphere_pbr.id);
     Render::Submit(cube.id);
     Render::Submit(paimon.id);
 

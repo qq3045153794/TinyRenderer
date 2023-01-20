@@ -54,6 +54,20 @@ void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
 }
 
+
+void Material::set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
+  GLuint uid = static_cast<GLuint>(pbr);
+  if (texture_dictionary.find(uid) != texture_dictionary.end()) {
+    std::string texture_name = texture_dictionary[uid];
+    if (uid >= 5U) {
+      set_uniform(uid + 95U, true);
+    }
+    set_texture(uid, texture);
+  } else {
+    CORE_ERROR("Can't find valid texture (uid = {0})", uid);
+  }
+}
+
 void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) {
   m_shader->bind();
 
