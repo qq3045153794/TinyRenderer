@@ -197,7 +197,7 @@ class Scene1 : public Scene {
     quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
 
 
-    skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/Milkyway_small.hdr", 512);
+    skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/hotel_room_4k2.hdr", 512);
 
     paimon_1 = std::make_shared<Material>(quad_shader);
 
