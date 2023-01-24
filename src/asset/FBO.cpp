@@ -70,6 +70,17 @@ void FBO::set_color_texture() {
   CORE_INFO("attach color texture");
 }
 
+
+void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) {
+  this->bind();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_TEXTURE_CUBE_MAP_NEGATIVE_X + face, cubemap, 0);
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+  }
+  this->ubind(); 
+  CORE_INFO("attach color cubemap texture (face = {})", face);
+}
+
 void FBO::set_depth_texture() {
   this->bind();
   m_rbo = std::make_unique<RBO> (m_width, m_height);
