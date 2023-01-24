@@ -205,7 +205,7 @@ class Scene1 : public Scene {
     add_ubo(ptr_shader);
     add_ubo(pbr_texture_shader);
 
-    quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true);
+    quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true, 2);
 
 
     skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/hotel_room_4k2.hdr", 512);
@@ -322,35 +322,35 @@ class Scene1 : public Scene {
 
     auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
     temp_mat_1.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/披风2.jpg"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/披风2.jpg", false, 5));
 
     auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
     temp_mat_2.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
 
     auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
     temp_mat_3.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
 
     auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
     temp_mat_4.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
 
     auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
     temp_mat_5.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
 
     auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
     temp_mat_6.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/表情.png"));
+        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/表情.png", false, 5));
 
     auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
     temp_mat_7.set_texture(0,
-                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
+                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
 
     auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
     temp_mat_8.set_texture(0,
-                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg"));
+                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
 
     CHECK_ERROR();
 
