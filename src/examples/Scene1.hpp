@@ -173,14 +173,18 @@ class Scene1 : public Scene {
     for (size_t i = 0; i < faces; i++) {
       irradian_shader->set_uniform("view", views[i]);
 
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
-                             GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradian->get_id(), 0);
+     //  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+     //                         GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradian->get_id(), 0);
 
-      glClearColor(1.0, 0.0, 0.0, 1.0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      cube_vao->bind();
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-      cube_vao->ubind();
+      // glClearColor(1.0, 0.0, 0.0, 1.0);
+      // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      // cube_vao->bind();
+      // glDrawArrays(GL_TRIANGLES, 0, 36);
+      // cube_vao->ubind();
+
+      irradian_fbo->set_color_texture(0, irradian->get_id(), i);
+      Render::clear_buffer();
+      cube_vao->draw(0U, 36U);
     }
     irradian_fbo->ubind();
   }
