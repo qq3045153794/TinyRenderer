@@ -93,6 +93,16 @@ void FBO::set_depth_texture() {
   CORE_INFO("attach depth texture");
 }
 
+
+void FBO::reset_depth_texture(GLuint width, GLuint height) {
+  if (m_rbo) {
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+  } else {
+    CORE_ERROR("Reset depth texture failed, FBO not Attach RBO...");
+  }
+}
+
 void FBO::change_shader(std::unique_ptr<Shader> shader) {
   m_shader = std::move(shader);
 }
