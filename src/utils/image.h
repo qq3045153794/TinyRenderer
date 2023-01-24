@@ -12,6 +12,7 @@ class Image {
   ~Image();
   Image(const Image&) = delete;
   Image& operator=(const Image&) = delete;
+  bool is_hdr() const;
   GLuint get_width() const;
   GLuint get_height() const;
   GLuint get_img_format() const;
@@ -20,6 +21,7 @@ class Image {
 
  private:
   GLint m_width, m_height, n_channels;
+  GLuint m_is_hdr;
   uint8_t* m_buffer;
 };
 

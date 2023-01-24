@@ -19,10 +19,10 @@
 namespace asset {
 class Texture {
  public:
-  Texture(const std::vector<std::string>& path_vec);
-  Texture(const GLchar* path, bool flip = false);
-  Texture(GLuint width, GLuint height);
-  Texture(GLenum target, GLuint width, GLuint height, GLuint i_format);
+  Texture(const std::vector<std::string>& path_vec, GLuint levels = 0);
+  Texture(const GLchar* path, bool flip = false, GLuint levels = 0);
+  // Texture(GLuint width, GLuint height);
+  Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels = 0);
   Texture(const GLchar* path, int resolution);
   ~Texture();
   GLuint get_id();
@@ -36,6 +36,7 @@ class Texture {
   GLuint m_internal_format;
   GLuint m_image_format;
   GLuint m_target;
+  GLuint m_levels = 0;
 };
 
 }  // namespace asset

@@ -7,7 +7,7 @@
 #include "core/Log.h"
 namespace asset {
 
-Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
+Texture::Texture(const GLchar* img_path, bool flip, GLuint levels) : m_target(GL_TEXTURE_2D), m_levels(levels) {
   const auto& image = utils::Image(img_path, flip);
   m_width = image.get_width();
   m_height = image.get_height();
@@ -15,14 +15,20 @@ Texture::Texture(const GLchar* img_path, bool flip) : m_target(GL_TEXTURE_2D) {
   m_internal_format = image.get_ine_format();
   glGenTextures(1, &m_id);
   glBindTexture(m_target, m_id);
-  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-               GL_UNSIGNED_BYTE, image.get_buffer());
-  glBindTexture(m_target, 0);
+
+  if(image.is_hdr()) {
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+                 GL_FLOAT, image.get_buffer());
+  } else {
+
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+                 GL_UNSIGNED_BYTE, image.get_buffer());
+  }
 
   set_sampler_state();
 }
 
-Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE_CUBE_MAP) {
+Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
   glGenTextures(1, &m_id);
   glBindTexture(m_target, m_id);
 
@@ -38,11 +44,11 @@ Texture::Texture(const std::vector<std::string>& path_vec) : m_target(GL_TEXTURE
                  m_image_format, GL_UNSIGNED_BYTE, image.get_buffer());
     ++idx;
   }
-  glBindTexture(m_target, 0);
+
   set_sampler_state();
 }
 
-Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_MAP){
+Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(0){
   // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
   // (不会进行归一化) 转换成的cubemap也是float
 
@@ -171,13 +177,13 @@ Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_
   glDeleteTextures(1, &hdr_id);
 }
 
-Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format): m_width(width), m_height(height), m_internal_format(i_format), m_image_format(i_format), m_target(target){
+Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels): m_width(width), m_height(height), m_internal_format(i_format), m_image_format(i_format), m_target(target), m_levels(levels){
 
   switch(m_target) {
     case GL_TEXTURE_2D: {
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
-      glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+      glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format,
                    GL_UNSIGNED_BYTE, NULL);
       glBindTexture(m_target, 0);
       break;
@@ -198,7 +204,7 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format): m
   set_sampler_state();
 }
 
-
+/*
 Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
   m_width = width;
   m_height = height;
@@ -212,20 +218,28 @@ Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
 
   set_sampler_state();
 }
+*/
 
 Texture::~Texture() { glDeleteTextures(1, &m_id); }
 
 GLuint Texture::get_id() { return m_id; }
 
 void Texture::set_sampler_state() {
+
+  GLuint min_filter = m_levels > 0? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+
   glBindTexture(m_target, m_id);
   glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, min_filter);
   glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   if (m_target == GL_TEXTURE_CUBE_MAP) {
     glTexParameteri(m_target, GL_TEXTURE_WRAP_R, GL_REPEAT);
+  }
+
+  if (m_levels > 0) {
+    glGenerateMipmap(m_target);
   }
 
   glBindTexture(m_target, 0);

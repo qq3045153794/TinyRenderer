@@ -61,7 +61,7 @@ void FBO::set_buffer() {
 
 void FBO::set_color_texture() {
   this->bind();
-  m_texture = std::make_unique<Texture> (m_width, m_height);
+  m_texture = std::make_unique<Texture> (GL_TEXTURE_2D, m_width, m_height, GL_RGB);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture->get_id(), 0);
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");

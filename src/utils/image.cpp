@@ -12,8 +12,8 @@ Image::Image(const std::string& img_path, bool flip) : m_width(0), m_height(0), 
 
   stbi_set_flip_vertically_on_load(flip);
 
-  bool is_hdr = stbi_is_hdr(img_path.c_str());
-  if (is_hdr) {
+  m_is_hdr = stbi_is_hdr(img_path.c_str());
+  if (m_is_hdr) {
     float* buffer = stbi_loadf(img_path.c_str(), &m_width, &m_height, &n_channels, 0);
 
     int n_pixels = m_width * m_height;
@@ -45,6 +45,11 @@ Image::Image(const std::string& img_path, bool flip) : m_width(0), m_height(0), 
   if(!m_buffer){
     CORE_ERROR("Texture failed to load at path: {}", img_path);
   }
+}
+
+
+bool Image::is_hdr() const {
+  return m_is_hdr;
 }
 
 Image::~Image() {
