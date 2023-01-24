@@ -16,7 +16,8 @@ class VAO {
 
   void bind() const;
   void ubind() const;
-  void draw() const;
+  void draw() const; 
+  void draw(GLuint offset, GLuint count) const;
 
  private:
   GLuint m_id;

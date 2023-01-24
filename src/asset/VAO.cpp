@@ -35,4 +35,11 @@ void VAO::draw() const {
   this->ubind();
 }
 
+void VAO::draw(GLuint offset, GLuint count) const {
+
+  this->bind();
+  glDrawArrays(GL_TRIANGLES, offset, count);
+  this->ubind();
+}
+
 }  // namespace asset
