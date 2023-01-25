@@ -23,7 +23,7 @@ class Texture {
   Texture(const GLchar* path, bool flip = false, GLuint levels = 0);
   // Texture(GLuint width, GLuint height);
   Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels = 0);
-  Texture(const GLchar* path, int resolution);
+  Texture(const GLchar* path, int resolution, GLuint levels = 0);
   ~Texture();
   GLuint get_id();
   void bind(GLuint unit) const;

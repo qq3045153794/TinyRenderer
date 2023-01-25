@@ -193,20 +193,37 @@ class Scene1 : public Scene {
 
     prefilter_fbo->bind();
 
-    const size_t kMaxMipmap = 5;
+    const int kMaxMipmap = 5;
 
-    for (size_t mip = 0; mip < kMaxMipmap; mip++) {
+    for (int mip = 0; mip < kMaxMipmap; mip++) {
       GLuint mip_width = low_resolution * std::pow(0.5, mip);
       GLuint mip_height = low_resolution * std::pow(0.5, mip);
 
       prefilter_fbo->reset_depth_texture(mip_width, mip_height);
-      glViewport(0, 0, low_resolution, low_resolution);
+      glViewport(0, 0, mip_width, mip_height);
+      float roughness = static_cast<float> (mip) / (kMaxMipmap - 1);
+      prefilter_shader->set_uniform("roughness", roughness);
+      for (int face = 0; face < faces; face++) {
+        prefilter_shader->set_uniform("view", views[face]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, prefiltermap->get_id(), mip);
+        Render::clear_buffer();
+
+        cube_vao->draw(0, 36);
+      }
 
     }
+    prefilter_fbo->ubind();
+   
+    unsigned int brdfLUTTexture;
+    glGenTextures(1, &brdfLUTTexture);
 
-
-
-
+    // pre-allocate enough memory for the LUT texture.
+    glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   }
 
@@ -287,8 +304,9 @@ class Scene1 : public Scene {
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
-    skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
+    // skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
 
+    skybox.GetComponent<Material>().set_texture(0, prefiltermap);
 
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);

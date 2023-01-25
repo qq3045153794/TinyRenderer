@@ -48,7 +48,7 @@ Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels) : m_ta
   set_sampler_state();
 }
 
-Texture::Texture(const GLchar* path, int resolution) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(0){
+Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels){
   // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
   // (不会进行归一化) 转换成的cubemap也是float
 
