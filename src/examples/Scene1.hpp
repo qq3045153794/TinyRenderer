@@ -40,6 +40,7 @@ class Scene1 : public Scene {
   std::shared_ptr<Texture> skybox_hdr_texutre;
   std::shared_ptr<Texture> quad_texture;
   std::shared_ptr<Texture> irradian;
+  std::shared_ptr<Texture> prefiltermap;
 
   std::shared_ptr<Material> paimon_1;
 
@@ -179,6 +180,33 @@ class Scene1 : public Scene {
     }
     irradian_fbo->ubind();
 
+    prefiltermap = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution, low_resolution, GL_FLOAT, 5);
+    auto prefilter_shader = std::make_shared<Shader>("../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
+    auto prefilter_fbo = std::make_shared<FBO>(low_resolution, low_resolution);
+
+    prefilter_fbo->set_depth_texture();
+
+    prefilter_shader->bind();
+    prefilter_shader->set_uniform("projection", proj);
+
+    skybox_hdr_texutre->bind(0);
+
+    prefilter_fbo->bind();
+
+    const size_t kMaxMipmap = 5;
+
+    for (size_t mip = 0; mip < kMaxMipmap; mip++) {
+      GLuint mip_width = low_resolution * std::pow(0.5, mip);
+      GLuint mip_height = low_resolution * std::pow(0.5, mip);
+
+      prefilter_fbo->reset_depth_texture(mip_width, mip_height);
+      glViewport(0, 0, low_resolution, low_resolution);
+
+    }
+
+
+
+
 
   }
 
@@ -205,7 +233,7 @@ class Scene1 : public Scene {
     add_ubo(ptr_shader);
     add_ubo(pbr_texture_shader);
 
-    quad_texture = std::make_shared<Texture>("../resource/texture/29720830.png", true, 2);
+    quad_texture = std::make_shared<Texture>("../resource/texture/003.jpeg", true, 7);
 
 
     skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/hotel_room_4k2.hdr", 512);
