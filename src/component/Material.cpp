@@ -1,6 +1,7 @@
 #include "Material.h"
 
 #include "core/App.h"
+#include "core/Debug.h"
 namespace component {
 
 // clang-format off
@@ -69,8 +70,11 @@ void Material::set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
 }
 
 void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) {
+
+CHECK_ERROR();
   m_shader->bind();
 
+CHECK_ERROR();
   int n_texture = m_textures.size();
   int max_saplers = core::App::instand().gl_max_texture_units;
 
@@ -79,9 +83,14 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
     return;
   }
 
+CHECK_ERROR();
   if (texture_dictionary.count(uid) > 0) {
+
+CHECK_ERROR();
     m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
+CHECK_ERROR();
     m_textures.insert_or_assign(uid, texture);
+CHECK_ERROR();
   } else {
     CORE_ERROR("Can't find valid texture units (uid = {})", uid);
   }

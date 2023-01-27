@@ -1,8 +1,7 @@
 #version 330 core
-in vec3 tex_coords;
-out vec4 color;
+in vec2 tex_coords;
+out vec2 color;
 
-uniform float roughness;
 uniform samplerCube environment_map;
 
 #define PI 3.1415926
@@ -69,10 +68,10 @@ vec2 IntegrateBRDF(float NoV, float roughness, uint n_samples) {
     float scale = 0.0;
     float bias = 0.0;
 
-    for (uint i = 0; i < n_samples; i++) {
+    for (uint i = 0u; i < n_samples; i++) {
        vec2 u = Hammersley2D(i, n_samples);
        vec3 H = ImportanceSampleGGX(u.x, u.y, alpha);  // keep in tangent space
-       precise vec3 L = 2 * dot(V, H) * H - V;  // need the precise qualifier
+       vec3 L = 2 * dot(V, H) * H - V;  // need the precise qualifier
 
        // implicitly assume that all vectors lie in the X-Z plane
        float NoL = max(L.z, 0.0);
@@ -81,7 +80,7 @@ vec2 IntegrateBRDF(float NoV, float roughness, uint n_samples) {
 
        if (NoL > 0.0) {
            float V = V_SmithGGX(alpha, NoV, NoL) * NoL * HoV / max(NoH, 1e-5);
-           float Fc = pow5(1.0 - HoV);  // Fresnel F has been factorized out of the integral
+           float Fc = pow(1.0 - HoV, 5);  // Fresnel F has been factorized out of the integral
 
           // scale += V * (1.0 - Fc);  // this only considers single bounce
           // bias += V * Fc;           // this only considers single bounce
@@ -101,6 +100,7 @@ void main () {
   float roughness = tex_coords.y;
 
   color = IntegrateBRDF(cosine, roughness, 1024u);
+  // color = vec2(1.0, 0.0);
 }
 
 

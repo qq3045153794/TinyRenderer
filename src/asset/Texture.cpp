@@ -5,6 +5,7 @@
 #include "utils/image.h"
 #include "asset/FBO.h"
 #include "core/Log.h"
+#include "core/Debug.h"
 namespace asset {
 
 Texture::Texture(const GLchar* img_path, bool flip, GLuint levels) : m_target(GL_TEXTURE_2D), m_levels(levels) {
@@ -183,8 +184,12 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GL
     case GL_TEXTURE_2D: {
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
-      glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format,
-                   GL_UNSIGNED_BYTE, NULL);
+      if (m_image_format == GL_RGB || m_image_format == GL_RGBA) {
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE, NULL);
+      } else { 
+        std::cout << "width = " << width <<" " << "height = " << height << std::endl;
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, GL_RG, GL_FLOAT, NULL);
+      }
       glBindTexture(m_target, 0);
       break;
     }
@@ -229,10 +234,18 @@ void Texture::set_sampler_state() {
   GLuint min_filter = m_levels > 0? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
 
   glBindTexture(m_target, m_id);
-  glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, min_filter);
-  glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  if (m_image_format == GL_RG16F || m_image_format == GL_RGB16F) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  } else {
+    glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, min_filter);
+    glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  }
 
   if (m_target == GL_TEXTURE_CUBE_MAP) {
     glTexParameteri(m_target, GL_TEXTURE_WRAP_R, GL_REPEAT);

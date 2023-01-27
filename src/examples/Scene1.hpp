@@ -41,6 +41,7 @@ class Scene1 : public Scene {
   std::shared_ptr<Texture> quad_texture;
   std::shared_ptr<Texture> irradian;
   std::shared_ptr<Texture> prefiltermap;
+  std::shared_ptr<Texture> BRDF_LUT_texture;
 
   std::shared_ptr<Material> paimon_1;
 
@@ -155,7 +156,7 @@ class Scene1 : public Scene {
     auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
     auto cube_vao = std::make_unique<VAO>();
 
-    cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
+    cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(float), 0, GL_FLOAT);
 
 
     auto irradian_shader = std::make_unique<Shader>("../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
@@ -213,17 +214,41 @@ class Scene1 : public Scene {
 
     }
     prefilter_fbo->ubind();
-   
-    unsigned int brdfLUTTexture;
-    glGenTextures(1, &brdfLUTTexture);
 
-    // pre-allocate enough memory for the LUT texture.
-    glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GLfloat quad_data[] = {
+      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+      1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+      1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+      1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+      -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
+    };
+
+    auto quad_vbo = std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
+    auto quad_vao = std::make_shared<VAO>();
+    quad_vao->set_vbo(*quad_vbo, 0, 3, 5 * sizeof(GLfloat), 0, GL_FLOAT);
+    quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat), GL_FLOAT);
+
+    BRDF_LUT_texture = std::make_shared<Texture> (GL_TEXTURE_2D, 512, 512, GL_RG16F);
+    auto BRDF_LUT_fbo = std::make_shared<FBO>(512, 512);
+    auto BRDF_LUT_shader = std::make_shared<Shader>("../resource/shader/BRDF_LUT.vs", "../resource/shader/BRDF_LUT.fs");
+
+    BRDF_LUT_fbo->set_depth_texture();
+
+    BRDF_LUT_fbo->bind();
+    BRDF_LUT_shader->bind();
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT_texture->get_id(), 0);
+
+    glViewport(0, 0, 512, 512);
+
+    Render::clear_buffer();
+
+    quad_vao->draw(0, 6);
+
+    BRDF_LUT_fbo->ubind();
+
+CHECK_ERROR();
 
   }
 
@@ -311,15 +336,18 @@ class Scene1 : public Scene {
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
     quad.AddComponent<Material>(quad_shader);
-    quad.GetComponent<Material>().set_texture(0, quad_texture);
+    quad.GetComponent<Material>().set_texture(0, BRDF_LUT_texture);
     quad.GetComponent<Transform>().set_position(glm::vec3(-4, 0.0, 0.0));
     CHECK_ERROR();
     CORE_INFO("{} created", quad.name);
 
     cube = create_entity("cube");
     cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
+CHECK_ERROR();
     cube.AddComponent<Material>(quad_shader);
+    CHECK_ERROR();
     cube.GetComponent<Material>().set_texture(0, quad_texture);
+    CHECK_ERROR();
     cube.GetComponent<Transform>().translate(glm::vec3(8.0, 0.0, 0.0));
     CHECK_ERROR();
     CORE_INFO("{} created", cube.name);
