@@ -41,7 +41,9 @@ class Material {
     roughness = 7U,     // 粗糙度 标量 [0..1]
     ao = 8U,            // 反射率 标量 [0..1]
     normal = 9U,        // 法线贴图 向量 切线空间
-    irradiance_map = 2U
+    irradiance_map = 2U,
+    prefilter_map = 3U,
+    brdf_LUT_map = 4U
   };
 
   static std::map<GLuint, std::string> uniform_dictionary;

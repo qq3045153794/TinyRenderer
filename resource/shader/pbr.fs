@@ -20,6 +20,8 @@ in _vtx {
 
 /*********************************** BIL ***********************************/
 uniform samplerCube irradiance_map;
+uniform samplerCube prefilter_map;
+uniform sampler2D brdf_LUT_map;
 /*********************************** 材质属性 ***********************************/
 uniform bool sample_albedo;
 uniform bool sample_metalness;
@@ -298,14 +300,22 @@ vec3 EvalIBL(const Pixel px) {
     vec3 Fd = vec3(0.0);
     vec3 Lo = vec3(0.0);
 
+    vec3 R = reflect(-px.V, px.N);
+
     float NoV = px.NoV;
+    vec3 F = F_SchlickRoughness(NoV, px.F0, px.albedo.a);
     // 漫反射光
-    vec3 KS = F_SchlickRoughness(NoV, px.F0, px.albedo.a);
+    vec3 KS = F;
     vec3 KD = 1.0 - KS;
     Fd = texture(irradiance_map, px.N).rgb * px.diffuse_color * KD * px.ao;
 
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;   
+    vec2 envBRDF  = texture(brdf_LUT_map, vec2(max(NoV, 0.0), roughness)).rg;
+    Fr = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
     // TODO
-    Lo = Fd;
+    Lo = Fd + Fr;
 
     return Lo;
 
