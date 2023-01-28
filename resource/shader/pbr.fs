@@ -254,7 +254,7 @@ vec3 EvalLobe(const Pixel px, vec3 L) {
 
     float NoV = px.NoV;
     float NoH = max(dot(px.N, H), 0.0);
-    float HoL = max(dot(H, L), 0.0);
+    float HoL = clamp(dot(H, L), 0.0, 1.0);
 
     Fr = EvalSpecularLobe(px, L, H, NoV, NoL, NoH, HoL);
     Fd = EvalDiffuseLobe(px, NoV, NoL, HoL);
@@ -290,7 +290,7 @@ vec3 EvalSL(const Pixel px, const vec3 pos, const vec3 dir, float range, float i
     // angular attenuation fades out from the inner to the outer cone
     float cosine = dot(dir, L);
     float aa = clamp((cosine - outer_cos) / (inner_cos - outer_cos), 0.0, 1.0);
-    float attenuation = da * aa;
+    float attenuation = ds * aa;
 
     return attenuation <= 0.0 ? vec3(0.0) : (EvalLobe(px, L) * attenuation);
 }
@@ -310,11 +310,10 @@ vec3 EvalIBL(const Pixel px) {
     Fd = texture(irradiance_map, px.N).rgb * px.diffuse_color * KD * px.ao;
 
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;   
+    vec3 prefilteredColor = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;
     vec2 envBRDF  = texture(brdf_LUT_map, vec2(max(NoV, 0.0), roughness)).rg;
     Fr = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
-    // TODO
     Lo = Fd + Fr;
 
     return Lo;
@@ -351,7 +350,7 @@ void InitPixel(inout Pixel px, const vec3 camera_pos) {
     px.F0 = ComputeF0(px.albedo.rgb, px.metalness, px.specular);
 }
 
-void main() {  
+void main() {
 
     Pixel px;
     px._position = _position;

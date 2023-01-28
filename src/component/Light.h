@@ -35,8 +35,7 @@ class Spotlight : public Light {
   float m_inner_cutoff;
   float m_outer_cutoff;
   float m_range = std::numeric_limits<float>::max();
-  Spotlight(const glm::vec3& color, float intensity) : Light(color, intensity){};
-//  using Light::Light;
+  using Light::Light;
 
   void set_cutoff(float range, float inner_cutoff = 15.0f, float outer_cutoff = 30.0f);
   float get_inner_cosine() const;
