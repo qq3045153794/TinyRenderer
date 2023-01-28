@@ -3,6 +3,9 @@
 
 namespace asset {
 
+GLuint static curr_bound_rbo = 0;
+GLuint static curr_bound_fbo = 0;
+
 RBO::RBO(GLuint width, GLuint height) {
   glGenRenderbuffers(1, &id);
   glBindRenderbuffer(GL_RENDERBUFFER, id);
@@ -14,11 +17,17 @@ RBO::~RBO() {
 }
 
 void RBO::bind() const {
-  glBindRenderbuffer(GL_RENDERBUFFER, id);
+  if (curr_bound_rbo != id) {
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+    curr_bound_rbo = id;
+  }
 }
 
 void RBO::ubind() const {
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  if (curr_bound_rbo == id) {
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    curr_bound_rbo = 0;
+  }
 }
 
 FBO::FBO(GLuint width, GLuint height) {
@@ -66,7 +75,6 @@ void FBO::set_color_texture() {
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
-  // this->ubind();
   CORE_INFO("attach color texture");
 }
 
@@ -77,7 +85,6 @@ void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) {
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
-  // this->ubind(); 
   CORE_INFO("attach color cubemap texture (face = {})", face);
 }
 
@@ -89,7 +96,6 @@ void FBO::set_depth_texture() {
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
-  // this->ubind();
   CORE_INFO("attach depth texture");
 }
 
@@ -123,11 +129,17 @@ const Texture& FBO::get_color_texture() {
 }
 
 void FBO::bind() const {
-  glBindFramebuffer(GL_FRAMEBUFFER, id);
+  if (curr_bound_fbo != id) {
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+    curr_bound_fbo = id;
+  }
 }
 
 void FBO::ubind() const {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  if (curr_bound_fbo == id) {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    curr_bound_fbo = 0;
+  }
 }
 
 }
