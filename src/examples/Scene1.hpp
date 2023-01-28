@@ -329,9 +329,9 @@ CHECK_ERROR();
     skybox = create_entity("skybox", ETag::Skybox);
     skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
     skybox.AddComponent<Material>(skybox_shader);
-    // skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
+    skybox.GetComponent<Material>().set_texture(0, skybox_hdr_texutre);
 
-    skybox.GetComponent<Material>().set_texture(0, prefiltermap);
+    // skybox.GetComponent<Material>().set_texture(0, prefiltermap);
 
     quad = create_entity("quad");
     quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
