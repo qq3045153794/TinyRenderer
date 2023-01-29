@@ -3,6 +3,8 @@
 #include "core/Debug.h"
 namespace asset {
 
+static GLuint curr_bound_program = 0;
+
 Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file,
                const GLchar *geometry_file) {
   const std::string &vertex_code = File::read_file(vertex_file);
@@ -22,9 +24,19 @@ Shader::~Shader() {
   glDeleteProgram(m_id);
 }
 
-void Shader::bind() const { glUseProgram(m_id); }
+void Shader::bind() const {
+  if (curr_bound_program != m_id) {
+    glUseProgram(m_id);
+    curr_bound_program = m_id;
+  }
+}
 
-void Shader::ubind() const { glUseProgram(0); }
+void Shader::ubind() const {
+  if (curr_bound_program == m_id) {
+    glUseProgram(0);
+    curr_bound_program = 0;
+  }
+}
 
 void Shader::compile(const GLchar *vertex_code, const GLchar *fragment_code) {
   GLuint program = glCreateProgram();

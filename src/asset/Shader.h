@@ -15,7 +15,6 @@ using namespace utils;
 
 class Shader {
  public:
-  
   Shader(){};
   ~Shader();
   Shader(const GLchar* vertex_file, const GLchar* fragment_file, const GLchar* geometry_file);
