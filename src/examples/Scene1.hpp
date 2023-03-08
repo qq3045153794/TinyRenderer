@@ -248,7 +248,7 @@ class Scene1 : public Scene {
 
     BRDF_LUT_fbo->ubind();
 
-CHECK_ERROR();
+    CHECK_ERROR();
 
   }
 

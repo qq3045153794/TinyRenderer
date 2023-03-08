@@ -7,7 +7,7 @@ set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 
 
-# 设置Cpp标准
+# 设置cpp标准
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
@@ -15,13 +15,8 @@ set(CMAKE_CXX_EXTENSIONS ON)
 
 project(TinyRenderer VERSION 0.0.1 LANGUAGES C CXX)
 
+include(config/saber.cmake)
 
-include(${PROJECT_SOURCE_DIR}/examples/demo_imgui/CMakeLists.txt)
+add_subdirectory(src)
 
-include(${PROJECT_SOURCE_DIR}/examples/demo/CMakeLists.txt)
-
-include (${PROJECT_SOURCE_DIR}/examples/demo_GLFW/CMakeLists.txt)
-
-include (${PROJECT_SOURCE_DIR}/test/CMakeLists.txt)
-
-include (${PROJECT_SOURCE_DIR}/examples/demo_valgrind/CMakeLists.txt)
+file(COPY ${RresourceDir} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

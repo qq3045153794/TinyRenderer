@@ -1,10 +1,5 @@
-project(DEMO VERSION 0.0.1 LANGUAGES C CXX)
-
-
-include(${PROJECT_SOURCE_DIR}/config/CMakeLists.txt)
-
-add_executable(demo
-    ${PROJECT_SOURCE_DIR}/examples/demo/main.cpp
+add_executable(saber
+    main.cpp
     ${MAIN_SRC}
     ${ImGUI_SRC}
     ${ImGuizmo_SRC}
@@ -12,7 +7,7 @@ add_executable(demo
 )
 
 # 编译选项 https://blog.csdn.net/zhizhengguan/article/details/111743586
-target_compile_options(demo
+target_compile_options(saber
     # Diagnose
     PUBLIC -Wall
     # Debug
@@ -21,7 +16,7 @@ target_compile_options(demo
 )
 
 
-target_include_directories(demo
+target_include_directories(saber
     PUBLIC
         ${ImGUI_INCLUDE}
         ${MAIN_INCLUDE}
@@ -29,7 +24,7 @@ target_include_directories(demo
         ${VEN_INCLUDE}
 )
 
-target_link_libraries(demo
+target_link_libraries(saber
     PUBLIC
-        ${MAIN_LIBS}
+      ${VEN_LIBS}
 )
