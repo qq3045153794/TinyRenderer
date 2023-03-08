@@ -27,12 +27,12 @@ class Texture {
           GLuint levels = 0);
   Texture(const GLchar* path, int resolution, GLuint levels = 0);
   ~Texture();
-  GLuint get_id();
+  GLuint get_id() const;
   void bind(GLuint unit) const;
   void ubind(GLuint unit) const;
 
  private:
-  void set_sampler_state();
+  void set_sampler_state() const;
   GLuint m_id;
   GLuint m_width, m_height;
   GLuint m_internal_format;

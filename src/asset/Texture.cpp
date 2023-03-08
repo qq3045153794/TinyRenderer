@@ -91,139 +91,146 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   glBindTexture(m_target, 0);
   set_sampler_state();
 
-  glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
+  const float kFOV = 90.0F;
+  const float kAspect = 1.0F;
+  const float kZNear = 0.1F;
+  const float kZFar = 100.F;
+  glm::mat4 proj = glm::perspective(glm::radians(kFOV), kAspect, kZNear, kZFar);
 
   glm::mat4 views[] = {
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
-                  glm::vec3(0.0f, 0.0f, 1.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
-                  glm::vec3(0.0f, 0.0f, -1.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f))};
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 0.0F, 0.0F),
+                  glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(-1.0F, 0.0F, 0.0F),
+                  glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 1.0F, 0.0F),
+                  glm::vec3(0.0F, 0.0F, 1.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, -1.0F, 0.0F),
+                  glm::vec3(0.0F, 0.0F, -1.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, 1.0F),
+                  glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, -1.0F),
+                  glm::vec3(0.0F, -1.0F, 0.0F))};
 
+  // clang-format off
   // 创建cubek
   static float data[] = {
       // back face
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
       // front face
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
       // left face
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
       // right face
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
       // bottom face
-      -1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      -1.0f,
+      -1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      -1.0F,
       // top face
-      -1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
-      1.0f,
-      -1.0f,
-      1.0f,
-      -1.0f,
-      -1.0f,
-      1.0f,
-      1.0f,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
+      1.0F,
+      -1.0F,
+      1.0F,
+      -1.0F,
+      -1.0F,
+      1.0F,
+      1.0F,
   };
+
+  // clang-format on
   auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
   auto cube_vao = std::make_unique<VAO>();
 
@@ -235,12 +242,10 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   cubemap_shader->bind();
   cubemap_shader->set_uniform("projection", proj);
   cubemap_shader->set_uniform("texture_0", 0);
-
   // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
   glViewport(0, 0, resolution, resolution);
   cubemap_fbo->bind();
   glActiveTexture(GL_TEXTURE0);
-
   glBindTexture(GL_TEXTURE_2D, hdr_id);
   for (size_t i = 0; i < faces; i++) {
     cubemap_shader->set_uniform("view", views[i]);
@@ -250,8 +255,9 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
 
     glClearColor(1.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    const uint32_t kVecticesCount = 36U;
     cube_vao->bind();
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, kVecticesCount);
     cube_vao->ubind();
   }
   cubemap_fbo->ubind();
@@ -273,18 +279,18 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
       glBindTexture(m_target, m_id);
       if (m_image_format == GL_RGB || m_image_format == GL_RGBA) {
         glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
-                     0, m_image_format, GL_UNSIGNED_BYTE, NULL);
+                     0, m_image_format, GL_UNSIGNED_BYTE, nullptr);
       } else {
         std::cout << "width = " << width << " "
                   << "height = " << height << std::endl;
         glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
-                     0, GL_RG, GL_FLOAT, NULL);
+                     0, GL_RG, GL_FLOAT, nullptr);
       }
       glBindTexture(m_target, 0);
       break;
     }
     case GL_TEXTURE_CUBE_MAP: {
-      int faces = 6;
+      const size_t faces = 6U;
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
       for (size_t i = 0; i < faces; i++) {
@@ -299,26 +305,11 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
   set_sampler_state();
 }
 
-/*
-Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
-  m_width = width;
-  m_height = height;
-  m_image_format = GL_RGB;
-  m_internal_format = GL_RGB;
-  glGenTextures(1, &m_id);
-  glBindTexture(m_target, m_id);
-  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
-m_image_format, GL_UNSIGNED_BYTE, NULL); glBindTexture(m_target, 0);
-
-  set_sampler_state();
-}
-*/
-
 Texture::~Texture() { glDeleteTextures(1, &m_id); }
 
-GLuint Texture::get_id() { return m_id; }
+GLuint Texture::get_id() const { return m_id; }
 
-void Texture::set_sampler_state() {
+void Texture::set_sampler_state() const {
   GLuint min_filter = m_levels > 0 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
 
   glBindTexture(m_target, m_id);
@@ -351,6 +342,9 @@ void Texture::bind(GLuint unit) const {
   glBindTexture(m_target, m_id);
 }
 
-void Texture::ubind(GLuint unit) const { glBindTexture(m_target, 0); }
+void Texture::ubind(GLuint unit) const {
+  glActiveTexture(GL_TEXTURE0 + unit);
+  glBindTexture(m_target, 0);
+}
 
 }  // namespace asset

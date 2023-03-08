@@ -4,8 +4,8 @@
 
 namespace asset {
 
-GLuint static curr_bound_rbo = 0;
-GLuint static curr_bound_fbo = 0;
+GLuint static g_cur_bound_rbo = 0;
+GLuint static g_cur_bound_fbo = 0;
 
 RBO::RBO(GLuint width, GLuint height) {
   glGenRenderbuffers(1, &id);
@@ -16,16 +16,16 @@ RBO::RBO(GLuint width, GLuint height) {
 RBO::~RBO() { glDeleteRenderbuffers(1, &id); }
 
 void RBO::bind() const {
-  if (curr_bound_rbo != id) {
+  if (g_cur_bound_rbo != id) {
     glBindRenderbuffer(GL_RENDERBUFFER, id);
-    curr_bound_rbo = id;
+    g_cur_bound_rbo = id;
   }
 }
 
 void RBO::ubind() const {
-  if (curr_bound_rbo == id) {
+  if (g_cur_bound_rbo == id) {
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    curr_bound_rbo = 0;
+    g_cur_bound_rbo = 0;
   }
 }
 
@@ -45,10 +45,10 @@ FBO::~FBO() { glDeleteFramebuffers(1, &id); }
 void FBO::set_buffer() {
   // clang-format off
   GLfloat data [] = {
-    -1.0f,  1.0f,  0.0f, 0.0f, 1.0f,  // left top
-     1.0f,  1.0f,  0.0f, 1.0f, 1.0f,  // right top
-     1.0f, -1.0f,  0.0f, 1.0f, 0.0f,  // right bottom
-    -1.0f, -1.0f,  0.0f, 0.0f, 0.0f   // left bottom
+    -1.0F,  1.0F,  0.0F, 0.0F, 1.0F,  // left top
+     1.0F,  1.0F,  0.0F, 1.0F, 1.0F,  // right top
+     1.0F, -1.0F,  0.0F, 1.0F, 0.0F,  // right bottom
+    -1.0F, -1.0F,  0.0F, 0.0F, 0.0F   // left bottom
   };
 
   GLuint index [] = {
@@ -57,13 +57,16 @@ void FBO::set_buffer() {
   };
   // clang-format on
 
+  const uint32_t kVecticesCount = 6U;
   m_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
-  m_ibo = std::make_unique<IBO>(sizeof(index), index, GL_STATIC_DRAW, 6U);
+  m_ibo = std::make_unique<IBO>(sizeof(index), index, GL_STATIC_DRAW,
+                                kVecticesCount);
   m_vao = std::make_unique<VAO>();
 
-  m_vao->set_vbo(*m_vbo, 0, 3U, sizeof(GLfloat) * 5, 0U, GL_FLOAT);
-  m_vao->set_vbo(*m_vbo, 1, 2U, sizeof(GLfloat) * 5, 3U * sizeof(GLfloat),
-                 GL_FLOAT);
+  const uint32_t kVboStep = 5U;
+  m_vao->set_vbo(*m_vbo, 0, 3U, sizeof(GLfloat) * kVboStep, 0U, GL_FLOAT);
+  m_vao->set_vbo(*m_vbo, 1, 2U, sizeof(GLfloat) * kVboStep,
+                 3U * sizeof(GLfloat), GL_FLOAT);
   m_vao->set_ibo(*m_ibo);
 }
 
@@ -79,7 +82,7 @@ void FBO::set_color_texture() {
   CORE_INFO("attach color texture");
 }
 
-void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) {
+void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) const {
   this->bind();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index,
                          GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, cubemap, 0);
@@ -126,16 +129,16 @@ void FBO::draw() const {
 const Texture& FBO::get_color_texture() { return *m_texture; }
 
 void FBO::bind() const {
-  if (curr_bound_fbo != id) {
+  if (g_cur_bound_fbo != id) {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
-    curr_bound_fbo = id;
+    g_cur_bound_fbo = id;
   }
 }
 
 void FBO::ubind() const {
-  if (curr_bound_fbo == id) {
+  if (g_cur_bound_fbo == id) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    curr_bound_fbo = 0;
+    g_cur_bound_fbo = 0;
   }
 }
 

@@ -4,9 +4,9 @@
 
 namespace asset {
 
-static GLuint curr_bound_vbo = 0;
-static GLuint curr_bound_ibo = 0;
-static GLuint curr_bound_ubo = 0;
+static GLuint g_curr_bound_vbo = 0;
+static GLuint g_curr_bound_ibo = 0;
+static GLuint g_curr_bound_ubo = 0;
 
 VBO::VBO(GLuint sz, void* data, GLenum usage) : BufferBase() {
   glBindBuffer(GL_ARRAY_BUFFER, m_id);
@@ -14,15 +14,15 @@ VBO::VBO(GLuint sz, void* data, GLenum usage) : BufferBase() {
 }
 
 void VBO::bind() const {
-  if (curr_bound_vbo != m_id) {
+  if (g_curr_bound_vbo != m_id) {
     glBindBuffer(GL_ARRAY_BUFFER, m_id);
-    curr_bound_vbo = m_id;
+    g_curr_bound_vbo = m_id;
   }
 }
 void VBO::ubind() const {
-  if (curr_bound_vbo == m_id) {
+  if (g_curr_bound_vbo == m_id) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    curr_bound_vbo = 0;
+    g_curr_bound_vbo = 0;
   }
 }
 
@@ -35,23 +35,23 @@ IBO::IBO(GLuint sz, void* data, GLenum usage, GLuint count)
 const GLuint& IBO::get_count() const { return m_count; }
 
 void IBO::bind() const {
-  if (curr_bound_ibo != m_id) {
+  if (g_curr_bound_ibo != m_id) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-    curr_bound_ibo = m_id;
+    g_curr_bound_ibo = m_id;
   }
 }
 
 void IBO::ubind() const {
-  if (curr_bound_ibo == m_id) {
+  if (g_curr_bound_ibo == m_id) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    curr_bound_ibo = 0;
+    g_curr_bound_ibo = 0;
   }
 }
 
 UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz)
     : BufferBase(), m_offset_vec(offset_vec), m_length_vec(length_vec) {
   glBindBuffer(GL_UNIFORM_BUFFER, m_id);
-  glBufferData(GL_UNIFORM_BUFFER, sz, NULL, GL_STATIC_DRAW);
+  glBufferData(GL_UNIFORM_BUFFER, sz, nullptr, GL_STATIC_DRAW);
 }
 
 void UBO::set_uniform(GLuint uid, void* data) {
@@ -73,16 +73,16 @@ void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
 }
 
 void UBO::bind() const {
-  if (curr_bound_ubo != m_id) {
+  if (g_curr_bound_ubo != m_id) {
     glBindBuffer(GL_UNIFORM_BUFFER, m_id);
-    curr_bound_ubo = m_id;
+    g_curr_bound_ubo = m_id;
   }
 }
 
 void UBO::ubind() const {
-  if (curr_bound_ubo == m_id) {
+  if (g_curr_bound_ubo == m_id) {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    curr_bound_ubo = 0;
+    g_curr_bound_ubo = 0;
   }
 }
 

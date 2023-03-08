@@ -33,8 +33,8 @@ class Shader {
 
  private:
   GLuint m_id;
-  GLuint create_shader(const GLchar* code, GLuint type);
-  void check_compile_errors(GLuint object, const std::string& type);
+  static GLuint create_shader(const GLchar* code, GLuint type);
+  static void check_compile_errors(GLuint object, const std::string& type);
 
   void compile(const GLchar* vertex_code, const GLchar* fragment_code,
                const GLchar* geometry_code);

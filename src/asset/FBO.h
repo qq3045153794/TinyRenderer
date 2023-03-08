@@ -21,7 +21,7 @@ class FBO : public Asset {
   FBO(GLuint width, GLuint height);
   virtual ~FBO();
   void set_color_texture();
-  void set_color_texture(GLuint index, GLuint cubemap, GLuint face);
+  void set_color_texture(GLuint index, GLuint cubemap, GLuint face) const;
   void set_depth_texture();
   void reset_depth_texture(GLuint width, GLuint height);
   void change_shader(std::unique_ptr<Shader> shader);
