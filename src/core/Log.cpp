@@ -1,10 +1,7 @@
 #include "core/Log.h"
 
-#include "spdlog/sinks/stdout_color_sinks.h"
-
 #include "assert.h"
-
-
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 std::shared_ptr<spdlog::logger> Log::logger;
 
@@ -17,7 +14,7 @@ void Log::init() {
   sinks[0]->set_pattern("[%^%4!l%$][%Y-%m-%d %H:%M:%S.%e]<%s:%#>: %v");
   sinks[0]->set_color(spdlog::level::trace, sinks[0]->cyan);
   sinks[0]->set_color(spdlog::level::debug, sinks[0]->bold);
-  
+
   logger = std::make_shared<spdlog::logger>("logger", begin(sinks), end(sinks));
 
   // 全局使用需要注册
@@ -30,4 +27,3 @@ void Log::init() {
 }
 
 void Log::shut_down() { spdlog::shutdown(); }
-

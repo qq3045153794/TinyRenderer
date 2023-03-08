@@ -37,7 +37,8 @@ class Spotlight : public Light {
   float m_range = std::numeric_limits<float>::max();
   using Light::Light;
 
-  void set_cutoff(float range, float inner_cutoff = 15.0f, float outer_cutoff = 30.0f);
+  void set_cutoff(float range, float inner_cutoff = 15.0f,
+                  float outer_cutoff = 30.0f);
   float get_inner_cosine() const;
   float get_outer_cosine() const;
   float get_attenuation(float distance) const;

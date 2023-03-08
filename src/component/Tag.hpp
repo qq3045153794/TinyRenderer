@@ -15,9 +15,12 @@ enum ETag {
 class Tag {
  public:
   Tag(ETag tag) : m_tag(tag) {}
-  void add(ETag tag) { m_tag = static_cast<ETag>(static_cast<int>(m_tag) | static_cast<int>(tag)); }
+  void add(ETag tag) {
+    m_tag = static_cast<ETag>(static_cast<int>(m_tag) | static_cast<int>(tag));
+  }
   void del(ETag tag) {
-    m_tag = static_cast<ETag>(static_cast<int>(m_tag) & (~static_cast<int>(tag)));
+    m_tag =
+        static_cast<ETag>(static_cast<int>(m_tag) & (~static_cast<int>(tag)));
   }
 
   constexpr bool contains(ETag tag) const {

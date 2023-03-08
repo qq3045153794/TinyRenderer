@@ -31,7 +31,8 @@ using namespace core;
 static const ImGuiColorEditFlags color3_flags =
     ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoAlpha;
 static const ImGuiWindowFlags invisible_window_flags =
-    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
+    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration |
+    ImGuiWindowFlags_NoInputs;
 
 const char* glsl_version = "#version 330";
 
@@ -59,10 +60,12 @@ void init() {
   config_main.PixelSnapH = true;
   config_main.OversampleH = 4;
   config_main.OversampleV = 4;
-  config_main.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
+  config_main.RasterizerMultiply =
+      1.2f;  // brighten up the font to make them more readable
   config_main.GlyphExtraSpacing.x = 0.0f;  // 字间距离
 
-  truetype_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
+  truetype_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz,
+                                               &config_main);
 
   // load default dark theme
   ImGui::StyleColorsDark();
@@ -179,16 +182,19 @@ void draw_menu_bar(std::string& new_title) {
   ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4(0.0f, 0.0f, 0.0f, 0.75f));
   ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.0f, 0.0f, 0.0f, 0.55f));
   ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.22f, 0.39f, 0.61f, 0.8f));
-  ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.24f, 0.54f, 0.89f, 0.8f));
+  ImGui::PushStyleColor(ImGuiCol_HeaderHovered,
+                        ImVec4(0.24f, 0.54f, 0.89f, 0.8f));
 
   //
 
   ImGui::Begin("Menu Bar", 0,
-               ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
+               ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration |
+                   ImGuiWindowFlags_NoMove);
 
   if (ImGui::BeginMenuBar()) {
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.7f, 0.7f, 0.7f, 0.3f));
-    ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+    ImGui::PushStyleColor(ImGuiCol_BorderShadow,
+                          ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
 
     if (ImGui::BeginMenu("Open")) {
       for (unsigned int i = 0; i < scene::factory::titles.size(); i++) {
@@ -197,7 +203,8 @@ void draw_menu_bar(std::string& new_title) {
         id << " " << std::setfill('0') << std::setw(2) << i;
         bool selected = (curr_scene_title == title);
 
-        if (ImGui::MenuItem((" " + title).c_str(), id.str().c_str(), selected)) {
+        if (ImGui::MenuItem((" " + title).c_str(), id.str().c_str(),
+                            selected)) {
           if (!selected) {
             new_title = title;
           }
@@ -229,7 +236,8 @@ void draw_menu_bar(std::string& new_title) {
 
 void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
   static const ImVec2 win_pos = ImVec2(0.0f, 50.0f);
-  static const ImVec2 win_size = ImVec2((float)Window::m_width, (float)Window::m_height - 82.0f);
+  static const ImVec2 win_size =
+      ImVec2((float)Window::m_width, (float)Window::m_height - 82.0f);
 
   ImGuizmo::MODE mode = ImGuizmo::MODE::LOCAL;
   ImGuizmo::OPERATION operation = ImGuizmo::OPERATION::TRANSLATE;
@@ -268,7 +276,8 @@ void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
   ImGuizmo::SetDrawlist();
   ImGuizmo::SetRect(win_pos.x, win_pos.y, win_size.x, win_size.y);
 
-  ImGuizmo::Manipulate(value_ptr(V), value_ptr(P), operation, mode, value_ptr(transform));
+  ImGuizmo::Manipulate(value_ptr(V), value_ptr(P), operation, mode,
+                       value_ptr(transform));
 
   if (ImGuizmo::IsUsing()) {
     T.set_transform(transform);
@@ -300,7 +309,8 @@ void draw_loading_screen() {
   ImDrawList* draw_list = ImGui::GetWindowDrawList();
   draw_list->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 1.3f,
                      ImVec2((win_w - bar_w) * 0.5f, (win_h - bar_h) * 0.5f),
-                     ImGui::ColorConvertFloat4ToU32(yellow), "LOADING, PLEASE WAIT ......");
+                     ImGui::ColorConvertFloat4ToU32(yellow),
+                     "LOADING, PLEASE WAIT ......");
 
   float x = 505.0f;  // not magic number, it's simple math!
   float y = 465.0f;  // not magic number, it's simple math!
@@ -312,8 +322,9 @@ void draw_loading_screen() {
     g = (i <= 0.33f) ? i * 3 : 1.0f;
     b = (i > 0.66f) ? (i - 0.66f) * 3 : 0.0f;
 
-    draw_list->AddTriangleFilled(ImVec2(x, y - 0.5f * size), ImVec2(x, y + 0.5f * size),
-                                 ImVec2(x + size, y), IM_COL32(r * 255, g * 255, b * 255, 255.0f));
+    draw_list->AddTriangleFilled(
+        ImVec2(x, y - 0.5f * size), ImVec2(x, y + 0.5f * size),
+        ImVec2(x + size, y), IM_COL32(r * 255, g * 255, b * 255, 255.0f));
   }
 
   ImGui::End();

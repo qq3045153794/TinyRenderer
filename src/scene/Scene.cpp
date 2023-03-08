@@ -10,13 +10,16 @@ namespace scene {
 Scene::Scene(const std::string& title) : m_title(title) {}
 
 Scene::~Scene() {
-  registry.each([this](auto id) { CORE_TRACE("Destroying entity: {0}", directory.at(id)); });
+  registry.each([this](auto id) {
+    CORE_TRACE("Destroying entity: {0}", directory.at(id));
+  });
   registry.clear();
 }
 
 void Scene::init() {
-  welcome_screen = std::make_unique<asset::Texture>("../resource/texture/welcome (original).png", false);
-  welcome_screen_texture_id = (void*) welcome_screen->get_id();
+  welcome_screen = std::make_unique<asset::Texture>(
+      "../resource/texture/welcome (original).png", false);
+  welcome_screen_texture_id = (void*)welcome_screen->get_id();
 }
 
 Entity Scene::create_entity(const std::string& name, component::ETag tag) {
@@ -26,8 +29,6 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   directory.emplace(e.id, e.name);
   return e;
 }
-
-
 
 void Scene::add_fbo(GLuint width, GLuint height) {
   nor_fbo = std::make_shared<asset::FBO>(width, height);

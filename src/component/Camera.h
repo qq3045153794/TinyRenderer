@@ -19,7 +19,8 @@ namespace component {
 class Camera {
  public:
   Camera(Transform* T, float fov, float aspect, float znear, float zfar);
-  Camera(Transform* T, float left, float right, float bottom, float top, float znear, float zfar);
+  Camera(Transform* T, float left, float right, float bottom, float top,
+         float znear, float zfar);
   virtual ~Camera(){};
 
   glm::mat4 get_view_mat() const { return T->get_lookat(); };
@@ -48,8 +49,8 @@ class Camera {
 class CameraFps : public Camera {
  public:
   CameraFps(Transform* T, float fov, float aspect, float znear, float zfar);
-  CameraFps(Transform* T, float left, float right, float bottom, float top, float znear,
-            float zfar);
+  CameraFps(Transform* T, float left, float right, float bottom, float top,
+            float znear, float zfar);
 
   virtual ~CameraFps(){};
   void update();

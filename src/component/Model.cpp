@@ -1,15 +1,16 @@
 #include "component/Model.h"
-#include "component/Material.h"
 
 #include <bitset>
 #include <chrono>
 #include <vector>
 
+#include "component/Material.h"
 #include "component/Mesh.h"
 #include "core/Log.h"
 namespace component {
 
-Model::Model(const std::string& file_path, Quality quality, bool animated) : m_animated(animated) {
+Model::Model(const std::string& file_path, Quality quality, bool animated)
+    : m_animated(animated) {
   // clang-format off
   u_int32_t improt_options = static_cast<unsigned int>(quality) 
     | aiProcess_FlipUVs 
@@ -27,7 +28,8 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : m_a
 
   ai_root = importer.ReadFile(file_path, improt_options);
 
-  if (!ai_root || ai_root->mRootNode == nullptr || ai_root->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
+  if (!ai_root || ai_root->mRootNode == nullptr ||
+      ai_root->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     CORE_ERROR("Failed to import model: {0}", file_path);
     CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
     return;
@@ -41,11 +43,13 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : m_a
   CORE_TRACE("Generating model loading report...... (for reference)");
   CORE_TRACE("-----------------------------------------------------");
 
-  std::chrono::duration<double, std::milli> loading_time = end_time - start_time;
+  std::chrono::duration<double, std::milli> loading_time =
+      end_time - start_time;
   CORE_DEBUG("load model use time {} ms", loading_time.count());
 
   CORE_DEBUG("total # of meshes:     {0}", n_meshes);
-  CORE_DEBUG("total # of vertices:   {0:.2f}k ({1})", n_verts * 0.001f, n_verts);
+  CORE_DEBUG("total # of vertices:   {0:.2f}k ({1})", n_verts * 0.001f,
+             n_verts);
   CORE_DEBUG("total # of triangles:  {0:.2f}k ({1})", n_tris * 0.001f, n_tris);
   CORE_TRACE("-----------------------------------------------------");
 
@@ -91,13 +95,15 @@ void Model::process_mesh(aiMesh* ai_mesh) {
   local_format.set(0, ai_mesh->HasPositions());
   local_format.set(1, ai_mesh->HasNormals());
   local_format.set(2, ai_mesh->HasTextureCoords(0));
-  local_format.set(3, ai_mesh->HasTextureCoords(1) && ai_mesh->GetNumUVChannels() > 1);
+  local_format.set(
+      3, ai_mesh->HasTextureCoords(1) && ai_mesh->GetNumUVChannels() > 1);
   local_format.set(4, ai_mesh->HasTangentsAndBitangents());
   local_format.set(5, ai_mesh->HasTangentsAndBitangents());
 
   static bool warned = false;
   if (vtx_format != local_format && !warned) {
-    CORE_WARN("Inconsistent vertex format! Some meshes have attributes missing...");
+    CORE_WARN(
+        "Inconsistent vertex format! Some meshes have attributes missing...");
     warned = true;
   }
 
@@ -186,8 +192,10 @@ void Model::process_material(aiMaterial* ai_material, const Mesh& mesh) {
   materials_cache[matkey] = matid;
 }
 
-Material& Model::SetMatermial(const std::string& matkey, const Material& material) {
-  CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}", matkey);
+Material& Model::SetMatermial(const std::string& matkey,
+                              const Material& material) {
+  CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}",
+             matkey);
   GLuint matid = materials_cache[matkey];
   materials.insert_or_assign(matid, material);
 

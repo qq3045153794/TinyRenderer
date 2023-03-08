@@ -17,11 +17,11 @@ void Event::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   if (Window::layer == Layer::Scene) {
     Input::set_cursor(xpos, ypos);
   } else if (Window::layer == Layer::ImGui) {
-    
   }
 }
 
-void Event::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+void Event::mouse_button_callback(GLFWwindow* window, int button, int action,
+                                  int mods) {
   if (button == GLFW_MOUSE_BUTTON_LEFT) {
     Input::set_mouse_down(Input::LEFT, action == GLFW_PRESS);
   } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
@@ -31,8 +31,8 @@ void Event::mouse_button_callback(GLFWwindow* window, int button, int action, in
   }
 }
 
-void Event::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-  
+void Event::key_callback(GLFWwindow* window, int key, int scancode, int action,
+                         int mods) {
   uint8_t _key = '0';
 
   // clang-format off

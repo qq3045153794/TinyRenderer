@@ -1,9 +1,10 @@
 #ifndef _SRC_ASSET_BUFFER_H_
 #define _SRC_ASSET_BUFFER_H_
 
-#include "glad/glad.h"
-#include <vector>
 #include <string>
+#include <vector>
+
+#include "glad/glad.h"
 namespace asset {
 
 class BufferBase {

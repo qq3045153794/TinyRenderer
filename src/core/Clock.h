@@ -8,11 +8,11 @@ class Clock {
   static inline float dt = 0.0;
   static inline float this_frame = 0.0;
   static inline float last_frame = 0.0;
-  
+
   static void init();
   static void update();
+
  private:
-  
 };
 
 #endif

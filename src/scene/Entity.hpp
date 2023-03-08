@@ -4,13 +4,13 @@
 #include <entt/entt.hpp>
 #include <string>
 
-#include "utils/ext.hpp"
-#include "core/Debug.h"
 #include "component/Camera.h"
 #include "component/Material.h"
 #include "component/Mesh.h"
 #include "component/Model.h"
 #include "component/Transform.h"
+#include "core/Debug.h"
+#include "utils/ext.hpp"
 
 namespace scene {
 
@@ -26,11 +26,11 @@ class Entity {
   Entity() = default;
   Entity(const std::string& name, entt::entity id, entt::registry* reg)
       : name(name), id(id), registry(reg) {}
-  ~Entity(){}
+  ~Entity() {}
 
   Entity(const Entity&) = default;
   Entity& operator=(const Entity&) = default;
-  
+
   template <typename T, typename... Args>
   T& AddComponent(Args&&... args) {
     using namespace component;

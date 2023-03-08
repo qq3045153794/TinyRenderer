@@ -1,9 +1,10 @@
 #include "utils/File.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
+
 #include "core/Log.h"
 namespace utils {
 std::string File::read_file(const std::string& file_path) {
@@ -16,10 +17,10 @@ std::string File::read_file(const std::string& file_path) {
     file_stream << file.rdbuf();
     out = file_stream.str();
     file.close();
-  } catch(std::ifstream::failure& e) {
+  } catch (std::ifstream::failure& e) {
     file.close();
     CORE_ERROR("ERROR::SHADER::FILE_NO_SUCCESFULLY_READ");
-  } catch(std::exception& e) {
+  } catch (std::exception& e) {
     file.close();
     CORE_ERROR("Read file failure..");
   }

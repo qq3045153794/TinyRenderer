@@ -16,7 +16,6 @@
 #include "glad/glad.h"
 #include "core/Log.h"
 
-
 // clang-format on
 
 namespace core {

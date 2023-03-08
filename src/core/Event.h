@@ -50,7 +50,8 @@ class Event {
    * @param        {int} mods
    * @return       {*}
    */
-  static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+  static void mouse_button_callback(GLFWwindow* window, int button, int action,
+                                    int mods);
 
   /**
    * @brief : 当键盘按压时 调用回调 且将键盘状态写入输入事件中
@@ -61,7 +62,8 @@ class Event {
    * @param        {int} mods
    * @return       {*}
    */
-  static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+  static void key_callback(GLFWwindow* window, int key, int scancode,
+                           int action, int mods);
 
   /**
    * @brief :

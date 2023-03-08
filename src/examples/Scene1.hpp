@@ -30,7 +30,7 @@ class Scene1 : public Scene {
   Entity paimon;
   Entity sun_light;
   Entity point_light;
-  Entity camera_light; 
+  Entity camera_light;
 
   std::shared_ptr<Shader> quad_shader;
   std::shared_ptr<Shader> skybox_shader;
@@ -89,68 +89,144 @@ class Scene1 : public Scene {
   }
 
   void set_BIL() {
-
     GLuint low_resolution = 128;
-    irradian = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution , low_resolution, GL_RGB);
+    irradian = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution,
+                                         low_resolution, GL_RGB);
 
     auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
 
     glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
 
-    glm::mat4 views[] = 
-    {
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-    };
+    glm::mat4 views[] = {
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+                    glm::vec3(0.0f, -1.0f, 0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f),
+                    glm::vec3(0.0f, -1.0f, 0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
+                    glm::vec3(0.0f, 0.0f, 1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+                    glm::vec3(0.0f, 0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
+                    glm::vec3(0.0f, -1.0f, 0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f),
+                    glm::vec3(0.0f, -1.0f, 0.0f))};
 
     // 创建cubek
-   static float data[] = {
-      // back face
-      -1.0f, -1.0f, -1.0f,
-       1.0f,  1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f,  1.0f, -1.0f,
-      -1.0f, -1.0f, -1.0f,
-      -1.0f,  1.0f, -1.0f,
-      // front face
-      -1.0f, -1.0f,  1.0f,
-       1.0f, -1.0f,  1.0f,
-       1.0f,  1.0f,  1.0f,
-       1.0f,  1.0f,  1.0f,
-      -1.0f,  1.0f,  1.0f,
-      -1.0f, -1.0f,  1.0f,
-      // left face
-      -1.0f,  1.0f,  1.0f,
-      -1.0f,  1.0f, -1.0f,
-      -1.0f, -1.0f, -1.0f,
-      -1.0f, -1.0f, -1.0f,
-      -1.0f, -1.0f,  1.0f,
-      -1.0f,  1.0f,  1.0f,
-      // right face
-       1.0f,  1.0f,  1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f,  1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f,  1.0f,  1.0f,
-       1.0f, -1.0f,  1.0f,
-      // bottom face
-      -1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f,  1.0f,
-       1.0f, -1.0f,  1.0f,
-      -1.0f, -1.0f,  1.0f,
-      -1.0f, -1.0f, -1.0f,
-      // top face
-      -1.0f,  1.0f, -1.0f,
-       1.0f,  1.0f , 1.0f,
-       1.0f,  1.0f, -1.0f,
-       1.0f,  1.0f,  1.0f,
-      -1.0f,  1.0f, -1.0f,
-      -1.0f,  1.0f,  1.0f,
+    static float data[] = {
+        // back face
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        // front face
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        // left face
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        // right face
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        // bottom face
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        -1.0f,
+        // top face
+        -1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
+        1.0f,
+        -1.0f,
+        1.0f,
+        -1.0f,
+        -1.0f,
+        1.0f,
+        1.0f,
     };
 
     auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
@@ -158,13 +234,12 @@ class Scene1 : public Scene {
 
     cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(float), 0, GL_FLOAT);
 
-
-    auto irradian_shader = std::make_unique<Shader>("../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
+    auto irradian_shader = std::make_unique<Shader>(
+        "../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
 
     irradian_shader->bind();
     irradian_shader->set_uniform("projection", proj);
     irradian_shader->set_uniform("texture_0", 0);
-
 
     // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
     glViewport(0, 0, low_resolution, low_resolution);
@@ -181,8 +256,10 @@ class Scene1 : public Scene {
     }
     irradian_fbo->ubind();
 
-    prefiltermap = std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, low_resolution, low_resolution, GL_FLOAT, 5);
-    auto prefilter_shader = std::make_shared<Shader>("../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
+    prefiltermap = std::make_shared<Texture>(
+        GL_TEXTURE_CUBE_MAP, low_resolution, low_resolution, GL_FLOAT, 5);
+    auto prefilter_shader = std::make_shared<Shader>(
+        "../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
     auto prefilter_fbo = std::make_shared<FBO>(low_resolution, low_resolution);
 
     prefilter_fbo->set_depth_texture();
@@ -202,43 +279,45 @@ class Scene1 : public Scene {
 
       prefilter_fbo->reset_depth_texture(mip_width, mip_height);
       glViewport(0, 0, mip_width, mip_height);
-      float roughness = static_cast<float> (mip) / (kMaxMipmap - 1);
+      float roughness = static_cast<float>(mip) / (kMaxMipmap - 1);
       prefilter_shader->set_uniform("roughness", roughness);
       for (int face = 0; face < faces; face++) {
         prefilter_shader->set_uniform("view", views[face]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, prefiltermap->get_id(), mip);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                               prefiltermap->get_id(), mip);
         Render::clear_buffer();
 
         cube_vao->draw(0, 36);
       }
-
     }
     prefilter_fbo->ubind();
 
-    GLfloat quad_data[] = {
-      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-      1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-      1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-      1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-      -1.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    };
+    GLfloat quad_data[] = {-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
+                           1.0f,  0.0f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f,
+                           -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  1.0f,
+                           1.0f,  -1.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 
-    auto quad_vbo = std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
+    auto quad_vbo =
+        std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
     auto quad_vao = std::make_shared<VAO>();
     quad_vao->set_vbo(*quad_vbo, 0, 3, 5 * sizeof(GLfloat), 0, GL_FLOAT);
-    quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat), GL_FLOAT);
+    quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat),
+                      GL_FLOAT);
 
-    BRDF_LUT_texture = std::make_shared<Texture> (GL_TEXTURE_2D, 512, 512, GL_RG16F);
+    BRDF_LUT_texture =
+        std::make_shared<Texture>(GL_TEXTURE_2D, 512, 512, GL_RG16F);
     auto BRDF_LUT_fbo = std::make_shared<FBO>(512, 512);
-    auto BRDF_LUT_shader = std::make_shared<Shader>("../resource/shader/BRDF_LUT.vs", "../resource/shader/BRDF_LUT.fs");
+    auto BRDF_LUT_shader = std::make_shared<Shader>(
+        "../resource/shader/BRDF_LUT.vs", "../resource/shader/BRDF_LUT.fs");
 
     BRDF_LUT_fbo->set_depth_texture();
 
     BRDF_LUT_fbo->bind();
     BRDF_LUT_shader->bind();
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT_texture->get_id(), 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           BRDF_LUT_texture->get_id(), 0);
 
     glViewport(0, 0, 512, 512);
 
@@ -249,36 +328,48 @@ class Scene1 : public Scene {
     BRDF_LUT_fbo->ubind();
 
     CHECK_ERROR();
-
   }
 
   virtual void init() override {
     add_fbo(Window::m_width, Window::m_height);
 
-    quad_shader =
-        std::make_shared<Shader>("../resource/shader/shader.vs", "../resource/shader/shader.fs");
+    quad_shader = std::make_shared<Shader>("../resource/shader/shader.vs",
+                                           "../resource/shader/shader.fs");
 
-    skybox_shader =
-        std::make_shared<Shader>("../resource/shader/skybox.vs", "../resource/shader/skybox.fs");
+    skybox_shader = std::make_shared<Shader>("../resource/shader/skybox.vs",
+                                             "../resource/shader/skybox.fs");
 
-    ptr_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
-    pbr_texture_shader = std::make_shared<Shader>("../resource/shader/pbr.vs", "../resource/shader/pbr.fs");
+    ptr_shader = std::make_shared<Shader>("../resource/shader/pbr.vs",
+                                          "../resource/shader/pbr.fs");
+    pbr_texture_shader = std::make_shared<Shader>("../resource/shader/pbr.vs",
+                                                  "../resource/shader/pbr.fs");
 
-    albedo_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
-    normal_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
-    metalness_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
-    roughness_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
-    ao_pbr = std::make_shared<Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
+    albedo_pbr = std::make_shared<Texture>(
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
+        "MetalPlates013_2K_Color.jpg");
+    normal_pbr = std::make_shared<Texture>(
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
+        "MetalPlates013_2K_NormalGL.jpg");
+    metalness_pbr = std::make_shared<Texture>(
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
+        "MetalPlates013_2K_Metalness.jpg");
+    roughness_pbr = std::make_shared<Texture>(
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
+        "MetalPlates013_2K_Roughness.jpg");
+    ao_pbr = std::make_shared<Texture>(
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
+        "MetalPlates013_2K_AmbientOcclusion.jpg");
 
     add_ubo(quad_shader);
     add_ubo(skybox_shader);
     add_ubo(ptr_shader);
     add_ubo(pbr_texture_shader);
 
-    quad_texture = std::make_shared<Texture>("../resource/texture/003.jpeg", true, 7);
+    quad_texture =
+        std::make_shared<Texture>("../resource/texture/003.jpeg", true, 7);
 
-
-    skybox_hdr_texutre = std::make_shared<Texture>("../resource/texture/hotel_room_4k2.hdr", 512);
+    skybox_hdr_texutre = std::make_shared<Texture>(
+        "../resource/texture/hotel_room_4k2.hdr", 512);
 
     paimon_1 = std::make_shared<Material>(quad_shader);
 
@@ -302,7 +393,8 @@ class Scene1 : public Scene {
 
     point_light = create_entity("point light");
     point_light.AddComponent<PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
-    point_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
+    point_light.GetComponent<Transform>().set_position(
+        glm::vec3(0.0, 0.0, -5.0));
     point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
     if (auto& ubo = UBOs[2]; true) {
       auto& dl = point_light.GetComponent<PointLight>();
@@ -320,7 +412,6 @@ class Scene1 : public Scene {
       ubo.set_uniform(3, &linear);
       ubo.set_uniform(4, &quadratic);
       ubo.set_uniform(5, &range);
-
     }
     camera_light = create_entity("camera light");
     camera_light.AddComponent<Spotlight>(glm::vec3(1.0, 0.553, 0.0), 3.8);
@@ -363,7 +454,6 @@ class Scene1 : public Scene {
     CHECK_ERROR();
     CORE_INFO("{} created", sphere.name);
 
-
     sphere_pbr = create_entity("sphere pbr");
     sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
     sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
@@ -382,48 +472,68 @@ class Scene1 : public Scene {
 
     main_camera = create_entity("main_camera");
     main_camera.AddComponent<CameraFps>(
-        60.f, static_cast<float>(Window::m_width) / static_cast<float>(Window::m_height), 0.1f,
-        100.f);
+        60.f,
+        static_cast<float>(Window::m_width) /
+            static_cast<float>(Window::m_height),
+        0.1f, 100.f);
     // main_camera.AddComponent<Camera>(0.0f, 1.0f, 0.0f, 1.0f, 0.1f, 100.f);
-    main_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+    main_camera.GetComponent<Transform>().set_position(
+        glm::vec3(0.0, 0.0, 5.0));
     CHECK_ERROR();
 
     paimon = create_entity("paimon");
-    paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj", Quality::Auto);
+    paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj",
+                               Quality::Auto);
     paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
     paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
 
-    auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
+    auto& temp_mat_1 =
+        paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
     temp_mat_1.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/披风2.jpg", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/披风2.jpg", false, 5));
 
-    auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
+    auto& temp_mat_2 =
+        paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
     temp_mat_2.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/头发.jpg", false, 5));
 
-    auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
+    auto& temp_mat_3 =
+        paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
     temp_mat_3.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/衣服.jpg", false, 5));
 
-    auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
+    auto& temp_mat_4 =
+        paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
     temp_mat_4.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/衣服.jpg", false, 5));
 
-    auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
+    auto& temp_mat_5 =
+        paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
     temp_mat_5.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/头发.jpg", false, 5));
 
-    auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
+    auto& temp_mat_6 =
+        paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
     temp_mat_6.set_texture(
-        0, std::make_shared<Texture>("../resource/objects/paimon/Texture/表情.png", false, 5));
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/表情.png", false, 5));
 
-    auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
-    temp_mat_7.set_texture(0,
-                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
+    auto& temp_mat_7 =
+        paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
+    temp_mat_7.set_texture(
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/脸.jpg", false, 5));
 
-    auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
-    temp_mat_8.set_texture(0,
-                           std::make_shared<Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
+    auto& temp_mat_8 =
+        paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
+    temp_mat_8.set_texture(
+        0, std::make_shared<Texture>(
+               "../resource/objects/paimon/Texture/脸.jpg", false, 5));
 
     CHECK_ERROR();
 
@@ -439,20 +549,23 @@ class Scene1 : public Scene {
     auto& camera = main_camera.GetComponent<CameraFps>();
     camera.update();
     if (asset::UBO& ubo = UBOs[0]; true) {
-      glm::mat4 proj = main_camera.GetComponent<CameraFps>().get_projection_mat();
+      glm::mat4 proj =
+          main_camera.GetComponent<CameraFps>().get_projection_mat();
       glm::mat4 view = main_camera.GetComponent<CameraFps>().get_view_mat();
-      glm::vec4 pos = glm::vec4(main_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
-      glm::vec4 forward = glm::vec4(main_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
+      glm::vec4 pos = glm::vec4(
+          main_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
+      glm::vec4 forward =
+          glm::vec4(main_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
       ubo.set_uniform(0, glm::value_ptr(proj));
       ubo.set_uniform(1, glm::value_ptr(view));
       ubo.set_uniform(2, glm::value_ptr(pos));
       ubo.set_uniform(3, glm::value_ptr(forward));
     }
 
-    if(auto& ubo = UBOs[3]; true) {
+    if (auto& ubo = UBOs[3]; true) {
       auto& camera = main_camera.GetComponent<Transform>();
       auto& sp = camera_light.GetComponent<Spotlight>();
-      auto color =glm::vec4(sp.m_color, 1.0);
+      auto color = glm::vec4(sp.m_color, 1.0);
       auto pos = glm::vec4(camera.get_position(), 1.0);
       auto direction = glm::vec4(-camera.m_forward, 0.0);
       float intensity = sp.m_intensity;

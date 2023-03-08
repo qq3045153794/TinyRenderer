@@ -53,7 +53,8 @@ class Model {
 
   /**
    * @brief       : 绑定模型材质
-   * @param        {string&} matkey 绑定的材质名 注意: 需要和模型文件绑定的材质名相同 否则出错
+   * @param        {string&} matkey 绑定的材质名 注意:
+   * 需要和模型文件绑定的材质名相同 否则出错
    * @param        {shared_ptr<Material>} material
    * @return       {*}
    */

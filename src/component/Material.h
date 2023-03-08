@@ -36,11 +36,11 @@ class Material {
 
   // 纹理采样数据
   enum class pbr_t : uint16_t {
-    albedo = 5U,        // 反射率 向量 sRGB 主要体现纹理和颜色
-    metalness = 6U,     // 金属度 标量 [0..1]
-    roughness = 7U,     // 粗糙度 标量 [0..1]
-    ao = 8U,            // 反射率 标量 [0..1]
-    normal = 9U,        // 法线贴图 向量 切线空间
+    albedo = 5U,     // 反射率 向量 sRGB 主要体现纹理和颜色
+    metalness = 6U,  // 金属度 标量 [0..1]
+    roughness = 7U,  // 粗糙度 标量 [0..1]
+    ao = 8U,         // 反射率 标量 [0..1]
+    normal = 9U,     // 法线贴图 向量 切线空间
     irradiance_map = 2U,
     prefilter_map = 3U,
     brdf_LUT_map = 4U

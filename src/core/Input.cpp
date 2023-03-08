@@ -7,15 +7,14 @@
 namespace core {
 // 键盘案件映射表
 std::unordered_map<uint8_t, bool> Input::keybook = {
-    {'w', false}, {'s', false}, {'a', false}, {'d', false}, {'q', false}, {'e', false}, {'\r', false}};
+    {'w', false}, {'s', false}, {'a', false}, {'d', false},
+    {'q', false}, {'e', false}, {'\r', false}};
 
 Input::Input() {}
 
 Input::~Input() {}
 
-void Input::init() {
-  clear();
-}
+void Input::init() { clear(); }
 
 void Input::clear() {
   for (auto& keystate : keybook) {
@@ -100,4 +99,4 @@ float Input::get_offset_y() {
   cursor_dy = 0;
   return tmp;
 }
-}
+}  // namespace core

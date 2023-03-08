@@ -5,7 +5,6 @@
 #include "asset/Buffer.h"
 #include "asset/Shader.h"
 #include "asset/Texture.h"
-#include "asset/Shader.h"
 #include "asset/VAO.h"
 
 namespace asset {

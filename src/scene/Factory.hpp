@@ -4,7 +4,8 @@
 #include "examples/Scene1.hpp"
 #include "scene/Scene.h"
 namespace scene::factory {
-inline const std::vector<std::string> titles{"Welcome Screen", "Tiled Forward Renderer"};
+inline const std::vector<std::string> titles{"Welcome Screen",
+                                             "Tiled Forward Renderer"};
 
 inline Scene* LoadScene(const std::string& title) {
   if (title == "Welcome Screen") return new Scene(title);

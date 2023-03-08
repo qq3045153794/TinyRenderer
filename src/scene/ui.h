@@ -2,8 +2,8 @@
 #define _SRC_SCENE_UI_H_
 
 #include "core/Window.h"
-#include "scene/Entity.hpp"
 #include "imgui.h"
+#include "scene/Entity.hpp"
 
 namespace scene::ui {
 

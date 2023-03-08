@@ -27,7 +27,8 @@ class Scene {
   std::string m_title;
   Scene(const std::string& title);
   virtual ~Scene();
-  Entity create_entity(const std::string& name, component::ETag tag = component::ETag::Untagged);
+  Entity create_entity(const std::string& name,
+                       component::ETag tag = component::ETag::Untagged);
 
   virtual void add_ubo(std::shared_ptr<asset::Shader> shader){};
 

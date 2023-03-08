@@ -1,14 +1,17 @@
-#include "asset/Texture.h" 
+#include "asset/Texture.h"
+
 #include <iostream>
 #include <memory>
+
+#include "asset/FBO.h"
+#include "core/Debug.h"
+#include "core/Log.h"
 #include "stb_image.h"
 #include "utils/image.h"
-#include "asset/FBO.h"
-#include "core/Log.h"
-#include "core/Debug.h"
 namespace asset {
 
-Texture::Texture(const GLchar* img_path, bool flip, GLuint levels) : m_target(GL_TEXTURE_2D), m_levels(levels) {
+Texture::Texture(const GLchar* img_path, bool flip, GLuint levels)
+    : m_target(GL_TEXTURE_2D), m_levels(levels) {
   const auto& image = utils::Image(img_path, flip);
   m_width = image.get_width();
   m_height = image.get_height();
@@ -17,19 +20,19 @@ Texture::Texture(const GLchar* img_path, bool flip, GLuint levels) : m_target(GL
   glGenTextures(1, &m_id);
   glBindTexture(m_target, m_id);
 
-  if(image.is_hdr()) {
-    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-                 GL_FLOAT, image.get_buffer());
+  if (image.is_hdr()) {
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
+                 m_image_format, GL_FLOAT, image.get_buffer());
   } else {
-
-    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-                 GL_UNSIGNED_BYTE, image.get_buffer());
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
+                 m_image_format, GL_UNSIGNED_BYTE, image.get_buffer());
   }
 
   set_sampler_state();
 }
 
-Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
+Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels)
+    : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
   glGenTextures(1, &m_id);
   glBindTexture(m_target, m_id);
 
@@ -41,15 +44,17 @@ Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels) : m_ta
     m_image_format = image.get_img_format();
     m_internal_format = image.get_ine_format();
 
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + idx, 0, m_internal_format, m_width, m_height, 0,
-                 m_image_format, GL_UNSIGNED_BYTE, image.get_buffer());
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + idx, 0, m_internal_format,
+                 m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE,
+                 image.get_buffer());
     ++idx;
   }
 
   set_sampler_state();
 }
 
-Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels){
+Texture::Texture(const GLchar* path, int resolution, GLuint levels)
+    : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
   // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
   // (不会进行归一化) 转换成的cubemap也是float
 
@@ -62,7 +67,8 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(G
   GLuint hdr_id;
   glGenTextures(1, &hdr_id);
   glBindTexture(GL_TEXTURE_2D, hdr_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_FLOAT, image.get_buffer());
+  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0,
+               m_image_format, GL_FLOAT, image.get_buffer());
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -79,81 +85,156 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(G
   glBindTexture(m_target, m_id);
   for (size_t i = 0; i < faces; i++) {
     // 我们存储的是float格式 由于采样的纹理是hdr
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
-                 resolution, resolution, 0, GL_RGB, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, resolution,
+                 resolution, 0, GL_RGB, GL_FLOAT, nullptr);
   }
   glBindTexture(m_target, 0);
   set_sampler_state();
 
   glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
 
-  glm::mat4 views[] = 
-  {
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-  };
+  glm::mat4 views[] = {
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
+                  glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f),
+                  glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
+                  glm::vec3(0.0f, 0.0f, 1.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+                  glm::vec3(0.0f, 0.0f, -1.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
+                  glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f),
+                  glm::vec3(0.0f, -1.0f, 0.0f))};
 
   // 创建cubek
- static float data[] = {
-    // back face
-    -1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    // front face
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-    // left face
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    // right face
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    // bottom face
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    // top face
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f , 1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
+  static float data[] = {
+      // back face
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      // front face
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      // left face
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      // right face
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      // bottom face
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      -1.0f,
+      // top face
+      -1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
+      1.0f,
+      -1.0f,
+      1.0f,
+      -1.0f,
+      -1.0f,
+      1.0f,
+      1.0f,
   };
   auto cube_vbo = std::make_unique<VBO>(sizeof(data), data, GL_STATIC_DRAW);
   auto cube_vao = std::make_unique<VAO>();
 
   cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
 
-
-  auto cubemap_shader = std::make_unique<Shader>("../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs");
+  auto cubemap_shader = std::make_unique<Shader>(
+      "../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs");
 
   cubemap_shader->bind();
   cubemap_shader->set_uniform("projection", proj);
   cubemap_shader->set_uniform("texture_0", 0);
-
 
   // 将hdr转换成cubemap 通过FBO将6个方向的渲染画面写入cubemap
   glViewport(0, 0, resolution, resolution);
@@ -164,7 +245,7 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(G
   for (size_t i = 0; i < faces; i++) {
     cubemap_shader->set_uniform("view", views[i]);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_id, 0);
 
     glClearColor(1.0, 0.0, 0.0, 1.0);
@@ -178,17 +259,26 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(G
   glDeleteTextures(1, &hdr_id);
 }
 
-Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels): m_width(width), m_height(height), m_internal_format(i_format), m_image_format(i_format), m_target(target), m_levels(levels){
-
-  switch(m_target) {
+Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
+                 GLuint levels)
+    : m_width(width),
+      m_height(height),
+      m_internal_format(i_format),
+      m_image_format(i_format),
+      m_target(target),
+      m_levels(levels) {
+  switch (m_target) {
     case GL_TEXTURE_2D: {
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
       if (m_image_format == GL_RGB || m_image_format == GL_RGBA) {
-        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE, NULL);
-      } else { 
-        std::cout << "width = " << width <<" " << "height = " << height << std::endl;
-        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, GL_RG, GL_FLOAT, NULL);
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
+                     0, m_image_format, GL_UNSIGNED_BYTE, NULL);
+      } else {
+        std::cout << "width = " << width << " "
+                  << "height = " << height << std::endl;
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
+                     0, GL_RG, GL_FLOAT, NULL);
       }
       glBindTexture(m_target, 0);
       break;
@@ -197,10 +287,10 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GL
       int faces = 6;
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
-        for (size_t i = 0; i < faces; i++) {
-          glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 
-                       m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
-        }
+      for (size_t i = 0; i < faces; i++) {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_width,
+                     m_height, 0, GL_RGB, GL_FLOAT, nullptr);
+      }
       glBindTexture(m_target, 0);
       break;
     }
@@ -217,9 +307,8 @@ Texture::Texture(GLuint width, GLuint height) : m_target(GL_TEXTURE_2D) {
   m_internal_format = GL_RGB;
   glGenTextures(1, &m_id);
   glBindTexture(m_target, m_id);
-  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format,
-               GL_UNSIGNED_BYTE, NULL);
-  glBindTexture(m_target, 0);
+  glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
+m_image_format, GL_UNSIGNED_BYTE, NULL); glBindTexture(m_target, 0);
 
   set_sampler_state();
 }
@@ -230,8 +319,7 @@ Texture::~Texture() { glDeleteTextures(1, &m_id); }
 GLuint Texture::get_id() { return m_id; }
 
 void Texture::set_sampler_state() {
-
-  GLuint min_filter = m_levels > 0? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
+  GLuint min_filter = m_levels > 0 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR;
 
   glBindTexture(m_target, m_id);
 

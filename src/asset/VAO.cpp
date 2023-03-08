@@ -7,11 +7,12 @@ VAO::VAO() : m_count(0) { glGenVertexArrays(1, &m_id); }
 
 VAO::~VAO() { glDeleteBuffers(1, &m_id); }
 
-void VAO::set_vbo(const VBO& vbo, GLuint index, GLuint sz, GLuint stride, GLuint offset,
-                  GLenum type) {
+void VAO::set_vbo(const VBO& vbo, GLuint index, GLuint sz, GLuint stride,
+                  GLuint offset, GLenum type) {
   this->bind();
   vbo.bind();
-  glVertexAttribPointer(index, sz, type, GL_FALSE, stride, reinterpret_cast<void*>(offset));
+  glVertexAttribPointer(index, sz, type, GL_FALSE, stride,
+                        reinterpret_cast<void*>(offset));
   glEnableVertexAttribArray(index);
   this->ubind();
   // vbo.ubind();
@@ -36,7 +37,6 @@ void VAO::draw() const {
 }
 
 void VAO::draw(GLuint offset, GLuint count) const {
-
   this->bind();
   glDrawArrays(GL_TRIANGLES, offset, count);
   this->ubind();

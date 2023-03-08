@@ -55,7 +55,6 @@ void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
 }
 
-
 void Material::set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
   GLuint uid = static_cast<GLuint>(pbr);
   if (texture_dictionary.find(uid) != texture_dictionary.end()) {
@@ -69,28 +68,28 @@ void Material::set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
   }
 }
 
-void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) {
-
-CHECK_ERROR();
+void Material::set_texture(GLuint uid,
+                           std::shared_ptr<asset::Texture> texture) {
+  CHECK_ERROR();
   m_shader->bind();
 
-CHECK_ERROR();
+  CHECK_ERROR();
   int n_texture = m_textures.size();
   int max_saplers = core::App::instand().gl_max_texture_units;
 
   if (n_texture > max_saplers) {
-    CORE_ERROR("{0} samplers limit has reached, failed to add texture", max_saplers);
+    CORE_ERROR("{0} samplers limit has reached, failed to add texture",
+               max_saplers);
     return;
   }
 
-CHECK_ERROR();
+  CHECK_ERROR();
   if (texture_dictionary.count(uid) > 0) {
-
-CHECK_ERROR();
+    CHECK_ERROR();
     m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
-CHECK_ERROR();
+    CHECK_ERROR();
     m_textures.insert_or_assign(uid, texture);
-CHECK_ERROR();
+    CHECK_ERROR();
   } else {
     CORE_ERROR("Can't find valid texture units (uid = {})", uid);
   }

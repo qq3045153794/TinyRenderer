@@ -11,9 +11,10 @@
 #ifndef _SRC_ASSET_TEXTURE_H_
 #define _SRC_ASSET_TEXTURE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
+
 #include "glad/glad.h"
 
 namespace asset {
@@ -22,7 +23,8 @@ class Texture {
   Texture(const std::vector<std::string>& path_vec, GLuint levels = 0);
   Texture(const GLchar* path, bool flip = false, GLuint levels = 0);
   // Texture(GLuint width, GLuint height);
-  Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels = 0);
+  Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
+          GLuint levels = 0);
   Texture(const GLchar* path, int resolution, GLuint levels = 0);
   ~Texture();
   GLuint get_id();

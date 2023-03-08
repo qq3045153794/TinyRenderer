@@ -97,7 +97,7 @@ void Transform::set_ealar_YZX(const glm::vec3& eular) {
   temp_eular.x = glm::radians(eular.x);
   temp_eular.y = glm::radians(eular.y);
   temp_eular.z = glm::radians(eular.z);
-  
+
   auto& temp_pos = m_transform[3];
 
   m_transform = glm::mat4(1.0);
@@ -106,7 +106,8 @@ void Transform::set_ealar_YZX(const glm::vec3& eular) {
   m_transform[2][2] = m_scale.z;
   m_transform[3][3] = 1.0;
 
-  m_rotation = glm::normalize(glm::quat_cast(glm::eulerAngleYZX(temp_eular.y, temp_eular.z, temp_eular.x)));
+  m_rotation = glm::normalize(glm::quat_cast(
+      glm::eulerAngleYZX(temp_eular.y, temp_eular.z, temp_eular.x)));
   m_transform = glm::mat4_cast(m_rotation) * m_transform;
 
   m_transform[3] = temp_pos;
@@ -151,7 +152,8 @@ void Transform::set_transform(const glm::mat4& transform) {
   m_scale.y = glm::length(transform[1]);
   m_scale.z = glm::length(transform[2]);
 
-  glm::mat3 pure_rotation_mat = {transform[0] / m_scale.x, transform[1] / m_scale.y,
+  glm::mat3 pure_rotation_mat = {transform[0] / m_scale.x,
+                                 transform[1] / m_scale.y,
                                  transform[2] / m_scale.z};
 
   m_transform = transform;

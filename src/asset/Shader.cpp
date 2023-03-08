@@ -153,7 +153,8 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
   }
 }
 
-#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, const T &val);
+#define INSTANTIATE_TEMPLATE(T) \
+  template void Shader::set_uniform(const GLchar *name, const T &val);
 
 using namespace glm;
 

@@ -19,19 +19,20 @@ class Mesh {
     glm::vec2 uv2;
     glm::vec3 tangent;
     glm::vec3 binormal;
-    glm::ivec4 bone_id;  
-    glm::vec4 bone_wt;   
+    glm::ivec4 bone_id;
+    glm::vec4 bone_wt;
   };
 
   Mesh(primitive obj);
   Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices);
   ~Mesh();
-  
+
   void draw() const;
 
   void set_material_id(GLuint mid) const;
 
   mutable GLuint material_id;
+
  private:
   std::shared_ptr<asset::VAO> m_vao;
   std::shared_ptr<asset::VBO> m_vbo;
@@ -40,7 +41,8 @@ class Mesh {
   void create_quat();
   void create_cube();
   void create_sphere();
-  void create_buffer(const std::vector<Vertex>& vertex, const std::vector<GLuint>& indices);
+  void create_buffer(const std::vector<Vertex>& vertex,
+                     const std::vector<GLuint>& indices);
 };
 
 }  // namespace component

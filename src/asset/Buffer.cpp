@@ -19,30 +19,31 @@ void VBO::bind() const {
     curr_bound_vbo = m_id;
   }
 }
-void VBO::ubind() const { 
+void VBO::ubind() const {
   if (curr_bound_vbo == m_id) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     curr_bound_vbo = 0;
   }
 }
 
-IBO::IBO(GLuint sz, void* data, GLenum usage, GLuint count) : BufferBase(), m_count(count) {
+IBO::IBO(GLuint sz, void* data, GLenum usage, GLuint count)
+    : BufferBase(), m_count(count) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sz, data, usage);
 }
 
 const GLuint& IBO::get_count() const { return m_count; }
 
-void IBO::bind() const { 
+void IBO::bind() const {
   if (curr_bound_ibo != m_id) {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
     curr_bound_ibo = m_id;
   }
 }
 
-void IBO::ubind() const { 
+void IBO::ubind() const {
   if (curr_bound_ibo == m_id) {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     curr_bound_ibo = 0;
   }
 }
@@ -56,7 +57,8 @@ UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz)
 void UBO::set_uniform(GLuint uid, void* data) {
   CORE_ASERT(uid < m_offset_vec.size(), "uid more then vector size");
   this->bind();
-  glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid], m_length_vec[uid], data);
+  glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid], m_length_vec[uid],
+                  data);
   // this->ubind();
 }
 
@@ -70,16 +72,16 @@ void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
   glBindBufferBase(GL_UNIFORM_BUFFER, uid, m_id);
 }
 
-void UBO::bind() const { 
+void UBO::bind() const {
   if (curr_bound_ubo != m_id) {
     glBindBuffer(GL_UNIFORM_BUFFER, m_id);
-    curr_bound_ubo =m_id;
+    curr_bound_ubo = m_id;
   }
 }
 
-void UBO::ubind() const { 
+void UBO::ubind() const {
   if (curr_bound_ubo == m_id) {
-    glBindBuffer(GL_UNIFORM_BUFFER, 0); 
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
     curr_bound_ubo = 0;
   }
 }

@@ -90,7 +90,7 @@ class Transform {
   void set_scale(const glm::vec3& size);
 
   /**
-   * @brief : 设置变换矩阵 
+   * @brief : 设置变换矩阵
    * @param        {mat4&} transform
    * @return       {*}
    */

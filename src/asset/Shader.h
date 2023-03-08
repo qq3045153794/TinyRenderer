@@ -17,7 +17,8 @@ class Shader {
  public:
   Shader(){};
   ~Shader();
-  Shader(const GLchar* vertex_file, const GLchar* fragment_file, const GLchar* geometry_file);
+  Shader(const GLchar* vertex_file, const GLchar* fragment_file,
+         const GLchar* geometry_file);
   Shader(const GLchar* vertex_file, const GLchar* fragment_file);
   Shader(const Shader&) = delete;
   Shader& operator=(const Shader&) = delete;
@@ -25,7 +26,7 @@ class Shader {
   // 设置uniform值
   template <typename T>
   void set_uniform(const GLchar* name, const T& val);
-  const GLuint get_id() const {return m_id;}
+  const GLuint get_id() const { return m_id; }
 
   void bind() const;
   void ubind() const;
@@ -35,7 +36,8 @@ class Shader {
   GLuint create_shader(const GLchar* code, GLuint type);
   void check_compile_errors(GLuint object, const std::string& type);
 
-  void compile(const GLchar* vertex_code, const GLchar* fragment_code, const GLchar* geometry_code);
+  void compile(const GLchar* vertex_code, const GLchar* fragment_code,
+               const GLchar* geometry_code);
   void compile(const GLchar* vertex_code, const GLchar* fragment_code);
 };
 
