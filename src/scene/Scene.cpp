@@ -1,13 +1,19 @@
 
 #include "scene/Scene.h"
 
+#include <system/RenderSystem.h>
+#include <system/EnvironmentSystem.h>
+
 #include "core/Log.h"
 #include "scene/Render.h"
 #include "scene/ui.h"
 
 namespace scene {
 
-Scene::Scene(const std::string& title) : m_title(title) {}
+Scene::Scene(const std::string& title) : m_title(title) {
+  m_systems.push_back(std::make_shared<saber::system::RenderSystem>(this));
+  m_systems.push_back(std::make_shared<saber::system::EnvironmentSystem>(this));
+}
 
 Scene::~Scene() {
   registry.each([this](auto id) {

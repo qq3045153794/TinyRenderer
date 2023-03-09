@@ -17,6 +17,7 @@
 #include "component/Tag.hpp"
 #include "imgui.h"
 #include "scene/Entity.hpp"
+#include "system/System.h"
 
 namespace scene {
 
@@ -48,6 +49,7 @@ class Scene {
   entt::registry registry;
   std::map<entt::entity, std::string> directory;
   std::vector<Entity> m_entitys;
+  std::vector<std::shared_ptr<saber::system::System>> m_systems;
 
  private:
   ImTextureID welcome_screen_texture_id;
