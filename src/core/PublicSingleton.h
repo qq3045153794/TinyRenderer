@@ -1,4 +1,8 @@
+#ifndef _SRC_CORE_PUBLIC_SINGLETON_H_
+#define _SRC_CORE_PUBLIC_SINGLETON_H_
 #include <iostream>
+namespace saber {
+
 template <typename T>
 class PublicSingleton {
  protected:
@@ -14,3 +18,6 @@ class PublicSingleton {
   PublicSingleton(const PublicSingleton&) = delete;
   PublicSingleton& operator=(const PublicSingleton&) = delete;
 };
+
+}
+#endif

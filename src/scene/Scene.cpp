@@ -27,6 +27,7 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   e.AddComponent<component::Transform>();
   e.AddComponent<component::Tag>(tag);
   directory.emplace(e.id, e.name);
+  m_entitys.emplace_back(e);
   return e;
 }
 

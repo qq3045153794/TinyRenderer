@@ -47,6 +47,7 @@ class Scene {
 
   entt::registry registry;
   std::map<entt::entity, std::string> directory;
+  std::vector<Entity> m_entitys;
 
  private:
   ImTextureID welcome_screen_texture_id;
