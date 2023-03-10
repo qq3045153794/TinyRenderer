@@ -8,14 +8,24 @@
 namespace saber {
 namespace system {
 
+using Texture = asset::Texture;
+using FBO = ::asset::FBO;
+using VAO = ::asset::VAO;
+using VBO = ::asset::VBO;
+using Render = ::scene::Render;
+
 EnvironmentSystem::EnvironmentSystem(scene::Scene* scene) : System(scene) {}
 
-void EnvironmentSystem::Awake() {
-  using Texture = asset::Texture;
-  using FBO = ::asset::FBO;
-  using VAO = ::asset::VAO;
-  using VBO = ::asset::VBO;
-  using Render = ::scene::Render;
+void EnvironmentSystem::Awake() { SetIBL(); }
+
+void EnvironmentSystem::OnUpdateRuntime() {
+  // TODO
+}
+
+void EnvironmentSystem::OnEditorRumtime() {
+  // TODO
+}
+void EnvironmentSystem::SetIBL() {
   auto irradian =
       PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
   GLuint low_resolution = irradian->Width();
@@ -152,10 +162,12 @@ void EnvironmentSystem::Awake() {
   }
   prefilter_fbo->ubind();
 
+  // clnag-format off
   GLfloat quad_data[] = {-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
                          1.0f,  0.0f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f,
                          -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  1.0f,
                          1.0f,  -1.0f, 1.0f, 0.0f, 0.0f, 1.0f};
+  // clang-format on
 
   auto quad_vbo =
       std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
@@ -181,7 +193,7 @@ void EnvironmentSystem::Awake() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          BRDF_LUT_texture->get_id(), 0);
 
-  glViewport(0, 0, 512, 512);
+  glViewport(0, 0, kResolution, kResolution);
 
   Render::clear_buffer();
 
@@ -191,15 +203,6 @@ void EnvironmentSystem::Awake() {
 
   CHECK_ERROR();
 }
-
-void EnvironmentSystem::OnUpdateRuntime() {
-  // TODO
-}
-
-void EnvironmentSystem::OnEditorRumtime() {
-  // TODO
-}
-void EnvironmentSystem::SetIBL() {}
 
 }  // namespace system
 }  // namespace saber

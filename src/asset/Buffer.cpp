@@ -62,6 +62,13 @@ void UBO::set_uniform(GLuint uid, void* data) {
   // this->ubind();
 }
 
+void UBO::set_uid(GLuint uid) {
+  m_uid = uid;
+}
+GLuint UBO::Uid() {
+  return m_uid;
+}
+
 void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
   GLuint block_idx = glGetUniformBlockIndex(shader_id, name.c_str());
   if (block_idx == GL_INVALID_INDEX) {
