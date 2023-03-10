@@ -12,7 +12,8 @@ class System {
   System() = default;
   System(scene::Scene* scene);
   virtual ~System() = default;
-
+  // 使用时调用
+  virtual void Awake() = 0;
   virtual void OnUpdateRuntime() = 0;
   virtual void OnEditorRumtime() = 0;
 

@@ -28,7 +28,7 @@ class LibraryBase : public PublicSingleton<Derived<LibType>> {
 template <typename LibType>
 class Library : public LibraryBase<Library, LibType> {
  public:
-  Library();
+  Library() = default;
 };
 
 }  // namespace saber

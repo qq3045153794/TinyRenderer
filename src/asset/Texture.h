@@ -22,12 +22,13 @@ class Texture {
  public:
   Texture(const std::vector<std::string>& path_vec, GLuint levels = 0);
   Texture(const GLchar* path, bool flip = false, GLuint levels = 0);
-  // Texture(GLuint width, GLuint height);
   Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
           GLuint levels = 0);
   Texture(const GLchar* path, int resolution, GLuint levels = 0);
   ~Texture();
   GLuint get_id() const;
+  GLuint Width() const;
+  GLuint Height() const;
   void bind(GLuint unit) const;
   void ubind(GLuint unit) const;
 

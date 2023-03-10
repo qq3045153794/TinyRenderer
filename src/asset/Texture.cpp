@@ -347,4 +347,11 @@ void Texture::ubind(GLuint unit) const {
   glBindTexture(m_target, 0);
 }
 
+GLuint Texture::Width() const {
+  return m_width;
+}
+GLuint Texture::Height() const {
+  return m_height;
+}
+
 }  // namespace asset
