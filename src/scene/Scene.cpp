@@ -11,8 +11,10 @@
 namespace scene {
 
 Scene::Scene(const std::string& title) : m_title(title) {
-  m_systems.push_back(std::make_shared<saber::system::RenderSystem>(this));
+
+  // 注意顺序
   m_systems.push_back(std::make_shared<saber::system::EnvironmentSystem>(this));
+  m_systems.push_back(std::make_shared<saber::system::RenderSystem>(this));
 }
 
 Scene::~Scene() {
@@ -39,6 +41,11 @@ void Scene::add_fbo(GLuint width, GLuint height) {
   nor_fbo->set_depth_texture();
 }
 
+
+void Scene::registry_shader(GLuint shader_id) {
+  shader_id_set.insert(shader_id);
+}
+
 void Scene::on_scene_render() { Render::clear_buffer(); }
 
 void Scene::on_imgui_render() { ui::draw_welcome_scene(welcome_screen_texture_id); }
@@ -53,7 +60,7 @@ void Scene::OnUpdateRuntime() {
     system->OnUpdateRuntime();
   }
 }
-void Scene::OnEditorRumtime(::scene::Entity editor_camera) {
+void Scene::OnEditorRumtime(::scene::Entity& editor_camera) {
   for (auto& system : m_systems) {
     system->OnEditorRumtime(editor_camera);
   }

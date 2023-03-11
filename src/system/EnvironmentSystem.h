@@ -12,7 +12,7 @@ public:
 
   virtual void Awake() override;
   virtual void OnUpdateRuntime() override;
-  virtual void OnEditorRumtime(scene::Entity editor_camera) override;
+  virtual void OnEditorRumtime(scene::Entity& editor_camera) override;
 private:
   void SetIBL();
   void SetUBO();

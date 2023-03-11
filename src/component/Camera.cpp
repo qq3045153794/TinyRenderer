@@ -58,7 +58,10 @@ void CameraFps::update() {
   float dt = Clock::dt;
   float velocity = dt;
 
+  CORE_DEBUG("camera update");
   if (Input::get_key_down('w')) {
+
+    CORE_DEBUG("key down w");
     T->translate(T->m_forward * velocity);
   }
 

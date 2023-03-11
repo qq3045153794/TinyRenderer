@@ -40,13 +40,20 @@ class Scene {
 
   void add_fbo(GLuint width, GLuint height);
 
+  void registry_shader(GLuint shader_id);
+
+  template <typename... Args>
+  void SubmitRender(Args&&... args) {
+    (render_queue.push_back(args), ...);
+  }
+
   virtual void init();
   virtual void on_scene_render();
   virtual void on_imgui_render();
 
   virtual void Awake();
   virtual void OnUpdateRuntime();
-  virtual void OnEditorRumtime(::scene::Entity editor_camera);
+  virtual void OnEditorRumtime(::scene::Entity& editor_camera);
  protected:
   // 相机 UBO
   // std::shared_ptr<asset::UBO> nor_ubo;

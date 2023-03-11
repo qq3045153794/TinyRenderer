@@ -30,8 +30,9 @@ int main() {
   std::cout << "  Fragment shader: " << app.gl_maxf_ubos << std::endl;
 
   while (app.run()) {
-    core::App::instand().render_update();
-    core::App::instand().event_update();
+    // core::App::instand().render_update();
+    // core::App::instand().event_update();
+    app.Run();
   }
   app.clear();
 }

@@ -58,7 +58,13 @@ void App::init() {
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &gl_maxf_ubos);
 
   // 渲染器绑定场景
-  Render::attach("Welcome Screen");
+  // Render::attach("Welcome Screen");
+
+  Window::rename("title");
+  Input::clear();
+  editor_layer = std::make_shared<::saber::editor::EditorLayer>();
+  editor_layer->OnAttach();
+  editor_layer->Awake();
 }
 
 void App::clear() {
@@ -83,6 +89,12 @@ void App::event_update() {
 
   Clock::update();
   Render::draw_imGui();
+}
+
+void App::Run() {
+  editor_layer->OnUpdateRuntime();
+  editor_layer->OnImGuiRender();
+  Window::update();
 }
 
 App::App() {}

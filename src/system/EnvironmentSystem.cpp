@@ -17,13 +17,16 @@ using Entity = ::scene::Entity;
 
 EnvironmentSystem::EnvironmentSystem(scene::Scene* scene) : System(scene) {}
 
-void EnvironmentSystem::Awake() { SetIBL(); }
+void EnvironmentSystem::Awake() {
+  SetIBL();
+  SetUBO();
+}
 
 void EnvironmentSystem::OnUpdateRuntime() {
   // TODO
 }
 
-void EnvironmentSystem::OnEditorRumtime(Entity editor_camera) {
+void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
   using CameraFps = ::component::CameraFps;
 
   // 编辑相机案件移动等逻辑
@@ -77,7 +80,7 @@ void EnvironmentSystem::OnEditorRumtime(Entity editor_camera) {
       if (tag.contains(ETag::Skybox)) {
         material.bind();
         material.set_uniform("model", transform.get_transform());
-
+        CORE_DEBUG("render skybox");
         ::scene::Render::set_front_is_ccw(false);
         mesh.draw();
         ::scene::Render::set_front_is_ccw(true);
@@ -92,6 +95,7 @@ void EnvironmentSystem::SetUBO() {
   auto pl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("PL");
   auto sl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("SL");
 
+  CORE_DEBUG("setUBO shader count : {}", m_scene->shader_id_set.size());
   auto& view = m_scene->shader_id_set;
   for (const uint32_t& shader_id : view) {
     // TODO 后续需要优化接口
@@ -103,6 +107,7 @@ void EnvironmentSystem::SetUBO() {
 }
 
 void EnvironmentSystem::SetIBL() {
+  CHECK_ERROR();
   auto irradian = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
   GLuint low_resolution = irradian->Width();
   auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
@@ -132,7 +137,7 @@ void EnvironmentSystem::SetIBL() {
      1.0f, -1.0f,  1.0f, // bottom-right
      1.0f,  1.0f,  1.0f, // top-right
      1.0f,  1.0f,  1.0f, // top-right
-    -1.0f,  1.0f,  1.0f, // top-left
+    -1.0f,  1.0f,  1.0f, // top-left歌枠
     -1.0f, -1.0f,  1.0f, // bottom-left
     // left face
     -1.0f,  1.0f,  1.0f, // top-right
@@ -173,6 +178,7 @@ void EnvironmentSystem::SetIBL() {
   //    "../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
   auto irradian_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("irradian");
 
+  CHECK_ERROR();
   irradian_shader->bind();
   irradian_shader->set_uniform("projection", proj);
   irradian_shader->set_uniform("texture_0", 0);
@@ -181,6 +187,7 @@ void EnvironmentSystem::SetIBL() {
   glViewport(0, 0, low_resolution, low_resolution);
   irradian_fbo->bind();
 
+  CHECK_ERROR();
   auto skybox_hdr_texutre = PublicSingleton<Library<Texture>>::GetInstance().Get("hdr");
   skybox_hdr_texutre->bind(0);
   int faces = 6;
@@ -195,11 +202,13 @@ void EnvironmentSystem::SetIBL() {
   // prefiltermap = std::make_shared<Texture>(
   //     GL_TEXTURE_CUBE_MAP, low_resolution, low_resolution, GL_FLOAT, 5);
   auto prefiltermap = PublicSingleton<Library<Texture>>::GetInstance().Get("prefiltermap");
-  auto prefilter_shader = std::make_shared<Shader>("../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
+  auto prefilter_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("prefiler");
+
   auto prefilter_fbo = std::make_shared<FBO>(low_resolution, low_resolution);
 
   prefilter_fbo->set_depth_texture();
 
+    CHECK_ERROR();
   prefilter_shader->bind();
   prefilter_shader->set_uniform("projection", proj);
 
@@ -227,6 +236,7 @@ void EnvironmentSystem::SetIBL() {
   }
   prefilter_fbo->ubind();
 
+    CHECK_ERROR();
   // clang-format off
   GLfloat quad_data[] = {
     -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
@@ -238,29 +248,43 @@ void EnvironmentSystem::SetIBL() {
   };
   // clang-format on
 
+  CHECK_ERROR();
   auto quad_vbo = std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
   auto quad_vao = std::make_shared<VAO>();
   quad_vao->set_vbo(*quad_vbo, 0, 3, 5 * sizeof(GLfloat), 0, GL_FLOAT);
   quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat), GL_FLOAT);
 
-  auto BRDF_LUT_texture = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
+  CHECK_ERROR();
+  auto BRDF_LUT_texture = PublicSingleton<Library<Texture>>::GetInstance().Get("BRDF_LUT");
   constexpr GLuint kResolution = 512U;
+
+  CHECK_ERROR();
   auto BRDF_LUT_fbo = std::make_shared<FBO>(kResolution, kResolution);
   // auto BRDF_LUT_shader = std::make_shared<Shader>(
   //    "../resource/shader/BRDF_LUT.vs", "../resource/shader/BRDF_LUT.fs");
+
+  CHECK_ERROR();
   auto BRDF_LUT_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("BRDF_LUT");
 
   BRDF_LUT_fbo->set_depth_texture();
 
+  CHECK_ERROR();
   BRDF_LUT_fbo->bind();
+  
+  CHECK_ERROR();
   BRDF_LUT_shader->bind();
 
+  CHECK_ERROR();
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT_texture->get_id(), 0);
 
+  std::cout << "BRDF : " << BRDF_LUT_texture->get_id() << std::endl;
+  CHECK_ERROR();
   glViewport(0, 0, kResolution, kResolution);
 
+  CHECK_ERROR();
   Render::clear_buffer();
 
+  CHECK_ERROR();
   quad_vao->draw(0, 6);
 
   BRDF_LUT_fbo->ubind();

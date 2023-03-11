@@ -4,6 +4,7 @@
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
 #include <scene/Render.h>
+
 #include <scene/Entity.hpp>
 namespace saber {
 namespace editor {
@@ -18,6 +19,9 @@ EditorLayer::EditorLayer() {}
 void EditorLayer::OnAttach() {
   using namespace ::component;
   using Entity = ::scene::Entity;
+
+  m_cur_scene = std::make_shared<scene::Scene>("hello world");
+
   auto& scene = m_cur_scene;
   Entity sun_light = scene->create_entity("sum light");
   sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
@@ -29,8 +33,12 @@ void EditorLayer::OnAttach() {
   point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
 
   auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+  scene->registry_shader(default_shader->get_id());
   auto skybox_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("skybox");
+  scene->registry_shader(skybox_shader->get_id());
   auto pbr_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("pbr");
+  scene->registry_shader(pbr_shader->get_id());
+
 
   auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
   auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
@@ -81,11 +89,19 @@ void EditorLayer::OnAttach() {
   main_fbo = std::make_shared<asset::FBO>(core::Window::m_width, core::Window::m_height);
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
+
+  ::scene::Render::eable_depth_test(true);
+  ::scene::Render::eable_alpha_blend(true);
+  ::scene::Render::eable_face_culling(true);
+  ::core::Window::resize();
+
+  scene->SubmitRender(skybox.id);
+  scene->SubmitRender(quad.id);
+  scene->SubmitRender(cube.id);
+  scene->SubmitRender(sphere.id);
 }
 
-void EditorLayer::Awake() {
-  m_cur_scene->Awake();
-}
+void EditorLayer::Awake() { m_cur_scene->Awake(); }
 void EditorLayer::OnDetach() {
   // TODO
 }
@@ -96,6 +112,9 @@ void EditorLayer::OnUpdateRuntime() {
   main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
+
+
+  glViewport(0U, 0U, core::Window::m_width, core::Window::m_height);
   ::scene::Render::clear_buffer();
   main_fbo->draw();
   // TODO

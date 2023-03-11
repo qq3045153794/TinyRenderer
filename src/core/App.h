@@ -4,6 +4,7 @@
 #include "asset/Shader.h"
 #include "asset/Texture.h"
 #include "component/Mesh.h"
+#include "editor/EditorLayer.h"
 // clang-format on
 namespace core {
 class App {
@@ -12,6 +13,7 @@ class App {
   void init();
   void clear();
   bool run();
+  void Run();
   void render_update();
   void event_update();
   std::string gl_vendor, gl_renderer, gl_version, glsl_version;
@@ -29,6 +31,7 @@ class App {
   App(const App&) = delete;
   App& operator=(const App&) = delete;
   ~App();
+  std::shared_ptr<::saber::editor::EditorLayer> editor_layer;
 };
 }  // namespace core
 
