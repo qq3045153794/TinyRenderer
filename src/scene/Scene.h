@@ -44,6 +44,9 @@ class Scene {
   virtual void on_scene_render();
   virtual void on_imgui_render();
 
+  virtual void Awake();
+  virtual void OnUpdateRuntime();
+  virtual void OnEditorRumtime(::scene::Entity editor_camera);
  protected:
   // 相机 UBO
   // std::shared_ptr<asset::UBO> nor_ubo;

@@ -295,6 +295,7 @@ class Scene1 : public Scene {
 
     GLfloat quad_data[] = {-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
                            1.0f,  0.0f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f,
+
                            -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  1.0f,
                            1.0f,  -1.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 

@@ -1,8 +1,8 @@
 
 #include "scene/Scene.h"
 
-#include <system/RenderSystem.h>
 #include <system/EnvironmentSystem.h>
+#include <system/RenderSystem.h>
 
 #include "core/Log.h"
 #include "scene/Render.h"
@@ -16,15 +16,12 @@ Scene::Scene(const std::string& title) : m_title(title) {
 }
 
 Scene::~Scene() {
-  registry.each([this](auto id) {
-    CORE_TRACE("Destroying entity: {0}", directory.at(id));
-  });
+  registry.each([this](auto id) { CORE_TRACE("Destroying entity: {0}", directory.at(id)); });
   registry.clear();
 }
 
 void Scene::init() {
-  welcome_screen = std::make_unique<asset::Texture>(
-      "../resource/texture/welcome (original).png", false);
+  welcome_screen = std::make_unique<asset::Texture>("../resource/texture/welcome (original).png", false);
   welcome_screen_texture_id = (void*)welcome_screen->get_id();
 }
 
@@ -44,8 +41,22 @@ void Scene::add_fbo(GLuint width, GLuint height) {
 
 void Scene::on_scene_render() { Render::clear_buffer(); }
 
-void Scene::on_imgui_render() {
-  ui::draw_welcome_scene(welcome_screen_texture_id);
+void Scene::on_imgui_render() { ui::draw_welcome_scene(welcome_screen_texture_id); }
+
+void Scene::Awake() {
+  for (auto& system : m_systems) {
+    system->Awake();
+  }
+}
+void Scene::OnUpdateRuntime() {
+  for (auto& system : m_systems) {
+    system->OnUpdateRuntime();
+  }
+}
+void Scene::OnEditorRumtime(::scene::Entity editor_camera) {
+  for (auto& system : m_systems) {
+    system->OnEditorRumtime(editor_camera);
+  }
 }
 
 }  // namespace scene
