@@ -11,7 +11,7 @@ public:
   virtual ~RenderSystem() = default;
 
   virtual void OnUpdateRuntime() override;
-  virtual void OnEditorRumtime() override;
+  virtual void OnEditorRumtime(scene::Entity editor_camera) override;
 };
 
 }  // namespace system
