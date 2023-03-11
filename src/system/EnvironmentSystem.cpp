@@ -1,10 +1,10 @@
-#include <system/EnvironmentSystem.h>
 #include <asset/Buffer.h>
 #include <asset/FBO.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
 #include <scene/Render.h>
 #include <scene/Scene.h>
+#include <system/EnvironmentSystem.h>
 namespace saber {
 namespace system {
 
@@ -13,6 +13,7 @@ using FBO = ::asset::FBO;
 using VAO = ::asset::VAO;
 using VBO = ::asset::VBO;
 using Render = ::scene::Render;
+using Entity = ::scene::Entity;
 
 EnvironmentSystem::EnvironmentSystem(scene::Scene* scene) : System(scene) {}
 
@@ -22,8 +23,44 @@ void EnvironmentSystem::OnUpdateRuntime() {
   // TODO
 }
 
-void EnvironmentSystem::OnEditorRumtime() {
+void EnvironmentSystem::OnEditorRumtime(Entity editor_camera) {
+  using CameraFps = ::component::CameraFps;
 
+  // 编辑相机案件移动等逻辑
+  auto& camera = editor_camera.GetComponent<::component::CameraFps>();
+  camera.update();
+
+  // 设置主相机属性
+  if (auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("CameraData"); true) {
+    glm::mat4 proj = editor_camera.GetComponent<CameraFps>().get_projection_mat();
+    glm::mat4 view = editor_camera.GetComponent<CameraFps>().get_view_mat();
+    glm::vec4 pos = glm::vec4(editor_camera.GetComponent<CameraFps>().T->get_position(), 1.0);
+    glm::vec4 forward = glm::vec4(editor_camera.GetComponent<CameraFps>().T->m_forward, 0.0);
+    ubo->set_uniform(0, glm::value_ptr(proj));
+    ubo->set_uniform(1, glm::value_ptr(view));
+    ubo->set_uniform(2, glm::value_ptr(pos));
+    ubo->set_uniform(3, glm::value_ptr(forward));
+  }
+
+  // TODO
+  // if (auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("SL"); true) {
+  // auto& camera = main_camera.GetComponent<Transform>();
+  // auto& sp = camera_light.GetComponent<Spotlight>();
+  // auto color = glm::vec4(sp.m_color, 1.0);
+  // auto pos = glm::vec4(camera.get_position(), 1.0);
+  // auto direction = glm::vec4(-camera.m_forward, 0.0);
+  // float intensity = sp.m_intensity;
+  // float inner_cos = sp.get_inner_cosine();
+  // float outer_cos = sp.get_outer_cosine();
+  // float range = sp.m_range;
+  // ubo.set_uniform(0, glm::value_ptr(color));
+  // ubo.set_uniform(1, glm::value_ptr(pos));
+  // ubo.set_uniform(2, glm::value_ptr(direction));
+  // ubo.set_uniform(3, &intensity);
+  // ubo.set_uniform(4, &inner_cos);
+  // ubo.set_uniform(5, &outer_cos);
+  // ubo.set_uniform(6, &range);
+  //}
 
   // 渲染天空盒
   using namespace component;
@@ -32,7 +69,7 @@ void EnvironmentSystem::OnEditorRumtime() {
   auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
 
   for (auto& e : render_queue) {
-    if(mesh_group.contains(e)) {
+    if (mesh_group.contains(e)) {
       auto& mesh = mesh_group.get<Mesh>(e);
       auto& transform = mesh_group.get<Transform>(e);
       auto& material = mesh_group.get<Material>(e);
@@ -50,7 +87,6 @@ void EnvironmentSystem::OnEditorRumtime() {
 }
 
 void EnvironmentSystem::SetUBO() {
-
   auto camera_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("CameraData");
   auto dl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("DL");
   auto pl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("PL");
@@ -67,26 +103,19 @@ void EnvironmentSystem::SetUBO() {
 }
 
 void EnvironmentSystem::SetIBL() {
-  auto irradian =
-      PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
+  auto irradian = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
   GLuint low_resolution = irradian->Width();
   auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
 
   glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
 
   glm::mat4 views[] = {
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
-                  glm::vec3(0.0f, 0.0f, 1.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
-                  glm::vec3(0.0f, 0.0f, -1.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f)),
-      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f),
-                  glm::vec3(0.0f, -1.0f, 0.0f))};
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
+      glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f))};
 
   // clang-format off
   // 创建cube
@@ -142,8 +171,7 @@ void EnvironmentSystem::SetIBL() {
 
   // auto irradian_shader = std::make_unique<Shader>(
   //    "../resource/shader/irradian.vs", "../resource/shader/irradian.fs");
-  auto irradian_shader =
-      PublicSingleton<Library<Shader>>::GetInstance().Get("irradian");
+  auto irradian_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("irradian");
 
   irradian_shader->bind();
   irradian_shader->set_uniform("projection", proj);
@@ -153,8 +181,7 @@ void EnvironmentSystem::SetIBL() {
   glViewport(0, 0, low_resolution, low_resolution);
   irradian_fbo->bind();
 
-  auto skybox_hdr_texutre =
-      PublicSingleton<Library<Texture>>::GetInstance().Get("hdr");
+  auto skybox_hdr_texutre = PublicSingleton<Library<Texture>>::GetInstance().Get("hdr");
   skybox_hdr_texutre->bind(0);
   int faces = 6;
   for (size_t i = 0; i < faces; i++) {
@@ -167,10 +194,8 @@ void EnvironmentSystem::SetIBL() {
 
   // prefiltermap = std::make_shared<Texture>(
   //     GL_TEXTURE_CUBE_MAP, low_resolution, low_resolution, GL_FLOAT, 5);
-  auto prefiltermap =
-      PublicSingleton<Library<Texture>>::GetInstance().Get("prefiltermap");
-  auto prefilter_shader = std::make_shared<Shader>(
-      "../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
+  auto prefiltermap = PublicSingleton<Library<Texture>>::GetInstance().Get("prefiltermap");
+  auto prefilter_shader = std::make_shared<Shader>("../resource/shader/prefiler.vs", "../resource/shader/prefilter.fs");
   auto prefilter_fbo = std::make_shared<FBO>(low_resolution, low_resolution);
 
   prefilter_fbo->set_depth_texture();
@@ -193,8 +218,7 @@ void EnvironmentSystem::SetIBL() {
     prefilter_shader->set_uniform("roughness", roughness);
     for (int face = 0; face < faces; face++) {
       prefilter_shader->set_uniform("view", views[face]);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                             GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
                              prefiltermap->get_id(), mip);
       Render::clear_buffer();
 
@@ -203,36 +227,35 @@ void EnvironmentSystem::SetIBL() {
   }
   prefilter_fbo->ubind();
 
-  // clnag-format off
-  GLfloat quad_data[] = {-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f,
-                         1.0f,  0.0f,  1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f,
-                         -1.0f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  1.0f,
-                         1.0f,  -1.0f, 1.0f, 0.0f, 0.0f, 1.0f};
+  // clang-format off
+  GLfloat quad_data[] = {
+    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+     1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+     1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+    -1.0f,  1.0f, 0.0f, 0.0f, 1.0f
+  };
   // clang-format on
 
-  auto quad_vbo =
-      std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
+  auto quad_vbo = std::make_shared<VBO>(sizeof(quad_data), quad_data, GL_STATIC_DRAW);
   auto quad_vao = std::make_shared<VAO>();
   quad_vao->set_vbo(*quad_vbo, 0, 3, 5 * sizeof(GLfloat), 0, GL_FLOAT);
-  quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat),
-                    GL_FLOAT);
+  quad_vao->set_vbo(*quad_vbo, 1, 2, 5 * sizeof(GLfloat), 3 * sizeof(GLfloat), GL_FLOAT);
 
-  auto BRDF_LUT_texture =
-      PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
+  auto BRDF_LUT_texture = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
   constexpr GLuint kResolution = 512U;
   auto BRDF_LUT_fbo = std::make_shared<FBO>(kResolution, kResolution);
   // auto BRDF_LUT_shader = std::make_shared<Shader>(
   //    "../resource/shader/BRDF_LUT.vs", "../resource/shader/BRDF_LUT.fs");
-  auto BRDF_LUT_shader =
-      PublicSingleton<Library<Shader>>::GetInstance().Get("BRDF_LUT");
+  auto BRDF_LUT_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("BRDF_LUT");
 
   BRDF_LUT_fbo->set_depth_texture();
 
   BRDF_LUT_fbo->bind();
   BRDF_LUT_shader->bind();
 
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         BRDF_LUT_texture->get_id(), 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT_texture->get_id(), 0);
 
   glViewport(0, 0, kResolution, kResolution);
 

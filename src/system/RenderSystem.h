@@ -10,6 +10,7 @@ public:
   RenderSystem(scene::Scene* scene);
   virtual ~RenderSystem() = default;
 
+  virtual void Awake() override;
   virtual void OnUpdateRuntime() override;
   virtual void OnEditorRumtime(scene::Entity editor_camera) override;
 };

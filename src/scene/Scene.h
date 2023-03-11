@@ -20,12 +20,14 @@
 #include "scene/Entity.hpp"
 #include "system/System.h"
 #include "system/EnvironmentSystem.h"
+#include "system/RenderSystem.h"
 
 namespace scene {
 
 class Scene {
   friend class Render;
 
+  friend class ::saber::system::RenderSystem;
   friend class ::saber::system::EnvironmentSystem;
  public:
   std::string m_title;
