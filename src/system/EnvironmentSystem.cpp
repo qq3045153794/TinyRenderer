@@ -1,10 +1,10 @@
+#include <system/EnvironmentSystem.h>
 #include <asset/Buffer.h>
 #include <asset/FBO.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
 #include <scene/Render.h>
 #include <scene/Scene.h>
-#include <system/EnvironmentSystem.h>
 namespace saber {
 namespace system {
 
@@ -25,6 +25,24 @@ void EnvironmentSystem::OnUpdateRuntime() {
 void EnvironmentSystem::OnEditorRumtime() {
   // TODO
 }
+
+void EnvironmentSystem::SetUBO() {
+
+  auto camera_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("CameraData");
+  auto dl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("DL");
+  auto pl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("PL");
+  auto sl_ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("SL");
+
+  auto& view = m_scene->shader_id_set;
+  for (const uint32_t& shader_id : view) {
+    // TODO 后续需要优化接口
+    camera_ubo->set_binding(0U, "Matrices", shader_id);
+    dl_ubo->set_binding(1U, "DL", shader_id);
+    pl_ubo->set_binding(2U, "PL", shader_id);
+    sl_ubo->set_binding(3U, "SL", shader_id);
+  }
+}
+
 void EnvironmentSystem::SetIBL() {
   auto irradian =
       PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");

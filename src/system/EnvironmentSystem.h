@@ -15,6 +15,7 @@ public:
   virtual void OnEditorRumtime() override;
 private:
   void SetIBL();
+  void SetUBO();
 };
 
 }  // namespace system

@@ -12,18 +12,21 @@
 #define _SRC_SCENE_SCENE_H_
 
 #include <string>
+#include <set>
 
 #include "asset/FBO.h"
 #include "component/Tag.hpp"
 #include "imgui.h"
 #include "scene/Entity.hpp"
 #include "system/System.h"
+#include "system/EnvironmentSystem.h"
 
 namespace scene {
 
 class Scene {
   friend class Render;
 
+  friend class ::saber::system::EnvironmentSystem;
  public:
   std::string m_title;
   Scene(const std::string& title);
@@ -48,7 +51,8 @@ class Scene {
 
   entt::registry registry;
   std::map<entt::entity, std::string> directory;
-  std::vector<Entity> m_entitys;
+  std::vector<entt::entity> render_queue;
+  std::set<uint32_t> shader_id_set;
   std::vector<std::shared_ptr<saber::system::System>> m_systems;
 
  private:

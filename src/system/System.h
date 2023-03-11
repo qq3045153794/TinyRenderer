@@ -1,11 +1,12 @@
 #ifndef _SRC_SYSTEM_SYSTEM_
 #define _SRC_SYSTEM_SYSTEM_
-namespace saber {
-namespace system {
 
 namespace scene {
 class Scene;
 }
+
+namespace saber {
+namespace system {
 
 class System {
  public:
