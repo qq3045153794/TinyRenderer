@@ -59,12 +59,13 @@ void App::init() {
 
   // 渲染器绑定场景
   // Render::attach("Welcome Screen");
-
+#if 1
   Window::rename("title");
   Input::clear();
   editor_layer = std::make_shared<::saber::editor::EditorLayer>();
   editor_layer->OnAttach();
   editor_layer->Awake();
+#endif
 }
 
 void App::clear() {
@@ -95,6 +96,7 @@ void App::Run() {
   editor_layer->OnUpdateRuntime();
   editor_layer->OnImGuiRender();
   Window::update();
+  Clock::update();
 }
 
 App::App() {}

@@ -39,7 +39,6 @@ void EditorLayer::OnAttach() {
   auto pbr_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("pbr");
   scene->registry_shader(pbr_shader->get_id());
 
-
   auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
   auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
   auto irradian_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("irradian");
@@ -90,18 +89,19 @@ void EditorLayer::OnAttach() {
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
 
-  ::scene::Render::eable_depth_test(true);
-  ::scene::Render::eable_alpha_blend(true);
-  ::scene::Render::eable_face_culling(true);
-  ::core::Window::resize();
-
   scene->SubmitRender(skybox.id);
   scene->SubmitRender(quad.id);
   scene->SubmitRender(cube.id);
   scene->SubmitRender(sphere.id);
 }
 
-void EditorLayer::Awake() { m_cur_scene->Awake(); }
+void EditorLayer::Awake() {
+  m_cur_scene->Awake();
+  ::scene::Render::eable_depth_test(true);
+  ::scene::Render::eable_alpha_blend(true);
+  ::scene::Render::eable_face_culling(true);
+  ::core::Window::resize();
+}
 void EditorLayer::OnDetach() {
   // TODO
 }
@@ -112,14 +112,14 @@ void EditorLayer::OnUpdateRuntime() {
   main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
-
-
   glViewport(0U, 0U, core::Window::m_width, core::Window::m_height);
   ::scene::Render::clear_buffer();
   main_fbo->draw();
   // TODO
 }
+
 void EditorLayer::OnEvent() {}
+
 void EditorLayer::CreateScene() {}
 
 }  // namespace editor

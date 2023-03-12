@@ -80,6 +80,7 @@ void FBO::set_color_texture() {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
   CORE_INFO("attach color texture");
+  this->ubind();
 }
 
 void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) const {
@@ -90,6 +91,7 @@ void FBO::set_color_texture(GLuint index, GLuint cubemap, GLuint face) const {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
   CORE_INFO("attach color cubemap texture (face = {})", face);
+  // this->ubind();
 }
 
 void FBO::set_depth_texture() {
@@ -102,6 +104,8 @@ void FBO::set_depth_texture() {
     CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
   }
   CORE_INFO("attach depth texture");
+
+  this->ubind();
 }
 
 void FBO::reset_depth_texture(GLuint width, GLuint height) {
