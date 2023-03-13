@@ -72,7 +72,8 @@ GLuint UBO::Uid() {
 void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
   GLuint block_idx = glGetUniformBlockIndex(shader_id, name.c_str());
   if (block_idx == GL_INVALID_INDEX) {
-    CORE_ERROR("{} does not identify an active uniform block of program", name);
+    // 暂时注释
+    // CORE_ERROR("{} does not identify an active uniform block of program", name);
     return;
   }
   glUniformBlockBinding(shader_id, block_idx, uid);

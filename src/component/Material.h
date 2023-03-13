@@ -27,17 +27,19 @@ namespace component {
 
 template <typename T>
 class UboData {
-  std::string m_name;
-  std::shared_ptr<::asset::Shader> m_shader{nullptr};
-  T m_data;
+ public:
   UboData() = default;
   UboData(const std::string& name, std::shared_ptr<::asset::Shader> shader, const T& data)
       : m_name(name), m_shader(shader), m_data(data) {}
   ~UboData() = default;
-  void bind() {
+  void bind() const {
     m_shader->bind();
     m_shader->set_uniform(m_name.c_str(), m_data);
   }
+
+  std::string m_name;
+  std::shared_ptr<::asset::Shader> m_shader{nullptr};
+  T m_data;
 };
 
 class Material {
@@ -84,8 +86,8 @@ class Material {
     m_shader->bind();
     if (uniform_dictionary.find(uid) != uniform_dictionary.end()) {
       m_shader->set_uniform(uniform_dictionary[uid].c_str(), val);
-      // test
-      m_ubo_datas.emplace_back(uniform_dictionary[uid], m_shader, val);
+
+      m_ubo_datas.push_back(UboData<T>(uniform_dictionary[uid], m_shader, val));
     } else {
       CORE_ERROR("Can't find valid uniform (uid = {})", uid);
     }

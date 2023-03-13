@@ -24,7 +24,7 @@ std::map<GLuint, std::string> Material::texture_dictionary{
     {1, "texture_1"},
     {2, "irradiance_map"},
     {3, "prefilter_map"},
-    {4, "brdf_LUT_map "},
+    {4, "brdf_LUT_map"},
     {5, "albedo_texture"},
     {6, "metalness_texture"},
     {7, "roughness_texture"},
@@ -51,6 +51,7 @@ Material::Material(std::shared_ptr<asset::Shader> shader) {
     set_uniform(4U, 0.5f);
   }
 }
+
 
 void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
@@ -83,6 +84,8 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
   if (texture_dictionary.count(uid) > 0) {
     m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
     m_textures.insert_or_assign(uid, texture);
+
+    m_ubo_datas.push_back(UboData<GLuint>(texture_dictionary[uid], m_shader, uid));
   } else {
     CORE_ERROR("Can't find valid texture units (uid = {})", uid);
   }
@@ -92,6 +95,10 @@ void Material::bind() const {
   m_shader->bind();
   for (const auto& item : m_textures) {
     item.second->bind(item.first);
+  }
+
+  for (auto& ubo_data : m_ubo_datas) {
+    std::visit([](auto& val) { val.bind();}, ubo_data);
   }
 }
 

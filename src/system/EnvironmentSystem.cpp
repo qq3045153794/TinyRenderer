@@ -145,12 +145,8 @@ void EnvironmentSystem::SetUBO() {
 }
 
 void EnvironmentSystem::SetIBL() {
-  auto irradian = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
-  GLuint low_resolution = irradian->Width();
-  auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
-
+  // 生成辐照图
   glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.f);
-
   glm::mat4 views[] = {
       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
@@ -213,6 +209,11 @@ void EnvironmentSystem::SetIBL() {
 
   auto irradian_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("irradian");
 
+
+  auto irradian = PublicSingleton<Library<Texture>>::GetInstance().Get("irradian");
+  GLuint low_resolution = irradian->Width();
+  auto irradian_fbo = std::make_unique<FBO>(low_resolution, low_resolution);
+
   irradian_shader->bind();
   irradian_shader->set_uniform("projection", proj);
   irradian_shader->set_uniform("texture_0", 0);
@@ -224,7 +225,7 @@ void EnvironmentSystem::SetIBL() {
   auto skybox_hdr_texutre = PublicSingleton<Library<Texture>>::GetInstance().Get("hdr");
   skybox_hdr_texutre->bind(0);
   int faces = 6;
-  for (size_t i = 0; i < faces; i++) {
+  for (int i = 0; i < faces; i++) {
     irradian_shader->set_uniform("view", views[i]);
     irradian_fbo->set_color_texture(0, irradian->get_id(), i);
     Render::clear_buffer();

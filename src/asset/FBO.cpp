@@ -35,8 +35,11 @@ FBO::FBO(GLuint width, GLuint height) {
   m_height = height;
   m_shader = std::make_unique<Shader>("../resource/shader/fbo.vs",
                                       "../resource/shader/fbo.fs");
-  m_shader->bind();
-  m_shader->set_uniform("texture_0", 0);
+  // TODO 需要优化接口
+  // m_shader->bind();
+  // m_shader->set_uniform("texture_0", 0);
+  // 需要关
+  // m_shader->ubind();
   set_buffer();
 }
 

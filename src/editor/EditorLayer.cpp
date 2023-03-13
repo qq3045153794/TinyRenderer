@@ -79,7 +79,6 @@ void EditorLayer::OnAttach() {
   CHECK_ERROR();
   CORE_INFO("{} created", sphere.name);
 
-
   Entity sphere_pbr = scene->create_entity("sphere pbr");
   sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
   sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
@@ -88,14 +87,20 @@ void EditorLayer::OnAttach() {
   sphere_mat_pbr.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
   sphere_mat_pbr.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
   sphere_mat_pbr.bind_texture(Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-  auto albedo_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
-  auto normal_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
+  auto albedo_pbr = std::make_shared<::asset::Texture>(
+      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
   sphere_mat_pbr.bind_texture(Material::pbr_t::albedo, albedo_pbr);
-  auto metalness_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
+  auto normal_pbr = std::make_shared<::asset::Texture>(
+      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
+  sphere_mat_pbr.bind_texture(Material::pbr_t::normal, normal_pbr);
+  auto metalness_pbr = std::make_shared<::asset::Texture>(
+      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
   sphere_mat_pbr.bind_texture(Material::pbr_t::metalness, metalness_pbr);
-  auto roughness_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
+  auto roughness_pbr = std::make_shared<::asset::Texture>(
+      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
   sphere_mat_pbr.bind_texture(Material::pbr_t::roughness, roughness_pbr);
-  auto ao_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
+  auto ao_pbr = std::make_shared<::asset::Texture>(
+      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
   sphere_mat_pbr.bind_texture(Material::pbr_t::ao, ao_pbr);
 
   m_editor_camera = scene->create_entity("main_camera");
@@ -111,13 +116,12 @@ void EditorLayer::OnAttach() {
   scene->SubmitRender(quad.id);
   scene->SubmitRender(cube.id);
   scene->SubmitRender(sphere.id);
-  scene->SubmitRender(skybox.id);
   scene->SubmitRender(sphere_pbr.id);
+  // 最后渲染
+  scene->SubmitRender(skybox.id);
 }
 
-void EditorLayer::Awake() {
-  m_cur_scene->Awake();
-}
+void EditorLayer::Awake() { m_cur_scene->Awake(); }
 void EditorLayer::OnDetach() {
   // TODO
 }

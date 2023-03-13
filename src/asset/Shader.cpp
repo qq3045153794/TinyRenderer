@@ -122,6 +122,7 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
   GLint block_idx = glGetUniformLocation(m_id, name);
 
   if (block_idx == -1) {
+    // 暂时注释
     CORE_ERROR("Can't find valid uniform location for {}", name);
     return;
   }

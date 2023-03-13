@@ -41,11 +41,11 @@ uniform sampler2D roughness_texture;
 uniform sampler2D ao_texture;
 uniform sampler2D normal_texture;
 
-uniform sampler2D texture_0;
-uniform sampler2D texture_1;
-uniform sampler2D texture_2;
-uniform sampler2D texture_3;
-uniform sampler2D texture_4;
+// uniform sampler2D texture_0;
+// uniform sampler2D texture_1;
+// uniform sampler2D texture_2;
+// uniform sampler2D texture_3;
+// uniform sampler2D texture_4;
 
 struct Pixel {
     vec3 _position;
@@ -364,9 +364,9 @@ void main() {
 
     Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
 
-    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
+    // Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
 
-    Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
+    // Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
 
     Lo += EvalIBL(px);
 
