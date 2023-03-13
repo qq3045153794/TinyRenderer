@@ -102,11 +102,37 @@ void EditorLayer::OnAttach() {
   auto ao_pbr = std::make_shared<::asset::Texture>(
       "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
   sphere_mat_pbr.bind_texture(Material::pbr_t::ao, ao_pbr);
+  CHECK_ERROR();
+  CORE_INFO("{} created", sphere_pbr.name);
 
   m_editor_camera = scene->create_entity("main_camera");
   m_editor_camera.AddComponent<CameraFps>(
       60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+  CHECK_ERROR();
+  CORE_INFO("{} created", sphere.name);
+
+  Entity paimon = scene->create_entity("paimon");
+  paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj", Quality::Auto);
+  paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
+  paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
+  auto paimon_1 = std::make_shared<Material>(default_shader);
+  auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
+  temp_mat_1.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/披风2.jpg", false, 5));
+  auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
+  temp_mat_2.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+  auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
+  temp_mat_3.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+  auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
+  temp_mat_4.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+  auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
+  temp_mat_5.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+  auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
+  temp_mat_6.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/表情.png", false, 5));
+  auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
+  temp_mat_7.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
+  auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
+  temp_mat_8.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
   CHECK_ERROR();
 
   main_fbo = std::make_shared<asset::FBO>(core::Window::m_width, core::Window::m_height);
@@ -117,6 +143,7 @@ void EditorLayer::OnAttach() {
   scene->SubmitRender(cube.id);
   scene->SubmitRender(sphere.id);
   scene->SubmitRender(sphere_pbr.id);
+  scene->SubmitRender(paimon.id);
   // 最后渲染
   scene->SubmitRender(skybox.id);
 }
