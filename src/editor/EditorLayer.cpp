@@ -69,15 +69,34 @@ void EditorLayer::OnAttach() {
   sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
   sphere.AddComponent<Material>(pbr_shader);
   auto& sphere_mat = sphere.GetComponent<Material>();
-  sphere_mat.set_texture(Material::pbr_t::irradiance_map, irradian_texture);
-  sphere_mat.set_texture(Material::pbr_t::prefilter_map, prefiltermap);
-  sphere_mat.set_texture(Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-  sphere_mat.bing_uniform(Material::pbr_u::albedo, sphere_albedo);
-  sphere_mat.bing_uniform(Material::pbr_u::metalness, sphere_metalness);
-  sphere_mat.bing_uniform(Material::pbr_u::roughness, sphere_roughness);
-  sphere_mat.bing_uniform(Material::pbr_u::ao, sphere_ao);
+  sphere_mat.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
+  sphere_mat.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
+  sphere_mat.bind_texture(Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+  sphere_mat.bind_uniform(Material::pbr_u::albedo, sphere_albedo);
+  sphere_mat.bind_uniform(Material::pbr_u::metalness, sphere_metalness);
+  sphere_mat.bind_uniform(Material::pbr_u::roughness, sphere_roughness);
+  sphere_mat.bind_uniform(Material::pbr_u::ao, sphere_ao);
   CHECK_ERROR();
   CORE_INFO("{} created", sphere.name);
+
+
+  Entity sphere_pbr = scene->create_entity("sphere pbr");
+  sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
+  sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
+  sphere_pbr.AddComponent<Material>(pbr_shader);
+  auto& sphere_mat_pbr = sphere_pbr.GetComponent<Material>();
+  sphere_mat_pbr.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
+  sphere_mat_pbr.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
+  sphere_mat_pbr.bind_texture(Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+  auto albedo_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
+  auto normal_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
+  sphere_mat_pbr.bind_texture(Material::pbr_t::albedo, albedo_pbr);
+  auto metalness_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
+  sphere_mat_pbr.bind_texture(Material::pbr_t::metalness, metalness_pbr);
+  auto roughness_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
+  sphere_mat_pbr.bind_texture(Material::pbr_t::roughness, roughness_pbr);
+  auto ao_pbr = std::make_shared<::asset::Texture>("/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
+  sphere_mat_pbr.bind_texture(Material::pbr_t::ao, ao_pbr);
 
   m_editor_camera = scene->create_entity("main_camera");
   m_editor_camera.AddComponent<CameraFps>(
@@ -89,18 +108,15 @@ void EditorLayer::OnAttach() {
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
 
-  scene->SubmitRender(skybox.id);
   scene->SubmitRender(quad.id);
   scene->SubmitRender(cube.id);
   scene->SubmitRender(sphere.id);
+  scene->SubmitRender(skybox.id);
+  scene->SubmitRender(sphere_pbr.id);
 }
 
 void EditorLayer::Awake() {
   m_cur_scene->Awake();
-  ::scene::Render::eable_depth_test(true);
-  ::scene::Render::eable_alpha_blend(true);
-  ::scene::Render::eable_face_culling(true);
-  ::core::Window::resize();
 }
 void EditorLayer::OnDetach() {
   // TODO

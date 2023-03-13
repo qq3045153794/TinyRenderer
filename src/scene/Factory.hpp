@@ -9,7 +9,7 @@ inline const std::vector<std::string> titles{"Welcome Screen",
 
 inline Scene* LoadScene(const std::string& title) {
   if (title == "Welcome Screen") return new Scene(title);
-  if (title == "Tiled Forward Renderer") return new Scene1(title);
+  // if (title == "Tiled Forward Renderer") return new Scene1(title);
 
   CORE_ERROR("Scene \"{0}\" is not registered in the factory ...", title);
   std::cin.get();

@@ -2,6 +2,7 @@
 #include <system/RenderSystem.h>
 #include <scene/Scene.h>
 #include <scene/Render.h>
+#include <core/Window.h>
 // clang-format on
 namespace saber {
 namespace system {
@@ -24,6 +25,10 @@ void RenderSystem::OnUpdateRuntime() {
 void RenderSystem::OnEditorRumtime(scene::Entity& editor_camera) {
 
   // TODO
+  ::scene::Render::eable_depth_test(true);
+  ::scene::Render::eable_alpha_blend(true);
+  ::scene::Render::eable_face_culling(true);
+  glViewport(0U, 0U, core::Window::m_width, core::Window::m_height);
   using namespace ::component;
   auto& reg = m_scene->registry;
   auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
@@ -40,6 +45,10 @@ void RenderSystem::OnEditorRumtime(scene::Entity& editor_camera) {
       material.set_uniform("model", transform.get_transform());
       if (!tag.contains(ETag::Skybox)) {
         mesh.draw();
+      } else {
+        ::scene::Render::set_front_is_ccw(false);
+        mesh.draw();
+        ::scene::Render::set_front_is_ccw(true);
       }
     } else if (model_group.contains(e)) {
       auto& model = model_group.get<Model>(e);

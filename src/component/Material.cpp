@@ -33,6 +33,7 @@ std::map<GLuint, std::string> Material::texture_dictionary{
 };
 // clang-format on
 
+
 Material::Material(std::shared_ptr<asset::Shader> shader) {
   set_shader(shader);
   if (m_shader != nullptr) {
@@ -55,7 +56,7 @@ void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
   m_shader = shader;
 }
 
-void Material::set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
+void Material::bind_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
   GLuint uid = static_cast<GLuint>(pbr);
   if (texture_dictionary.find(uid) != texture_dictionary.end()) {
     std::string texture_name = texture_dictionary[uid];
@@ -75,12 +76,10 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
   int max_saplers = core::App::instand().gl_max_texture_units;
 
   if (n_texture > max_saplers) {
-    CORE_ERROR("{0} samplers limit has reached, failed to add texture",
-               max_saplers);
+    CORE_ERROR("{0} samplers limit has reached, failed to add texture", max_saplers);
     return;
   }
 
-  CHECK_ERROR();
   if (texture_dictionary.count(uid) > 0) {
     m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
     m_textures.insert_or_assign(uid, texture);

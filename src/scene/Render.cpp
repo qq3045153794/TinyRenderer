@@ -27,15 +27,15 @@ void Render::clear_buffer() {
 }
 
 void Render::flush() {
-  glfwSwapBuffers(Window::m_window);
+  glfwSwapBuffers(core::Window::m_window);
   glfwPollEvents();
 }
 
 void Render::attach(const std::string& title) {
-  Window::rename(title);
-  Input::clear();
+  core::Window::rename(title);
+  core::Input::clear();
 
-  Window::layer = Layer::ImGui;
+  core::Window::layer = core::Layer::ImGui;
 
   Scene* new_scene = factory::LoadScene(title);
   std::swap(curr_scene, new_scene);
@@ -121,7 +121,7 @@ void Render::draw_imGui() {
       ui::draw_loading_screen();
 
     } else {
-      if (Window::layer == Layer::ImGui) {
+      if (core::Window::layer == core::Layer::ImGui) {
         curr_scene->on_imgui_render();
       }
     }

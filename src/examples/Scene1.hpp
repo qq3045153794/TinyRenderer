@@ -6,6 +6,7 @@
 #include "scene/Render.h"
 #include "scene/Scene.h"
 #include "scene/ui.h"
+#if 0
 namespace scene {
 
 using namespace component;
@@ -346,8 +347,7 @@ class Scene1 : public Scene {
                                                   "../resource/shader/pbr.fs");
 
     albedo_pbr = std::make_shared<Texture>(
-        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
-        "MetalPlates013_2K_Color.jpg");
+        "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
     normal_pbr = std::make_shared<Texture>(
         "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/"
         "MetalPlates013_2K_NormalGL.jpg");
@@ -608,5 +608,6 @@ class Scene1 : public Scene {
 };
 
 }  // namespace scene
+#endif
 
 #endif

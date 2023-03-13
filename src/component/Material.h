@@ -11,10 +11,12 @@
 #ifndef _SRC_COMPONENT_MATERIAL_H_
 #define _SRC_COMPONENT_MATERIAL_H_
 
+#include <any>
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <variant>
 
 #include "asset/Buffer.h"
 #include "asset/Shader.h"
@@ -22,6 +24,21 @@
 #include "core/Log.h"
 
 namespace component {
+
+template <typename T>
+class UboData {
+  std::string m_name;
+  std::shared_ptr<::asset::Shader> m_shader{nullptr};
+  T m_data;
+  UboData() = default;
+  UboData(const std::string& name, std::shared_ptr<::asset::Shader> shader, const T& data)
+      : m_name(name), m_shader(shader), m_data(data) {}
+  ~UboData() = default;
+  void bind() {
+    m_shader->bind();
+    m_shader->set_uniform(m_name.c_str(), m_data);
+  }
+};
 
 class Material {
  public:
@@ -51,7 +68,6 @@ class Material {
 
   Material(std::shared_ptr<asset::Shader> shader);
   void set_texture(GLuint u_id, std::shared_ptr<asset::Texture> texture);
-  void set_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture);
   void bind() const;
   void ubind() const;
   std::shared_ptr<asset::Shader> m_shader;
@@ -68,18 +84,26 @@ class Material {
     m_shader->bind();
     if (uniform_dictionary.find(uid) != uniform_dictionary.end()) {
       m_shader->set_uniform(uniform_dictionary[uid].c_str(), val);
+      // test
+      m_ubo_datas.emplace_back(uniform_dictionary[uid], m_shader, val);
     } else {
       CORE_ERROR("Can't find valid uniform (uid = {})", uid);
     }
   }
 
+  void bind_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture);
+
   template <typename T>
-  void bing_uniform(pbr_u pbr, const T& val) {
+  void bind_uniform(pbr_u pbr, const T& val) {
     GLuint uid = static_cast<GLuint>(pbr);
     set_uniform(uid, val);
   }
 
  private:
+  using ubo_variant =
+      std::variant<UboData<int>, UboData<bool>, UboData<GLfloat>, UboData<GLuint>, UboData<glm::vec2>,
+                   UboData<glm::vec3>, UboData<glm::vec4>, UboData<glm::mat2>, UboData<glm::mat3>, UboData<glm::mat4>>;
+  std::vector<ubo_variant> m_ubo_datas;
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
 };
 

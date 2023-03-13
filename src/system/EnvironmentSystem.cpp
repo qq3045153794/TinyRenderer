@@ -106,25 +106,25 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
   //}
 
   // 渲染天空盒
-  auto& render_queue = m_scene->render_queue;
-  auto& reg = m_scene->registry;
-  auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
+  //auto& render_queue = m_scene->render_queue;
+  //auto& reg = m_scene->registry;
+  //auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
 
-  for (auto& e : render_queue) {
-    if (mesh_group.contains(e)) {
-      auto& mesh = mesh_group.get<Mesh>(e);
-      auto& transform = mesh_group.get<Transform>(e);
-      auto& material = mesh_group.get<Material>(e);
-      auto& tag = mesh_group.get<Tag>(e);
-      if (tag.contains(ETag::Skybox)) {
-        material.bind();
-        material.set_uniform("model", transform.get_transform());
-        ::scene::Render::set_front_is_ccw(false);
-        mesh.draw();
-        ::scene::Render::set_front_is_ccw(true);
-      }
-    }
-  }
+  //for (auto& e : render_queue) {
+    //if (mesh_group.contains(e)) {
+      //auto& mesh = mesh_group.get<Mesh>(e);
+      //auto& transform = mesh_group.get<Transform>(e);
+      //auto& material = mesh_group.get<Material>(e);
+      //auto& tag = mesh_group.get<Tag>(e);
+      //if (tag.contains(ETag::Skybox)) {
+        //material.bind();
+        //material.set_uniform("model", transform.get_transform());
+        //::scene::Render::set_front_is_ccw(false);
+        //mesh.draw();
+        //::scene::Render::set_front_is_ccw(true);
+      //}
+    //}
+  //}
 }
 
 void EnvironmentSystem::SetUBO() {
