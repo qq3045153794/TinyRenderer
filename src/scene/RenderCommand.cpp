@@ -4,8 +4,6 @@
 #include "core/Input.h"
 #include "core/Log.h"
 #include "core/Window.h"
-#include "examples/Scene1.hpp"
-#include "scene/Factory.hpp"
 #include "scene/Scene.h"
 #include "scene/ui.h"
 

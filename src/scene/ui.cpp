@@ -9,7 +9,6 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "core/Log.h"
-#include "scene/Factory.hpp"
 #include "scene/RenderCommand.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
