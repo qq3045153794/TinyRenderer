@@ -3,7 +3,7 @@
 #include <editor/EditorLayer.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
-#include <scene/Render.h>
+#include <scene/RenderCommand.h>
 
 #include <scene/Entity.hpp>
 namespace saber {
@@ -154,13 +154,13 @@ void EditorLayer::OnDetach() {
 }
 void EditorLayer::OnUpdateRuntime() {
   main_fbo->bind();
-  ::scene::Render::clear_buffer();
+  ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
   glViewport(0U, 0U, core::Window::m_width, core::Window::m_height);
-  ::scene::Render::clear_buffer();
+  ::scene::RenderCommand::clear_buffer();
   main_fbo->draw();
   // TODO
 }

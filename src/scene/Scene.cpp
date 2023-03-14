@@ -5,7 +5,7 @@
 #include <system/RenderSystem.h>
 
 #include "core/Log.h"
-#include "scene/Render.h"
+#include "scene/RenderCommand.h"
 #include "scene/ui.h"
 
 namespace scene {
@@ -46,7 +46,7 @@ void Scene::registry_shader(GLuint shader_id) {
   shader_id_set.insert(shader_id);
 }
 
-void Scene::on_scene_render() { Render::clear_buffer(); }
+void Scene::on_scene_render() { RenderCommand::clear_buffer(); }
 
 void Scene::on_imgui_render() { ui::draw_welcome_scene(welcome_screen_texture_id); }
 

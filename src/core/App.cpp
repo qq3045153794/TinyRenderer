@@ -9,13 +9,13 @@
 #include "core/Clock.h"
 #include "core/Input.h"
 #include "core/Event.h"
-#include "scene/Render.h"
+#include "scene/RenderCommand.h"
 #include "scene/ui.h"
 // clang-format on
 
 namespace core {
 
-using Render = scene::Render;
+using RenderCommand = scene::RenderCommand;
 
 App& App::instand() {
   static App i;
@@ -70,7 +70,7 @@ void App::init() {
 
 void App::clear() {
   Window::clear();
-  Render::detach();
+  RenderCommand::detach();
   scene::ui::show_down();
 }
 
@@ -78,7 +78,7 @@ bool App::run() { return !Window::should_close(); }
 
 void App::render_update() {
   // 画面渲染
-  Render::draw_scene();
+  RenderCommand::draw_scene();
 }
 
 void App::event_update() {
@@ -89,7 +89,7 @@ void App::event_update() {
   }
 
   Clock::update();
-  Render::draw_imGui();
+  RenderCommand::draw_imGui();
 }
 
 void App::Run() {

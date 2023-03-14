@@ -3,7 +3,7 @@
 #include "component/Light.h"
 #include "core/Debug.h"
 #include "core/Window.h"
-#include "scene/Render.h"
+#include "scene/RenderCommand.h"
 #include "scene/Scene.h"
 #include "scene/ui.h"
 #if 0

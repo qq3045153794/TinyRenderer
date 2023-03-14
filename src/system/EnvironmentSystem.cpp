@@ -2,7 +2,7 @@
 #include <asset/FBO.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
-#include <scene/Render.h>
+#include <scene/RenderCommand.h>
 #include <scene/Scene.h>
 #include <component/Light.h>
 #include <system/EnvironmentSystem.h>
@@ -13,7 +13,7 @@ using Texture = asset::Texture;
 using FBO = ::asset::FBO;
 using VAO = ::asset::VAO;
 using VBO = ::asset::VBO;
-using Render = ::scene::Render;
+using RenderCommand = ::scene::RenderCommand;
 using Entity = ::scene::Entity;
 
 EnvironmentSystem::EnvironmentSystem(scene::Scene* scene) : System(scene) {}
@@ -228,7 +228,7 @@ void EnvironmentSystem::SetIBL() {
   for (int i = 0; i < faces; i++) {
     irradian_shader->set_uniform("view", views[i]);
     irradian_fbo->set_color_texture(0, irradian->get_id(), i);
-    Render::clear_buffer();
+    RenderCommand::clear_buffer();
     cube_vao->draw(0U, 36U);
   }
   irradian_fbo->ubind();
@@ -260,7 +260,7 @@ void EnvironmentSystem::SetIBL() {
       prefilter_shader->set_uniform("view", views[face]);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
                              prefiltermap->get_id(), mip);
-      Render::clear_buffer();
+      RenderCommand::clear_buffer();
 
       cube_vao->draw(0, 36);
     }
@@ -295,7 +295,7 @@ void EnvironmentSystem::SetIBL() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT_texture->get_id(), 0);
   glViewport(0, 0, kResolution, kResolution);
 
-  Render::clear_buffer();
+  RenderCommand::clear_buffer();
 
   quad_vao->draw(0, 6);
 

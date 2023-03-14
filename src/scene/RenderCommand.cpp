@@ -1,4 +1,4 @@
-#include "scene/Render.h"
+#include "scene/RenderCommand.h"
 
 #include "component/Tag.hpp"
 #include "core/Input.h"
@@ -11,27 +11,27 @@
 
 namespace scene {
 
-std::queue<entt::entity> Render::render_queue;
-Scene* Render::curr_scene = nullptr;
-Scene* Render::last_scene = nullptr;
+std::queue<entt::entity> RenderCommand::render_queue;
+Scene* RenderCommand::curr_scene = nullptr;
+Scene* RenderCommand::last_scene = nullptr;
 
-Render::Render() {}
+RenderCommand::RenderCommand() {}
 
-Render::~Render() {}
+RenderCommand::~RenderCommand() {}
 
-Scene* Render::get_scene() { return curr_scene; }
+Scene* RenderCommand::get_scene() { return curr_scene; }
 
-void Render::clear_buffer() {
+void RenderCommand::clear_buffer() {
   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Render::flush() {
+void RenderCommand::flush() {
   glfwSwapBuffers(core::Window::m_window);
   glfwPollEvents();
 }
 
-void Render::attach(const std::string& title) {
+void RenderCommand::attach(const std::string& title) {
   core::Window::rename(title);
   core::Input::clear();
 
@@ -43,7 +43,7 @@ void Render::attach(const std::string& title) {
   curr_scene->init();
 }
 
-void Render::detach() {
+void RenderCommand::detach() {
   CORE_TRACE("Detaching scene \"{0}\" ......", curr_scene->m_title);
   last_scene = curr_scene;
   curr_scene = nullptr;
@@ -51,16 +51,16 @@ void Render::detach() {
   delete last_scene;
   last_scene = nullptr;
 
-  Render::reset();
+  RenderCommand::reset();
 }
 
-void Render::reset() {
+void RenderCommand::reset() {
   eable_alpha_blend(false);
   eable_depth_test(false);
   eable_face_culling(false);
 }
 
-void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
+void RenderCommand::render_scene(std::shared_ptr<asset::Shader> shader) {
   using namespace component;
 
   auto& reg = curr_scene->registry;
@@ -106,9 +106,9 @@ void Render::render_scene(std::shared_ptr<asset::Shader> shader) {
   }
 }
 
-void Render::draw_scene() { curr_scene->on_scene_render(); }
+void RenderCommand::draw_scene() { curr_scene->on_scene_render(); }
 
-void Render::draw_imGui() {
+void RenderCommand::draw_imGui() {
   bool switch_scene = false;
   std::string next_scene_title;
   if (ui::new_frame(); true) {
@@ -117,7 +117,7 @@ void Render::draw_imGui() {
 
     if (!next_scene_title.empty()) {
       switch_scene = true;
-      Render::clear_buffer();
+      RenderCommand::clear_buffer();
       ui::draw_loading_screen();
 
     } else {
@@ -128,7 +128,7 @@ void Render::draw_imGui() {
     ui::end_frame();
   }
   // 双缓存 将渲染画面提交到窗口
-  Render::flush();
+  RenderCommand::flush();
 
   if (switch_scene) {
     detach();
@@ -136,7 +136,7 @@ void Render::draw_imGui() {
   }
 }
 
-void Render::eable_depth_test(bool enable) {
+void RenderCommand::eable_depth_test(bool enable) {
   if (enable) {
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -147,7 +147,7 @@ void Render::eable_depth_test(bool enable) {
   }
 }
 
-void Render::eable_alpha_blend(bool enable) {
+void RenderCommand::eable_alpha_blend(bool enable) {
   if (enable) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -156,7 +156,7 @@ void Render::eable_alpha_blend(bool enable) {
   }
 }
 
-void Render::eable_face_culling(bool enable) {
+void RenderCommand::eable_face_culling(bool enable) {
   if (enable) {
     glEnable(GL_CULL_FACE);
     // 设置连接顺序 GL_CCW为逆时针 GL_CW为顺时针
@@ -168,7 +168,7 @@ void Render::eable_face_culling(bool enable) {
   }
 }
 
-void Render::eable_msaa(bool enalbe) {
+void RenderCommand::eable_msaa(bool enalbe) {
   static GLint buffers = 0, samples = 0, max_samples = 0;
 
   if (samples == 0) {
@@ -191,7 +191,7 @@ void Render::eable_msaa(bool enalbe) {
   }
 }
 
-void Render::set_front_is_ccw(bool is_ccw) {
+void RenderCommand::set_front_is_ccw(bool is_ccw) {
   glFrontFace(is_ccw ? GL_CCW : GL_CW);
 }
 

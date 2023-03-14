@@ -25,7 +25,7 @@
 namespace scene {
 
 class Scene {
-  friend class Render;
+  friend class RenderCommand;
 
   friend class ::saber::system::RenderSystem;
   friend class ::saber::system::EnvironmentSystem;

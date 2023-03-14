@@ -9,10 +9,10 @@
 namespace scene {
 
 class Scene;
-class Render {
+class RenderCommand {
  public:
-  Render();
-  ~Render();
+  RenderCommand();
+  ~RenderCommand();
   static Scene* get_scene();
 
   static void clear_buffer();
@@ -31,12 +31,12 @@ class Render {
   static void eable_msaa(bool enalbe);
 
   static void set_front_is_ccw(bool is_ccw);
-
+/*
   template <typename... Args>
   static void Submit(Args&&... args) {
     (render_queue.push(args), ...);
   }
-
+*/
  private:
   static Scene* curr_scene;
   static Scene* last_scene;

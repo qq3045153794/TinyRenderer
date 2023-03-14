@@ -10,7 +10,7 @@
 
 #include "core/Log.h"
 #include "scene/Factory.hpp"
-#include "scene/Render.h"
+#include "scene/RenderCommand.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -168,7 +168,7 @@ void show_down() {
 }
 
 void draw_menu_bar(std::string& new_title) {
-  const auto& curr_scene_title = Render::get_scene()->m_title;
+  const auto& curr_scene_title = RenderCommand::get_scene()->m_title;
 
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
   ImGui::SetNextWindowSize(ImVec2((float)Window::m_width, 0.01f));
