@@ -30,6 +30,8 @@ class FBO : public Asset {
   void draw() const;
   void bind() const override;
   void ubind() const override;
+  GLuint Width() const;
+  GLuint Height() const;
 
  private:
   void set_buffer();

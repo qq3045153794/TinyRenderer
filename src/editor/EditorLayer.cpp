@@ -1,6 +1,7 @@
 #include <component/Light.h>
 #include <core/Window.h>
 #include <editor/EditorLayer.h>
+#include <imGui/ImGuiWrapper.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
 #include <scene/RenderCommand.h>
@@ -19,9 +20,11 @@ EditorLayer::EditorLayer() {}
 void EditorLayer::OnAttach() {
   using namespace ::component;
   using Entity = ::scene::Entity;
-
   m_cur_scene = std::make_shared<scene::Scene>("hello world");
 
+  ImGuiWrapper::Init();
+
+  // 创建 Entity
   auto& scene = m_cur_scene;
   Entity sun_light = scene->create_entity("sum light");
   sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
@@ -135,7 +138,7 @@ void EditorLayer::OnAttach() {
   temp_mat_8.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
   CHECK_ERROR();
 
-  main_fbo = std::make_shared<asset::FBO>(core::Window::m_width, core::Window::m_height);
+  main_fbo = std::make_shared<asset::FBO>(800, 600);
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
 
@@ -154,14 +157,69 @@ void EditorLayer::OnDetach() {
 }
 void EditorLayer::OnUpdateRuntime() {
   main_fbo->bind();
+  glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
-  glViewport(0U, 0U, core::Window::m_width, core::Window::m_height);
+  //glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
-  main_fbo->draw();
+  // main_fbo->draw();
+
+  static bool dockspaceOpen = true;
+
+
+  ImGuiWrapper::Begin();
+
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  ImGui::SetNextWindowPos(viewport->WorkPos);
+  ImGui::SetNextWindowSize(viewport->WorkSize);
+  // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+  // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+  window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+  window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+  CORE_DEBUG("View port pos : {} {} , size {} {}", viewport->WorkPos.x, viewport->WorkPos.y, viewport->WorkSize.x, viewport->WorkSize.y);
+
+  ImGui::Begin("test", &dockspaceOpen, window_flags);
+  if (ImGui::BeginMenuBar()) {
+    if (ImGui::BeginMenu("File")) {
+      if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
+
+      if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
+
+      if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) SaveScene();
+
+      ImGui::EndMenu();
+    }
+    ImGui::EndMenuBar();
+  }
+
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+  if (ImGui::Begin("ViewPort")) {
+    ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
+    CORE_DEBUG("viewportPanelSize : {} {}", viewportPanelSize.x, viewportPanelSize.y);
+    uint32_t texture_id = main_fbo->get_color_texture().get_id();
+    ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+    ImGui::End();
+    ImGui::PopStyleVar();
+  }
+  ImGui::End();
+
+  ImGuiWrapper::End();
+  // TODO
+}
+
+void EditorLayer::NewScene() {
+  // TODO
+}
+
+void EditorLayer::OpenScene() {
+  // TODO
+}
+
+void EditorLayer::SaveScene() {
   // TODO
 }
 

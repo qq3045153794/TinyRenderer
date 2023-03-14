@@ -17,6 +17,9 @@ class EditorLayer {
   void OnEvent();
   void CreateScene();
  private:
+  void NewScene();
+  void OpenScene();
+  void SaveScene();
   std::shared_ptr<scene::Scene> m_cur_scene;
   ::scene::Entity m_editor_camera;
   std::shared_ptr<::asset::FBO> main_fbo;

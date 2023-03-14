@@ -29,6 +29,14 @@ void RBO::ubind() const {
   }
 }
 
+
+GLuint FBO::Width() const {
+  return m_width;
+}
+GLuint FBO::Height() const {
+  return m_height;
+}
+
 FBO::FBO(GLuint width, GLuint height) {
   glGenFramebuffers(1, &id);
   m_width = width;

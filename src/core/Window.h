@@ -68,7 +68,7 @@ class Window {
   static inline GLuint m_x = 0, m_y = 0;
   static inline std::string title = "";
   static inline GLFWwindow* m_window = 0;
-  static inline Layer layer = Layer::Scene;
+  static inline Layer layer = Layer::ImGui;
 
  private:
   Window();

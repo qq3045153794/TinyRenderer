@@ -16,8 +16,8 @@ void Window::clear() {
 }
 
 void Window::init() {
-  m_width = 1600U;
-  m_height = 900U;
+  m_width = 1280U;
+  m_height = 720U;
   m_x = m_y = 0U;
   title = "LearnOpenGL";
   if (!glfwInit()) {
@@ -65,7 +65,7 @@ void Window::resize() {
   // 渲染fame_buffer显示大小
   glViewport(0, 0, m_width, m_height);
 }
-bool Window::should_close() { glfwWindowShouldClose(m_window); }
+bool Window::should_close() { return glfwWindowShouldClose(m_window); }
 void Window::on_layer_switch() {
   layer = (layer == Layer::ImGui) ? Layer::Scene : Layer::ImGui;
   if (layer == Layer::ImGui) {
