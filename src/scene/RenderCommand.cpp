@@ -11,15 +11,9 @@
 
 namespace scene {
 
-std::queue<entt::entity> RenderCommand::render_queue;
-Scene* RenderCommand::curr_scene = nullptr;
-Scene* RenderCommand::last_scene = nullptr;
-
 RenderCommand::RenderCommand() {}
 
 RenderCommand::~RenderCommand() {}
-
-Scene* RenderCommand::get_scene() { return curr_scene; }
 
 void RenderCommand::clear_buffer() {
   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
@@ -31,28 +25,6 @@ void RenderCommand::flush() {
   glfwPollEvents();
 }
 
-void RenderCommand::attach(const std::string& title) {
-  core::Window::rename(title);
-  core::Input::clear();
-
-  core::Window::layer = core::Layer::ImGui;
-
-  Scene* new_scene = factory::LoadScene(title);
-  std::swap(curr_scene, new_scene);
-  // curr_scene = new_scene;
-  curr_scene->init();
-}
-
-void RenderCommand::detach() {
-  CORE_TRACE("Detaching scene \"{0}\" ......", curr_scene->m_title);
-  last_scene = curr_scene;
-  curr_scene = nullptr;
-
-  delete last_scene;
-  last_scene = nullptr;
-
-  RenderCommand::reset();
-}
 
 void RenderCommand::reset() {
   eable_alpha_blend(false);
@@ -60,81 +32,6 @@ void RenderCommand::reset() {
   eable_face_culling(false);
 }
 
-void RenderCommand::render_scene(std::shared_ptr<asset::Shader> shader) {
-  using namespace component;
-
-  auto& reg = curr_scene->registry;
-  auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);
-  auto model_group = reg.group<Model>(entt::get<Transform, Tag>);
-
-  while (!render_queue.empty()) {
-    auto& e = render_queue.front();
-    render_queue.pop();
-    if (mesh_group.contains(e)) {
-      auto& mesh = mesh_group.get<Mesh>(e);
-      auto& transform = mesh_group.get<Transform>(e);
-      auto& material = mesh_group.get<Material>(e);
-      auto& tag = mesh_group.get<Tag>(e);
-      if (shader) {
-        shader->bind();
-        shader->set_uniform("model", transform.get_transform());
-      } else {
-        material.bind();
-        material.set_uniform("model", transform.get_transform());
-      }
-      if (tag.contains(ETag::Skybox)) {
-        set_front_is_ccw(false);
-        mesh.draw();
-        set_front_is_ccw(true);
-      } else {
-        mesh.draw();
-      }
-    } else if (model_group.contains(e)) {
-      auto& model = model_group.get<Model>(e);
-      auto& transform = model_group.get<Transform>(e);
-      for (auto& mesh : model.meshes) {
-        auto& material = model.materials.at(mesh.material_id);
-        if (shader) {
-          // TODO
-        } else {
-          material.bind();
-          material.set_uniform("model", transform.get_transform());
-        }
-        mesh.draw();
-      }
-    }
-  }
-}
-
-void RenderCommand::draw_scene() { curr_scene->on_scene_render(); }
-
-void RenderCommand::draw_imGui() {
-  bool switch_scene = false;
-  std::string next_scene_title;
-  if (ui::new_frame(); true) {
-    // 渲染菜单栏
-    ui::draw_menu_bar(next_scene_title);
-
-    if (!next_scene_title.empty()) {
-      switch_scene = true;
-      RenderCommand::clear_buffer();
-      ui::draw_loading_screen();
-
-    } else {
-      if (core::Window::layer == core::Layer::ImGui) {
-        curr_scene->on_imgui_render();
-      }
-    }
-    ui::end_frame();
-  }
-  // 双缓存 将渲染画面提交到窗口
-  RenderCommand::flush();
-
-  if (switch_scene) {
-    detach();
-    attach(next_scene_title);
-  }
-}
 
 void RenderCommand::eable_depth_test(bool enable) {
   if (enable) {

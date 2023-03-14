@@ -70,7 +70,6 @@ void App::init() {
 
 void App::clear() {
   Window::clear();
-  RenderCommand::detach();
   scene::ui::show_down();
 }
 
@@ -78,7 +77,7 @@ bool App::run() { return !Window::should_close(); }
 
 void App::render_update() {
   // 画面渲染
-  RenderCommand::draw_scene();
+  // RenderCommand::draw_scene();
 }
 
 void App::event_update() {
@@ -89,7 +88,7 @@ void App::event_update() {
   }
 
   Clock::update();
-  RenderCommand::draw_imGui();
+  // RenderCommand::draw_imGui();
 }
 
 void App::Run() {

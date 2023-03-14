@@ -16,7 +16,6 @@
 
 #include "asset/FBO.h"
 #include "component/Tag.hpp"
-#include "imgui.h"
 #include "scene/Entity.hpp"
 #include "system/System.h"
 #include "system/EnvironmentSystem.h"
@@ -36,9 +35,6 @@ class Scene {
   Entity create_entity(const std::string& name,
                        component::ETag tag = component::ETag::Untagged);
 
-  virtual void add_ubo(std::shared_ptr<asset::Shader> shader){};
-
-  void add_fbo(GLuint width, GLuint height);
 
   void registry_shader(GLuint shader_id);
 
@@ -47,19 +43,10 @@ class Scene {
     (render_queue.push_back(args), ...);
   }
 
-  virtual void init();
-  virtual void on_scene_render();
-  virtual void on_imgui_render();
-
   virtual void Awake();
   virtual void OnUpdateRuntime();
   virtual void OnEditorRumtime(::scene::Entity& editor_camera);
  protected:
-  // 相机 UBO
-  // std::shared_ptr<asset::UBO> nor_ubo;
-  std::map<GLuint, asset::UBO> UBOs;
-  // 后期处理
-  std::shared_ptr<asset::FBO> nor_fbo;
 
   entt::registry registry;
   std::map<entt::entity, std::string> directory;
@@ -68,8 +55,6 @@ class Scene {
   std::vector<std::shared_ptr<saber::system::System>> m_systems;
 
  private:
-  ImTextureID welcome_screen_texture_id;
-  std::unique_ptr<asset::Texture> welcome_screen;
 };
 
 }  // namespace scene

@@ -22,10 +22,6 @@ Scene::~Scene() {
   registry.clear();
 }
 
-void Scene::init() {
-  welcome_screen = std::make_unique<asset::Texture>("../resource/texture/welcome (original).png", false);
-  welcome_screen_texture_id = (void*)welcome_screen->get_id();
-}
 
 Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   Entity e = {name, registry.create(), &registry};
@@ -35,20 +31,12 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   return e;
 }
 
-void Scene::add_fbo(GLuint width, GLuint height) {
-  nor_fbo = std::make_shared<asset::FBO>(width, height);
-  nor_fbo->set_color_texture();
-  nor_fbo->set_depth_texture();
-}
 
 
 void Scene::registry_shader(GLuint shader_id) {
   shader_id_set.insert(shader_id);
 }
 
-void Scene::on_scene_render() { RenderCommand::clear_buffer(); }
-
-void Scene::on_imgui_render() { ui::draw_welcome_scene(welcome_screen_texture_id); }
 
 void Scene::Awake() {
   for (auto& system : m_systems) {

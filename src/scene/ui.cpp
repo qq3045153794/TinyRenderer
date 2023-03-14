@@ -168,7 +168,8 @@ void show_down() {
 }
 
 void draw_menu_bar(std::string& new_title) {
-  const auto& curr_scene_title = RenderCommand::get_scene()->m_title;
+#if 0
+  const auto& curr_scene_title = scene::RenderCommand::get_scene()->m_title;
 
   ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
   ImGui::SetNextWindowSize(ImVec2((float)Window::m_width, 0.01f));
@@ -232,6 +233,7 @@ void draw_menu_bar(std::string& new_title) {
 
   ImGui::PopStyleColor(4);
   ImGui::PopStyleVar(3);
+#endif
 }
 
 void draw_Gizmo(Entity& camera, Entity& target, Gizmo z) {
