@@ -3,7 +3,7 @@
 
 int main() {
   auto& app = core::App::instand();
-  app.init();
+  app.Init();
 
   std::cout << "$ System Information" << '\n' << std::endl;
   std::cout << "  GPU Vendor Name:   " << app.gl_vendor << std::endl;
@@ -22,9 +22,7 @@ int main() {
   std::cout << "  Geometry shader: " << app.gl_maxg_ubos << std::endl;
   std::cout << "  Fragment shader: " << app.gl_maxf_ubos << std::endl;
 
-  while (app.run()) {
-    core::App::instand().render_update();
-    core::App::instand().event_update();
-  }
-  app.clear();
+  app.AttachLayer();
+  app.Run();
+  app.Clean();
 }

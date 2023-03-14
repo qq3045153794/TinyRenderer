@@ -1,8 +1,6 @@
 // clang-format off
 #include "core/App.h"
-
 #include <iostream>
-
 #include "component/Mesh.h"
 #include "core/Window.h"
 #include "core/Log.h"
@@ -10,7 +8,6 @@
 #include "core/Input.h"
 #include "core/Event.h"
 #include "scene/RenderCommand.h"
-#include "scene/ui.h"
 // clang-format on
 
 namespace core {
@@ -22,29 +19,23 @@ App& App::instand() {
   return i;
 }
 
-void App::init() {
+void App::Init() {
   // 初始化窗口系统
   Window::init();
   Log::init();
   Clock::init();
   Input::init();
   Event::register_callback();
-  scene::ui::init();
-  CORE_INFO("scene ui init success");
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     CORE_ERROR("Failed to initialize GLAD");
     return;
   }
 
-  gl_vendor =
-      std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-  gl_renderer =
-      std::string(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
-  gl_version =
-      std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-  glsl_version = std::string(
-      reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  gl_vendor = std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+  gl_renderer = std::string(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  gl_version = std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  glsl_version = std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
   // texture size limit, max number of texture units and image units
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_texsize);
@@ -56,46 +47,26 @@ void App::init() {
   glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &gl_maxv_ubos);
   glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &gl_maxg_ubos);
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &gl_maxf_ubos);
+}
 
+void App::AttachLayer() {
   // 渲染器绑定场景
-  // Render::attach("Welcome Screen");
-#if 1
   Window::rename("title");
   Input::clear();
   editor_layer = std::make_shared<::saber::editor::EditorLayer>();
   editor_layer->OnAttach();
   editor_layer->Awake();
-#endif
 }
 
-void App::clear() {
-  Window::clear();
-  scene::ui::show_down();
-}
-
-bool App::run() { return !Window::should_close(); }
-
-void App::render_update() {
-  // 画面渲染
-  // RenderCommand::draw_scene();
-}
-
-void App::event_update() {
-  if (Input::get_key_down('\r')) {
-    // 切换layer
-    Window::on_layer_switch();
-    Input::set_key_down('\r', false);
-  }
-
-  Clock::update();
-  // RenderCommand::draw_imGui();
-}
+void App::Clean() { Window::clear(); }
 
 void App::Run() {
-  editor_layer->OnUpdateRuntime();
-  editor_layer->OnImGuiRender();
-  Window::update();
-  Clock::update();
+  while (!Window::should_close()) {
+    editor_layer->OnUpdateRuntime();
+    editor_layer->OnImGuiRender();
+    Window::update();
+    Clock::update();
+  }
 }
 
 App::App() {}

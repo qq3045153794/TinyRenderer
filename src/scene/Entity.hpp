@@ -15,12 +15,12 @@
 namespace scene {
 
 class Entity {
+ public:
+  std::string name;
+  entt::entity id = entt::null;
+
  private:
   entt::registry* registry = nullptr;
-
- public:
-  entt::entity id = entt::null;
-  std::string name;
 
  public:
   Entity() = default;

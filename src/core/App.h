@@ -10,12 +10,10 @@ namespace core {
 class App {
  public:
   static App& instand();
-  void init();
-  void clear();
-  bool run();
+  void Init();
+  void AttachLayer();
+  void Clean();
   void Run();
-  void render_update();
-  void event_update();
   std::string gl_vendor, gl_renderer, gl_version, glsl_version;
 
   GLint gl_texsize, gl_texsize_3d, gl_texsize_cubemap;

@@ -123,7 +123,7 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
 
   if (block_idx == -1) {
     // 暂时注释
-    CORE_ERROR("Can't find valid uniform location for {}", name);
+    // CORE_ERROR("Can't find valid uniform location for {}", name);
     return;
   }
 
