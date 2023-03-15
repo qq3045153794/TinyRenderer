@@ -46,9 +46,10 @@ class Scene {
   virtual void Awake();
   virtual void OnUpdateRuntime();
   virtual void OnEditorRumtime(::scene::Entity& editor_camera);
- protected:
 
   entt::registry registry;
+ protected:
+
   std::map<entt::entity, std::string> directory;
   std::vector<entt::entity> render_queue;
   std::set<uint32_t> shader_id_set;

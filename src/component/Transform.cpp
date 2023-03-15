@@ -84,9 +84,11 @@ void Transform::culate_eular() {
 
 const glm::mat4& Transform::get_transform() const { return m_transform; }
 
-const glm::vec3& Transform::get_eular() const { return m_eular; }
+glm::vec3& Transform::get_eular() { return m_eular; }
 
-const glm::vec3& Transform::get_position() const { return m_position; }
+glm::vec3& Transform::get_position() { return m_position; }
+
+glm::vec3& Transform::get_scale() { return m_scale; }
 
 const glm::mat4 Transform::get_lookat() const {
   return glm::lookAt(m_position, m_position + m_forward, m_up);
@@ -99,6 +101,7 @@ void Transform::set_ealar_YZX(const glm::vec3& eular) {
   temp_eular.z = glm::radians(eular.z);
 
   auto& temp_pos = m_transform[3];
+  std::cout << "temp_pos : " << temp_pos.x << " " << temp_pos.y << " " << temp_pos.z << std::endl;
 
   m_transform = glm::mat4(1.0);
   m_transform[0][0] = m_scale.x;

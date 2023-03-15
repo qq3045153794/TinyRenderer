@@ -106,13 +106,15 @@ class Transform {
    * @brief : 获取物体的欧拉角 Y->Z->X
    * @return       {*} 欧拉角
    */
-  const glm::vec3& get_eular() const;
+  glm::vec3& get_eular();
 
   /**
    * @brief : 获取位置向量
    * @return       {*} 位置向量
    */
-  const glm::vec3& get_position() const;
+  glm::vec3& get_position();
+
+  glm::vec3& get_scale();
 
   /**
    * @brief : 获取物体lookat矩阵

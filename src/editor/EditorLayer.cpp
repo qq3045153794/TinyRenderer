@@ -21,6 +21,7 @@ void EditorLayer::OnAttach() {
   using namespace ::component;
   using Entity = ::scene::Entity;
   m_cur_scene = std::make_shared<scene::Scene>("hello world");
+  m_hierarchy_panel = std::make_unique<SceneHierarchyPanel>(m_cur_scene);
 
   ImGuiWrapper::Init();
 
@@ -196,6 +197,9 @@ void EditorLayer::OnImGuiRender() {
     }
     ImGui::EndMenuBar();
   }
+
+  static bool hirerchy_panel_open = true;
+  m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
   ImGui::SetNextWindowPos(ImVec2{0, 30});

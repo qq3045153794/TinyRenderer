@@ -1,5 +1,6 @@
 #ifndef _SRC_COMPONENT_TAG_H_
 #define _SRC_COMPONENT_TAG_H_
+#include <string>
 namespace component {
 
 enum ETag {
@@ -14,7 +15,7 @@ enum ETag {
 
 class Tag {
  public:
-  Tag(ETag tag) : m_tag(tag) {}
+  Tag(ETag tag, const std::string& name) : m_name(name),  m_tag(tag) {}
   void add(ETag tag) {
     m_tag = static_cast<ETag>(static_cast<int>(m_tag) | static_cast<int>(tag));
   }
@@ -26,6 +27,7 @@ class Tag {
   constexpr bool contains(ETag tag) const {
     return (static_cast<int>(m_tag) & static_cast<int>(tag)) > 0;
   }
+  std::string m_name;
 
  private:
   ETag m_tag;

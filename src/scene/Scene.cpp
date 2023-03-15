@@ -22,21 +22,17 @@ Scene::~Scene() {
   registry.clear();
 }
 
-
 Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   Entity e = {name, registry.create(), &registry};
   e.AddComponent<component::Transform>();
-  e.AddComponent<component::Tag>(tag);
+  e.AddComponent<component::Tag>(tag, name);
   directory.emplace(e.id, e.name);
   return e;
 }
 
-
-
 void Scene::registry_shader(GLuint shader_id) {
   shader_id_set.insert(shader_id);
 }
-
 
 void Scene::Awake() {
   for (auto& system : m_systems) {

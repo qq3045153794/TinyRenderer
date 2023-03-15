@@ -40,6 +40,7 @@ void RenderSystem::OnEditorRumtime(scene::Entity& editor_camera) {
       auto& transform = mesh_group.get<Transform>(e);
       auto& material = mesh_group.get<Material>(e);
       auto& tag = mesh_group.get<Tag>(e);
+      std::cout << "name : " << tag.m_name << " " << transform.get_transform()[3][0]<< " " << transform.get_transform()[3][1] << " " << transform.get_transform()[3][2] << std::endl;
       material.bind();
       material.set_uniform("model", transform.get_transform());
       if (!tag.contains(ETag::Skybox)) {
