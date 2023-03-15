@@ -138,7 +138,8 @@ void EditorLayer::OnAttach() {
   temp_mat_8.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
   CHECK_ERROR();
 
-  main_fbo = std::make_shared<asset::FBO>(800, 600);
+  // 展示设置 800 600
+  main_fbo = std::make_shared<asset::FBO>(1024, 576);
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
 
@@ -157,7 +158,7 @@ void EditorLayer::OnDetach() {
 }
 void EditorLayer::OnUpdateRuntime() {
   main_fbo->bind();
-  glViewport(0U, 0U, 800, 600);
+  glViewport(0U, 0U, 1026, 576);
   ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
@@ -168,6 +169,7 @@ void EditorLayer::OnImGuiRender() {
   // main_fbo->draw();
 
   static bool dockspaceOpen = true;
+  static bool viewportOpen = true;
 
 
   ImGuiWrapper::Begin();
@@ -180,7 +182,6 @@ void EditorLayer::OnImGuiRender() {
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
   window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
   window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-  CORE_DEBUG("View port pos : {} {} , size {} {}", viewport->WorkPos.x, viewport->WorkPos.y, viewport->WorkSize.x, viewport->WorkSize.y);
 
   ImGui::Begin("test", &dockspaceOpen, window_flags);
   if (ImGui::BeginMenuBar()) {
@@ -196,10 +197,13 @@ void EditorLayer::OnImGuiRender() {
     ImGui::EndMenuBar();
   }
 
+
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-  if (ImGui::Begin("ViewPort")) {
+  ImGui::SetNextWindowPos(ImVec2{0, 30});
+  ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
+  static ImGuiWindowFlags viewport_window_flags = ImGuiWindowFlags_NoTitleBar |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+  if (ImGui::Begin("ViewPort",&viewportOpen, viewport_window_flags)) {
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
-    CORE_DEBUG("viewportPanelSize : {} {}", viewportPanelSize.x, viewportPanelSize.y);
     uint32_t texture_id = main_fbo->get_color_texture().get_id();
     ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
     ImGui::End();

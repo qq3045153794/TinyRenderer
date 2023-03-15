@@ -16,8 +16,8 @@ void Window::clear() {
 }
 
 void Window::init() {
-  m_width = 1280U;
-  m_height = 720U;
+  m_width = 1600U;
+  m_height = 900U;
   m_x = m_y = 0U;
   title = "LearnOpenGL";
   if (!glfwInit()) {
