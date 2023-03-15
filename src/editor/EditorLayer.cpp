@@ -164,13 +164,12 @@ void EditorLayer::OnUpdateRuntime() {
   main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
-  //glViewport(0U, 0U, 800, 600);
+  // glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
   // main_fbo->draw();
 
   static bool dockspaceOpen = true;
   static bool viewportOpen = true;
-
 
   ImGuiWrapper::Begin();
 
@@ -180,7 +179,8 @@ void EditorLayer::OnImGuiRender() {
   ImGui::SetNextWindowSize(viewport->WorkSize);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-  window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+  window_flags |=
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
   window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
   ImGui::Begin("test", &dockspaceOpen, window_flags);
@@ -197,15 +197,15 @@ void EditorLayer::OnImGuiRender() {
     ImGui::EndMenuBar();
   }
 
-
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
   ImGui::SetNextWindowPos(ImVec2{0, 30});
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
-  static ImGuiWindowFlags viewport_window_flags = ImGuiWindowFlags_NoTitleBar |  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-  if (ImGui::Begin("ViewPort",&viewportOpen, viewport_window_flags)) {
+  static ImGuiWindowFlags viewport_window_flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+  if (ImGui::Begin("ViewPort", &viewportOpen, viewport_window_flags)) {
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
     uint32_t texture_id = main_fbo->get_color_texture().get_id();
-    ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+    ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
     ImGui::End();
     ImGui::PopStyleVar();
   }
