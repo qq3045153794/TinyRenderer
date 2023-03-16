@@ -32,8 +32,8 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   ImGui::End();
 }
 
-static void draw_vec3_control(const std::string& label, glm::vec3& values) {
-  ImGui::Text(label.c_str());
+static void draw_vec3_control(const std::string& label, glm::vec3& values, float v_speed, float v_min, float v_max) {
+  ImGui::Text(label.c_str(), "%s");
   ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
   ImGui::TableNextRow();
   ImGui::TableSetColumnIndex(0);
@@ -50,7 +50,7 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values) {
 
 
   ImGui::SameLine();
-  ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, "%.2f");
+  ImGui::DragFloat("##X", &values.x, v_speed, v_min, v_max, "%.2f");
   ImGui::SameLine();
 
   ImGui::TableSetColumnIndex(1);
@@ -61,7 +61,7 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values) {
   ImGui::PopStyleColor(3);
 
   ImGui::SameLine();
-  ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, "%.2f");
+  ImGui::DragFloat("##Y", &values.y, v_speed, v_min, v_max, "%.2f");
   ImGui::SameLine();
 
   ImGui::TableSetColumnIndex(2);
@@ -72,7 +72,8 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values) {
   ImGui::PopStyleColor(3);
 
   ImGui::SameLine();
-  ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, "%.2f");
+  ImGui::DragFloat("##Z", &values.z, v_speed, v_min, v_max, "%.2f");
+  ImGui::SameLine();
 
   ImGui::PopStyleVar();
   ImGui::EndTable();
@@ -86,7 +87,7 @@ static void draw_component(const std::string& name, scene::Entity entity, FUNC u
   ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
                                        ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
                                        ImGuiTreeNodeFlags_FramePadding;
-  bool open = ImGui::TreeNodeEx((void*)(void*)(uint64_t)(uint32_t)entity.id, tree_node_flags, name.c_str());
+  bool open = ImGui::TreeNodeEx((void*)(void*)(uint64_t)(uint32_t)entity.id, tree_node_flags, name.c_str(), "%s");
   ImGui::PopStyleVar();
   if (open) {
     uiFunction(com);
@@ -94,7 +95,6 @@ static void draw_component(const std::string& name, scene::Entity entity, FUNC u
 
     ImGui::TreePop();
   }
-  std::cout << "end?" << std::endl;
 }
 
 void SceneHierarchyPanel::draw_components(Entity& entity) {
@@ -108,22 +108,17 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   }
   ImGui::SameLine();
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
-    std::cout <<"old : "<< component.get_position().x << " " << component.get_position().y <<" "<< component.get_position().z << std::endl;
-    std::cout << "tr : " << component.get_transform()[3][0] << " " << component.get_transform()[3][1] << " " << component.get_transform()[3][2] << std::endl;
+    auto temp_position = component.get_position();
+    draw_vec3_control("Position", temp_position , 0.1F, 0.0F, 0.0F);
+    component.set_position(temp_position);
 
+    auto temp_rotation = component.get_eular();
+    draw_vec3_control("Rotation", temp_rotation, 0.1F, 0.0F, 0.0F);
+    component.set_ealar_YZX(temp_rotation);
 
-    draw_vec3_control("Position", component.get_position());
-    std::cout <<"new : "<< component.get_position().x << " " << component.get_position().y <<" "<< component.get_position().z << std::endl;
-    std::cout << "tr : " << component.get_transform()[3][0] << " " << component.get_transform()[3][1] << " " << component.get_transform()[3][2] << std::endl;
-    static int tick = 0;
-    tick++;
-    CORE_ASERT(tick != 2, "abort");
-
-    glm::vec3 rotation = component.get_eular();
-    std::cout << " rotation : " << rotation.x << " " << rotation.y << " " << rotation.z << std::endl;
-    draw_vec3_control("Rotation", rotation);
-    component.set_ealar_YZX(rotation);
-    draw_vec3_control("Scale", component.get_scale());
+    auto temp_scale = component.get_scale();
+    draw_vec3_control("Scale", temp_scale, 0.1F, 0.1F, 10.0F);
+    component.set_scale(temp_scale);
   });
 }
 
@@ -149,7 +144,7 @@ void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   ImGui::Image((void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture()->get_id(),
                ImVec2{lineHeight - 5.0f, lineHeight - 5.0f}, {0, 1}, {1, 0});
   ImGui::SameLine();
-  ImGui::Text(local_name.c_str());
+  ImGui::Text(local_name.c_str(), "%s");
 
   if (opened) {
     ImGui::TreePop();
