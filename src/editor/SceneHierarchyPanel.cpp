@@ -217,6 +217,9 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values, float
 
 template <typename T, typename FUNC>
 static void draw_component(const std::string& name, scene::Entity entity, FUNC uiFunction) {
+  if (!entity.Contains<T>()) {
+    return;
+  }
   T& com = entity.GetComponent<T>();
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4.0f, 4.0f});
   ImGui::Separator();
@@ -261,19 +264,20 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   draw_component<::component::Material>("Material", entity, [](::component::Material& component) {
     using Material = ::component::Material;
-    ImGui::Text("Material");
+    ImGui::Text("Albedo");
     ImGui::BeginTable("##Material", 1);
     ImGui::TableNextRow();
 
-    ImGui::TableSetColumnIndex(0);
-    float f_albedo[4];
-    Material::ubo_variant ubo_var = component.get_uniform(Material::pbr_u::albedo);
-    auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
-    for(std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
-    ImGui::ColorEdit4("albedo", f_albedo);
-    for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
-    component.bind_uniform(Material::pbr_u::albedo, albedo);
-
+    if (component.m_shading_model == Material::ShadingModel::PBR) {
+      ImGui::TableSetColumnIndex(0);
+      float f_albedo[4];
+      Material::ubo_variant ubo_var = component.get_uniform(Material::pbr_u::albedo);
+      auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
+      for(std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
+      ImGui::ColorEdit4("albedo", f_albedo);
+      for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
+      component.bind_uniform(Material::pbr_u::albedo, albedo);
+  }
     ImGui::EndTable();
   });
 }

@@ -24,8 +24,7 @@ class Entity {
 
  public:
   Entity() = default;
-  Entity(const std::string& name, entt::entity id, entt::registry* reg)
-      : name(name), id(id), registry(reg) {}
+  Entity(const std::string& name, entt::entity id, entt::registry* reg) : name(name), id(id), registry(reg) {}
   ~Entity() {}
 
   Entity(const Entity&) = default;
@@ -46,6 +45,11 @@ class Entity {
   template <typename T>
   T& GetComponent() {
     return registry->get<T>(id);
+  }
+
+  template <typename T>
+  bool Contains() {
+    return registry->any_of<T>(id);
   }
 
   template <typename T, typename... Args>
