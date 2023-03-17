@@ -1,6 +1,10 @@
 
 #ifndef _SRC_IMGUI_IMGUI_WRAPPER_H
-#define  _SRC_IMGUI_IMGUI_WRAPPER_H
+#define _SRC_IMGUI_IMGUI_WRAPPER_H
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"

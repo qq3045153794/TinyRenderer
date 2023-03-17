@@ -2,7 +2,7 @@ add_executable(saber
     main.cpp
     ${MAIN_SRC}
     ${ImGUI_SRC}
-    ${ImGuizmo_SRC}
+    #${ImGuizmo_SRC}
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
@@ -20,7 +20,7 @@ target_include_directories(saber
     PUBLIC
         ${ImGUI_INCLUDE}
         ${MAIN_INCLUDE}
-        ${ImGuizmo_INCLUDE}
+        #${ImGuizmo_INCLUDE}
         ${VEN_INCLUDE}
 )
 

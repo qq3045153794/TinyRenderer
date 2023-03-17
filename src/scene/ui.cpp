@@ -1,3 +1,4 @@
+# if 0
 // clang-format off
 #include "scene/ui.h"
 
@@ -333,3 +334,4 @@ void draw_loading_screen() {
 }
 
 }  // namespace scene::ui
+#endif

@@ -1,16 +1,25 @@
 set(ImGUI_SRC
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_demo.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_draw.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_tables.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_widgets.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_impl_glfw.cpp
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_impl_opengl3.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_demo.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_draw.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_tables.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_widgets.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_impl_glfw.cpp
+    #${PROJECT_SOURCE_DIR}/vendor/imgui/include/imgui_impl_opengl3.cpp
+
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/imgui_demo.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/imgui.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/imgui_draw.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/imgui_tables.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/imgui_widgets.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/backends/imgui_impl_glfw.cpp
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/backends/imgui_impl_opengl3.cpp
 )
 
 
 set(ImGUI_INCLUDE
-    ${PROJECT_SOURCE_DIR}/vendor/imgui/include
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/
+    ${PROJECT_SOURCE_DIR}/vendor/imgui-docking/backends/
 )
 
 set(ImGuizmo_SRC

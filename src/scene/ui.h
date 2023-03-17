@@ -1,5 +1,9 @@
+#if 0
 #ifndef _SRC_SCENE_UI_H_
 #define _SRC_SCENE_UI_H_
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DISABLE_METRICS_WINDOW
 
 #include "core/Window.h"
 #include "imgui.h"
@@ -28,3 +32,4 @@ void draw_loading_screen();
 }  // namespace scene::ui
 
 #endif
+#endif 
