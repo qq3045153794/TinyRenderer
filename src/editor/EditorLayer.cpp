@@ -167,7 +167,6 @@ void EditorLayer::OnUpdateRuntime() {
 void EditorLayer::OnImGuiRender() {
   // glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
-  main_fbo->draw();
   static bool dockspaceOpen = true;
   static bool viewportOpen = true;
 

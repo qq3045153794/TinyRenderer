@@ -58,7 +58,6 @@ void CameraFps::update() {
   float dt = Clock::dt;
   float velocity = dt;
 
-  std::cout <<"old camera : "<< T->get_transform()[3][0] << " " << T->get_transform()[3][1] << " " << T->get_transform()[3][2] << "\n";
   if (Input::get_key_down('w')) {
     T->translate(T->m_forward * velocity);
   }
@@ -83,7 +82,6 @@ void CameraFps::update() {
     T->translate(world_up * velocity * -1.0f);
   }
 
-  std::cout <<"old camera : "<< T->get_transform()[3][0] << " " << T->get_transform()[3][1] << " " << T->get_transform()[3][2] << "\n";
   auto eular_x = glm::clamp(T->get_eular().x + Input::get_offset_y() * 0.1f,
                             -89.0f, 89.0f);
   auto eular_y = T->get_eular().y + Input::get_offset_x() * 0.1;
@@ -91,7 +89,6 @@ void CameraFps::update() {
 
   T->set_ealar_YZX(glm::vec3(eular_x, eular_y, 0.0f));
 
-  std::cout <<"F camera : "<< T->get_transform()[3][0] << " " << T->get_transform()[3][1] << " " << T->get_transform()[3][2] << "\n";
 }
 
 }  // namespace component

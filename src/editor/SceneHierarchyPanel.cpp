@@ -32,7 +32,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   ImGui::End();
 }
 
-static void draw_vec3_control(const std::string& label, glm::vec3& values, float v_speed, float v_min, float v_max) {
+static void draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value,  float v_speed, float v_min, float v_max) {
   ImGui::Text(label.c_str(), "%s");
   ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
   ImGui::TableNextRow();
@@ -44,31 +44,46 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values, float
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
-  float resetValue = 0.F;
-  if (ImGui::Button("X", buttonSize)) values.x = resetValue;
+
+  // 同一个window下的botton id必须不同，否则会冲突导致按键没反应
+  // 可用##str 将str作为区分id部分，且str不会显示在ui中
+  // 参考：https://github.com/ocornut/imgui/wiki#about-the-imgui-paradigm
+  std::string x_botton_id = "X##" + label;
+  if (ImGui::Button(x_botton_id.c_str(), buttonSize)) {
+    CORE_DEBUG("Click X botton (label = {})", label);
+    values.x = reset_value;
+  }
   ImGui::PopStyleColor(3);
 
 
   ImGui::SameLine();
-  ImGui::DragFloat("##X", &values.x, v_speed, v_min, v_max, "%.2f");
+  ImGui::DragFloat(("##X" + label).c_str(), &values.x, v_speed, v_min, v_max, "%.2f");
   ImGui::SameLine();
 
   ImGui::TableSetColumnIndex(1);
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
-  if (ImGui::Button("Y", buttonSize)) values.y = resetValue;
+  std::string y_botton_id = "Y##" + label;
+  if (ImGui::Button(y_botton_id.c_str(), buttonSize)) {
+    CORE_DEBUG("Click Y botton (label = {})", label);
+    values.y = reset_value;
+  }
   ImGui::PopStyleColor(3);
 
   ImGui::SameLine();
-  ImGui::DragFloat("##Y", &values.y, v_speed, v_min, v_max, "%.2f");
+  ImGui::DragFloat(("##Y" + label).c_str(), &values.y, v_speed, v_min, v_max, "%.2f");
   ImGui::SameLine();
 
   ImGui::TableSetColumnIndex(2);
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
-  if (ImGui::Button("Z", buttonSize)) values.z = resetValue;
+  std::string z_botton_id = ("Z##" + label).c_str() + label;
+  if (ImGui::Button(z_botton_id.c_str(), buttonSize)) {
+    CORE_DEBUG("Click Z botton (label = {})", label);
+    values.z = reset_value;
+  }
   ImGui::PopStyleColor(3);
 
   ImGui::SameLine();
@@ -91,7 +106,6 @@ static void draw_component(const std::string& name, scene::Entity entity, FUNC u
   ImGui::PopStyleVar();
   if (open) {
     uiFunction(com);
-    CORE_DEBUG("oepn component {}", name);
 
     ImGui::TreePop();
   }
@@ -109,15 +123,15 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   ImGui::SameLine();
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
     auto temp_position = component.get_position();
-    draw_vec3_control("Position", temp_position , 0.1F, 0.0F, 0.0F);
+    draw_vec3_control("Position", temp_position, 0.F , 0.1F, 0.0F, 0.0F);
     component.set_position(temp_position);
 
     auto temp_rotation = component.get_eular();
-    draw_vec3_control("Rotation", temp_rotation, 0.1F, 0.0F, 0.0F);
+    draw_vec3_control("Rotation", temp_rotation, 0.F, 0.1F, 0.0F, 0.0F);
     component.set_ealar_YZX(temp_rotation);
 
     auto temp_scale = component.get_scale();
-    draw_vec3_control("Scale", temp_scale, 0.1F, 0.1F, 10.0F);
+    draw_vec3_control("Scale", temp_scale, 1.0F, 0.1F, 0.0F, 0.0F);
     component.set_scale(temp_scale);
   });
 }
@@ -127,16 +141,6 @@ void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
   bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity.id, flags, "");
   if (ImGui::IsItemClicked()) {
-
-    auto& component = entity.GetComponent<component::Transform>();
-    std::cout << "tr : " << component.get_transform()[3][0] << " " << component.get_transform()[3][1] << " " << component.get_transform()[3][2] << std::endl;
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-        std::cout << component.get_transform()[j][i]<< " ";
-      }
-      std::cout << std::endl;
-    }
-    CORE_INFO("Scelet {}", local_name);
     m_select_entity = entity;
   }
   float lineHeight = 20.F;

@@ -17,16 +17,16 @@ Transform::Transform()
 
 Transform::~Transform() {}
 
-static glm::vec3 vec3_no_zore(const glm::vec3& vec3) {
+static glm::vec3 vec3_no_negetive(const glm::vec3& vec3) {
   glm::vec3 ret_vec3 = vec3;;
   constexpr float exp_val = 1e-5;
-  if(std::abs(vec3.x) <= exp_val) {
+  if(vec3.x <= exp_val) {
     ret_vec3.x = exp_val;
   }
-  if(std::abs(vec3.y) <= exp_val) {
+  if(vec3.y <= exp_val) {
     ret_vec3.y = exp_val;
   }
-  if(std::abs(vec3.z) <= exp_val) {
+  if(vec3.z <= exp_val) {
     ret_vec3.z = exp_val;
   }
   return ret_vec3;
@@ -166,8 +166,8 @@ void Transform::set_position(const glm::vec3& position) {
 }
 
 void Transform::set_scale(const glm::vec3& size) {
-  glm::vec3 no_zore_scale = vec3_no_zore(size);
-  scale(no_zore_scale / m_scale);
+  glm::vec3 no_negetive_scale = vec3_no_negetive(size);
+  scale(no_negetive_scale / m_scale);
   culate_asix();
   culate_eular();
 }
