@@ -264,21 +264,65 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   draw_component<::component::Material>("Material", entity, [](::component::Material& component) {
     using Material = ::component::Material;
-    ImGui::Text("Albedo");
-    ImGui::BeginTable("##Material", 1);
-    ImGui::TableNextRow();
-
     if (component.m_shading_model == Material::ShadingModel::PBR) {
-      ImGui::TableSetColumnIndex(0);
-      float f_albedo[4];
-      Material::ubo_variant ubo_var = component.get_uniform(Material::pbr_u::albedo);
-      auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
-      for(std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
-      ImGui::ColorEdit4("albedo", f_albedo);
-      for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
-      component.bind_uniform(Material::pbr_u::albedo, albedo);
-  }
-    ImGui::EndTable();
+      if (ImGui::Text("Albedo"); true) {
+        ImGui::BeginTable("##Albedo", 1);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        float f_albedo[4];
+        auto ubo_var = component.get_uniform(Material::pbr_u::albedo);
+        auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
+        for (std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
+        ImGui::ColorEdit4("albedo", f_albedo);
+        for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
+        component.bind_uniform(Material::pbr_u::albedo, albedo);
+        ImGui::EndTable();
+      }
+
+      if (ImGui::Text("Roughness"); true) {
+        ImGui::BeginTable("##Roughness", 1);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        auto ubo_var = component.get_uniform(Material::pbr_u::roughness);
+        float reghness = std::get<::component::UboData<float>>(ubo_var).m_data;
+        ImGui::DragFloat("##Roughness", &reghness, 0.01F, 0.F, 1.F, "%.2f");
+        component.bind_uniform(Material::pbr_u::roughness, reghness);
+        ImGui::EndTable();
+      }
+
+      if (ImGui::Text("Metalness"); true) {
+        ImGui::BeginTable("##Metalness", 1);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        auto ubo_var = component.get_uniform(Material::pbr_u::metalness);
+        float metalness = std::get<::component::UboData<float>>(ubo_var).m_data;
+        ImGui::DragFloat("##Metalness", &metalness, 0.01F, 0.F, 1.F, "%.2f");
+        component.bind_uniform(Material::pbr_u::metalness, metalness);
+        ImGui::EndTable();
+      }
+
+      if (ImGui::Text("Specular"); true) {
+        ImGui::BeginTable("##Specular", 1);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        auto ubo_var = component.get_uniform(Material::pbr_u::specular);
+        float specular = std::get<::component::UboData<float>>(ubo_var).m_data;
+        ImGui::DragFloat("##Specular", &specular, 0.01F, 0.F, 1.F,  "%.2f");
+        component.bind_uniform(Material::pbr_u::specular, specular);
+        ImGui::EndTable();
+      }
+
+      if (ImGui::Text("AO"); true) {
+        ImGui::BeginTable("##Ao", 1);
+        ImGui::TableNextRow();
+        ImGui::TableSetColumnIndex(0);
+        auto ubo_var = component.get_uniform(Material::pbr_u::ao);
+        float ao = std::get<::component::UboData<float>>(ubo_var).m_data;
+        ImGui::DragFloat("##Ao", &ao, 0.01F, 0.F, 1.F,  "%.2f");
+        component.bind_uniform(Material::pbr_u::ao, ao);
+        ImGui::EndTable();
+      }
+    }
   });
 }
 
