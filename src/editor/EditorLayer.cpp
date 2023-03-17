@@ -172,13 +172,14 @@ void EditorLayer::OnImGuiRender() {
 
   ImGuiWrapper::Begin();
 
-  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
   const ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
+  ImGui::SetNextWindowViewport(viewport->ID);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-  
+
   window_flags |=
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
   window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
@@ -201,10 +202,10 @@ void EditorLayer::OnImGuiRender() {
   m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-  ImGui::SetNextWindowPos(ImVec2{0, 30});
+  //ImGui::SetNextWindowPos(ImVec2{0, 30});
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
   static ImGuiWindowFlags viewport_window_flags =
-      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
   if (ImGui::Begin("ViewPort", &viewportOpen, viewport_window_flags)) {
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
     uint32_t texture_id = main_fbo->get_color_texture().get_id();

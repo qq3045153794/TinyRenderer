@@ -14,8 +14,8 @@ using Entity = ::scene::Entity;
 SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<::scene::Scene> scene) : m_scene{scene}, m_select_entity{} {}
 
 void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
-  ImGui::SetNextWindowPos(ImVec2{1024, 30});
-  ImGui::SetNextWindowSize(ImVec2{576, 288});
+  // ImGui::SetNextWindowPos(ImVec2{1024, 30});
+  // ImGui::SetNextWindowSize(ImVec2{576, 288});
   ImGui::Begin("Entity Hierarchy");
   m_scene->registry.each([&](auto& entity_id) {
     Entity e{"temp", entity_id, &m_scene->registry};
@@ -87,8 +87,8 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   }
   ImGui::End();
 
-  ImGui::SetNextWindowPos(ImVec2{1024, 318});
-  ImGui::SetNextWindowSize(ImVec2{576, 288});
+  // ImGui::SetNextWindowPos(ImVec2{1024, 318});
+  // ImGui::SetNextWindowSize(ImVec2{576, 288});
   ImGui::Begin("Entity Property");
   if (m_select_entity.id != entt::null) {
     draw_components(m_select_entity);
