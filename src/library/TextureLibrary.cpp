@@ -3,7 +3,7 @@ namespace saber {
 
 using Texture = asset::Texture;
 Library<asset::Texture>::Library() {
-  const uint32_t kLowResolution = 32U;
+  const uint32_t kLowResolution = 128U;
   const uint32_t kResolution = 512U;
   // clang-format off
   Add("irradian", std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, kLowResolution, kLowResolution, GL_RGB));
