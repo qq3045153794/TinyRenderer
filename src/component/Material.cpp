@@ -2,6 +2,7 @@
 
 #include "core/App.h"
 #include "core/Debug.h"
+#include <library/ShaderLibrary.h>
 namespace component {
 
 // clang-format off
@@ -49,6 +50,32 @@ Material::Material(std::shared_ptr<asset::Shader> shader) {
     set_uniform(2U, 1.0f);
     set_uniform(3U, 1.0f);
     set_uniform(4U, 0.5f);
+  }
+}
+
+
+Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_model) {
+  if (shadering_model == ShadingModel::DEFAULT) {
+    auto default_shader = ::saber::PublicSingleton<saber::Library<::asset::Shader>>::GetInstance().GetDefaultShader();
+    set_shader(default_shader);
+
+  } else if (shadering_model == ShadingModel::PBR) {
+    auto pbr_shader = ::saber::PublicSingleton<saber::Library<::asset::Shader>>::GetInstance().GetPbrShader();
+    set_shader(pbr_shader);
+    set_uniform(100U, false);
+    set_uniform(101U, false);
+    set_uniform(102U, false);
+    set_uniform(103U, false);
+    set_uniform(104U, false);
+
+    // 标准模型
+    set_uniform(0U, glm::vec4(1.0f));
+    set_uniform(1U, 0.0f);
+    set_uniform(2U, 1.0f);
+    set_uniform(3U, 1.0f);
+    set_uniform(4U, 0.5f);
+  } else{
+
   }
 }
 

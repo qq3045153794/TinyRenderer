@@ -65,10 +65,22 @@ class Material {
     brdf_LUT_map = 4U
   };
 
+  enum class default_t :uint16_t {
+    image_1 = 1U,
+    image_2 = 2U
+  };
+
+  enum class ShadingModel : uint16_t {
+    COSTEM  = 0U,
+    DEFAULT = 1U, // 贴图
+    PBR = 2U,     // PBR光照模型
+  };
+
   static std::map<GLuint, std::string> uniform_dictionary;
   static std::map<GLuint, std::string> texture_dictionary;
 
   Material(std::shared_ptr<asset::Shader> shader);
+  Material(ShadingModel shadering_model);
   void set_texture(GLuint u_id, std::shared_ptr<asset::Texture> texture);
   void bind() const;
   void ubind() const;
@@ -100,6 +112,8 @@ class Material {
     GLuint uid = static_cast<GLuint>(pbr);
     set_uniform(uid, val);
   }
+ public:
+  ShadingModel m_shading_model{ShadingModel::COSTEM};
 
  private:
   using ubo_variant =

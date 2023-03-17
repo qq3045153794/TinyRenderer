@@ -1,8 +1,9 @@
 #include <editor/SceneHierarchyPanel.h>
 #include <imGui/ImGuiWrapper.h>
-#include <library/TextureLibrary.h>
 #include <library/ShaderLibrary.h>
+#include <library/TextureLibrary.h>
 #include <scene/Scene.h>
+
 #include <component/Tag.hpp>
 #include <cstring>
 
@@ -23,9 +24,8 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   });
 
   // 右键点击弹出窗口
-  if(ImGui::BeginPopupContextWindow()) {
+  if (ImGui::BeginPopupContextWindow()) {
     if (ImGui::BeginMenu("Create Render Entity")) {
-
       if (ImGui::MenuItem("Create Empty")) {
         m_scene->create_entity("Empty");
         // TODO
@@ -36,7 +36,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
         auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
         auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
         e.AddComponent<::component::Mesh>(::component::Mesh::CUBE);
-        e.AddComponent<::component::Material>(default_shader);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::DEFAULT);
         e.GetComponent<::component::Material>().set_texture(0, default_texture);
         m_scene->SubmitRender(e.id);
       }
@@ -46,7 +46,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
         auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
         auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
         e.AddComponent<::component::Mesh>(::component::Mesh::SPHERE);
-        e.AddComponent<::component::Material>(default_shader);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::DEFAULT);
         e.GetComponent<::component::Material>().set_texture(0, default_texture);
         m_scene->SubmitRender(e.id);
       }
@@ -56,8 +56,66 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
         auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
         auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
         e.AddComponent<::component::Mesh>(::component::Mesh::QUAD);
-        e.AddComponent<::component::Material>(default_shader);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::DEFAULT);
         e.GetComponent<::component::Material>().set_texture(0, default_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Create PBR Entity")) {
+      if (ImGui::MenuItem("Create PBR Empty")) {
+        m_scene->create_entity("Empty");
+        // TODO
+      }
+
+      if (ImGui::MenuItem("Create Cube##PBR")) {
+        auto e = m_scene->create_entity("CubePBR");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+        auto irradian_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("irradian");
+        auto prefiltermap = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+        e.AddComponent<::component::Mesh>(::component::Mesh::CUBE);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::PBR);
+        auto& mat = e.GetComponent<::component::Material>();
+        mat.bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+        mat.bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+        mat.bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      if (ImGui::MenuItem("Create Sphere##PBR")) {
+        auto e = m_scene->create_entity("SpherePBR");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+        auto irradian_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("irradian");
+        auto prefiltermap = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+        e.AddComponent<::component::Mesh>(::component::Mesh::SPHERE);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::PBR);
+        auto& mat = e.GetComponent<::component::Material>();
+        mat.bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+        mat.bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+        mat.bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      if (ImGui::MenuItem("Create Quad##PBR")) {
+        auto e = m_scene->create_entity("QuadPBR");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+        auto irradian_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("irradian");
+        auto prefiltermap = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+        e.AddComponent<::component::Mesh>(::component::Mesh::QUAD);
+        e.AddComponent<::component::Material>(::component::Material::ShadingModel::PBR);
+        e.GetComponent<::component::Material>().set_texture(0, default_texture);
+        auto& mat = e.GetComponent<::component::Material>();
+        mat.bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+        mat.bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+        mat.bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
         m_scene->SubmitRender(e.id);
       }
 
@@ -66,19 +124,18 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
 
     if (ImGui::BeginMenu("Create Camera Entity")) {
       if (ImGui::MenuItem("Create Camera")) {
-        // TODO 
+        // TODO
       }
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Create Light")) {
-
       if (ImGui::MenuItem("Create Dirct Light")) {
-        // TODO 
+        // TODO
       }
 
       if (ImGui::MenuItem("Create Point Light")) {
-        // TODO 
+        // TODO
       }
       ImGui::EndMenu();
     }
@@ -96,7 +153,8 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   ImGui::End();
 }
 
-static void draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value,  float v_speed, float v_min, float v_max) {
+static void draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value, float v_speed,
+                              float v_min, float v_max) {
   ImGui::Text(label.c_str(), "%s");
   ImGui::BeginTable("table_padding", 3, ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_NoPadInnerX);
   ImGui::TableNextRow();
@@ -118,7 +176,6 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values, float
     values.x = reset_value;
   }
   ImGui::PopStyleColor(3);
-
 
   ImGui::SameLine();
   ImGui::DragFloat(("##X" + label).c_str(), &values.x, v_speed, v_min, v_max, "%.2f");
@@ -187,7 +244,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   ImGui::SameLine();
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
     auto temp_position = component.get_position();
-    draw_vec3_control("Position", temp_position, 0.F , 0.1F, 0.0F, 0.0F);
+    draw_vec3_control("Position", temp_position, 0.F, 0.1F, 0.0F, 0.0F);
     component.set_position(temp_position);
 
     auto temp_rotation = component.get_eular();

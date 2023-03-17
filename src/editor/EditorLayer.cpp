@@ -56,14 +56,14 @@ void EditorLayer::OnAttach() {
 
   Entity quad = scene->create_entity("quad");
   quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
-  quad.AddComponent<Material>(default_shader);
+  quad.AddComponent<Material>(Material::ShadingModel::DEFAULT);
   quad.GetComponent<Material>().set_texture(0, brdf_lut_texture);
   quad.GetComponent<Transform>().set_position(glm::vec3(-4, 0.0, 0.0));
   CORE_INFO("{} created", quad.name);
 
   Entity cube = scene->create_entity("cube");
   cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
-  cube.AddComponent<Material>(default_shader);
+  cube.AddComponent<Material>(Material::ShadingModel::DEFAULT);
   cube.GetComponent<Material>().set_texture(0, default_texture);
   cube.GetComponent<Transform>().translate(glm::vec3(8.0, 0.0, 0.0));
   CORE_INFO("{} created", cube.name);
@@ -71,7 +71,7 @@ void EditorLayer::OnAttach() {
   Entity sphere = scene->create_entity("sphere");
   sphere.AddComponent<Mesh>(Mesh::primitive::SPHERE);
   sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
-  sphere.AddComponent<Material>(pbr_shader);
+  sphere.AddComponent<Material>(Material::ShadingModel::PBR);
   auto& sphere_mat = sphere.GetComponent<Material>();
   sphere_mat.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
   sphere_mat.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
@@ -86,7 +86,7 @@ void EditorLayer::OnAttach() {
   Entity sphere_pbr = scene->create_entity("sphere pbr");
   sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
   sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
-  sphere_pbr.AddComponent<Material>(pbr_shader);
+  sphere_pbr.AddComponent<Material>(Material::ShadingModel::PBR);
   auto& sphere_mat_pbr = sphere_pbr.GetComponent<Material>();
   sphere_mat_pbr.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
   sphere_mat_pbr.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
