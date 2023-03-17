@@ -1,8 +1,9 @@
 #include "Material.h"
 
+#include <library/ShaderLibrary.h>
+
 #include "core/App.h"
 #include "core/Debug.h"
-#include <library/ShaderLibrary.h>
 namespace component {
 
 // clang-format off
@@ -34,7 +35,6 @@ std::map<GLuint, std::string> Material::texture_dictionary{
 };
 // clang-format on
 
-
 Material::Material(std::shared_ptr<asset::Shader> shader) {
   set_shader(shader);
   if (m_shader != nullptr) {
@@ -52,7 +52,6 @@ Material::Material(std::shared_ptr<asset::Shader> shader) {
     set_uniform(4U, 0.5f);
   }
 }
-
 
 Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_model) {
   if (shadering_model == ShadingModel::DEFAULT) {
@@ -74,15 +73,11 @@ Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_mod
     set_uniform(2U, 1.0f);
     set_uniform(3U, 1.0f);
     set_uniform(4U, 0.5f);
-  } else{
-
+  } else {
   }
 }
 
-
-void Material::set_shader(std::shared_ptr<asset::Shader> shader) {
-  m_shader = shader;
-}
+void Material::set_shader(std::shared_ptr<asset::Shader> shader) { m_shader = shader; }
 
 void Material::bind_texture(pbr_t pbr, std::shared_ptr<asset::Texture> texture) {
   GLuint uid = static_cast<GLuint>(pbr);
@@ -112,10 +107,26 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
     m_shader->set_uniform(texture_dictionary[uid].c_str(), uid);
     m_textures.insert_or_assign(uid, texture);
 
-    m_ubo_datas.push_back(UboData<GLuint>(texture_dictionary[uid], m_shader, uid));
+    m_uniforms_cache[texture_dictionary[uid]] = UboData<GLuint>(texture_dictionary[uid], m_shader, uid);
+    // m_ubo_datas.push_back(UboData<GLuint>(texture_dictionary[uid], m_shader, uid));
   } else {
     CORE_ERROR("Can't find valid texture units (uid = {})", uid);
   }
+}
+
+
+Material::ubo_variant Material::get_uniform(pbr_u id) {
+  std::string uniform_key = uniform_dictionary[(uint16_t)id];
+  CORE_ASERT(m_uniforms_cache.count(uniform_key) > 0, "No find uniform (id = {})", (uint16_t)id);
+  CORE_DEBUG("id : {}, uniform_key : {}", (uint16_t)id, uniform_key);
+  return m_uniforms_cache[uniform_key];
+}
+
+Material::ubo_variant Material::get_uniform(pbr_t id) {
+
+  std::string texture_key = texture_dictionary[(uint16_t)id];
+  CORE_ASERT(m_uniforms_cache.count(texture_key) > 0, "No find uniform (id = {})", (uint16_t)id);
+  return m_uniforms_cache[texture_key];
 }
 
 void Material::bind() const {
@@ -124,8 +135,12 @@ void Material::bind() const {
     item.second->bind(item.first);
   }
 
-  for (auto& ubo_data : m_ubo_datas) {
-    std::visit([](auto& val) { val.bind();}, ubo_data);
+  //for (auto& ubo_data : m_ubo_datas) {
+    //std::visit([](auto& val) { val.bind(); }, ubo_data);
+  //}
+
+  for (auto& [i, uniform] : m_uniforms_cache) {
+    std::visit([](auto& val) { val.bind(); }, uniform);
   }
 }
 

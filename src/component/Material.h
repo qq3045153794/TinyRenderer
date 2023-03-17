@@ -76,6 +76,10 @@ class Material {
     PBR = 2U,     // PBR光照模型
   };
 
+  using ubo_variant =
+      std::variant<UboData<int>, UboData<bool>, UboData<GLfloat>, UboData<GLuint>, UboData<glm::vec2>,
+                   UboData<glm::vec3>, UboData<glm::vec4>, UboData<glm::mat2>, UboData<glm::mat3>, UboData<glm::mat4>>;
+
   static std::map<GLuint, std::string> uniform_dictionary;
   static std::map<GLuint, std::string> texture_dictionary;
 
@@ -99,7 +103,8 @@ class Material {
     if (uniform_dictionary.find(uid) != uniform_dictionary.end()) {
       m_shader->set_uniform(uniform_dictionary[uid].c_str(), val);
 
-      m_ubo_datas.push_back(UboData<T>(uniform_dictionary[uid], m_shader, val));
+      m_uniforms_cache[uniform_dictionary[uid]] = UboData<T>(uniform_dictionary[uid], m_shader, val);
+      // m_ubo_datas.push_back(UboData<T>(uniform_dictionary[uid], m_shader, val));
     } else {
       CORE_ERROR("Can't find valid uniform (uid = {})", uid);
     }
@@ -112,15 +117,16 @@ class Material {
     GLuint uid = static_cast<GLuint>(pbr);
     set_uniform(uid, val);
   }
- public:
-  ShadingModel m_shading_model{ShadingModel::COSTEM};
 
+  ubo_variant get_uniform(pbr_u pbr);
+  ubo_variant get_uniform(pbr_t pbr);
+ public:
+
+  ShadingModel m_shading_model{ShadingModel::COSTEM};
  private:
-  using ubo_variant =
-      std::variant<UboData<int>, UboData<bool>, UboData<GLfloat>, UboData<GLuint>, UboData<glm::vec2>,
-                   UboData<glm::vec3>, UboData<glm::vec4>, UboData<glm::mat2>, UboData<glm::mat3>, UboData<glm::mat4>>;
-  std::vector<ubo_variant> m_ubo_datas;
+  // std::vector<ubo_variant> m_ubo_datas;
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
+  std::unordered_map<std::string, ubo_variant> m_uniforms_cache;
 };
 
 }  // namespace component

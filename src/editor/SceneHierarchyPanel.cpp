@@ -223,7 +223,8 @@ static void draw_component(const std::string& name, scene::Entity entity, FUNC u
   ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed |
                                        ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap |
                                        ImGuiTreeNodeFlags_FramePadding;
-  bool open = ImGui::TreeNodeEx((void*)(void*)(uint64_t)(uint32_t)entity.id, tree_node_flags, name.c_str(), "%s");
+  // bool open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity.id, tree_node_flags, name.c_str(), "%s");
+  bool open = ImGui::TreeNodeEx(name.c_str(), tree_node_flags, name.c_str(), "%s");
   ImGui::PopStyleVar();
   if (open) {
     uiFunction(com);
@@ -254,6 +255,26 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     auto temp_scale = component.get_scale();
     draw_vec3_control("Scale", temp_scale, 1.0F, 0.1F, 0.0F, 0.0F);
     component.set_scale(temp_scale);
+  });
+
+  ImGui::SameLine();
+
+  draw_component<::component::Material>("Material", entity, [](::component::Material& component) {
+    using Material = ::component::Material;
+    ImGui::Text("Material");
+    ImGui::BeginTable("##Material", 1);
+    ImGui::TableNextRow();
+
+    ImGui::TableSetColumnIndex(0);
+    float f_albedo[4];
+    Material::ubo_variant ubo_var = component.get_uniform(Material::pbr_u::albedo);
+    auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
+    for(std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
+    ImGui::ColorEdit4("albedo", f_albedo);
+    for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
+    component.bind_uniform(Material::pbr_u::albedo, albedo);
+
+    ImGui::EndTable();
   });
 }
 
