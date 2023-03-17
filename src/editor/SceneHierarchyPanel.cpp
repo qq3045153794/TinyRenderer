@@ -1,8 +1,8 @@
 #include <editor/SceneHierarchyPanel.h>
 #include <imGui/ImGuiWrapper.h>
 #include <library/TextureLibrary.h>
+#include <library/ShaderLibrary.h>
 #include <scene/Scene.h>
-
 #include <component/Tag.hpp>
 #include <cstring>
 
@@ -21,6 +21,70 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
     Entity e{"temp", entity_id, &m_scene->registry};
     draw_entity_node(e);
   });
+
+  // 右键点击弹出窗口
+  if(ImGui::BeginPopupContextWindow()) {
+    if (ImGui::BeginMenu("Create Render Entity")) {
+
+      if (ImGui::MenuItem("Create Empty")) {
+        m_scene->create_entity("Empty");
+        // TODO
+      }
+
+      if (ImGui::MenuItem("Create Cube")) {
+        auto e = m_scene->create_entity("Cube");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        e.AddComponent<::component::Mesh>(::component::Mesh::CUBE);
+        e.AddComponent<::component::Material>(default_shader);
+        e.GetComponent<::component::Material>().set_texture(0, default_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      if (ImGui::MenuItem("Create Sphere")) {
+        auto e = m_scene->create_entity("Sphere");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        e.AddComponent<::component::Mesh>(::component::Mesh::SPHERE);
+        e.AddComponent<::component::Material>(default_shader);
+        e.GetComponent<::component::Material>().set_texture(0, default_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      if (ImGui::MenuItem("Create Quad")) {
+        auto e = m_scene->create_entity("Quad");
+        auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+        auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+        e.AddComponent<::component::Mesh>(::component::Mesh::QUAD);
+        e.AddComponent<::component::Material>(default_shader);
+        e.GetComponent<::component::Material>().set_texture(0, default_texture);
+        m_scene->SubmitRender(e.id);
+      }
+
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Create Camera Entity")) {
+      if (ImGui::MenuItem("Create Camera")) {
+        // TODO 
+      }
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::BeginMenu("Create Light")) {
+
+      if (ImGui::MenuItem("Create Dirct Light")) {
+        // TODO 
+      }
+
+      if (ImGui::MenuItem("Create Point Light")) {
+        // TODO 
+      }
+      ImGui::EndMenu();
+    }
+
+    ImGui::EndPopup();
+  }
   ImGui::End();
 
   ImGui::SetNextWindowPos(ImVec2{1024, 318});
