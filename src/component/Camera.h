@@ -55,11 +55,6 @@ class CameraFps : public Camera {
   virtual ~CameraFps(){};
   void update();
 
- private:
-  float m_fov;
-  float m_aspect;
-  float m_znear;
-  float m_zfar;
 };
 
 }  // namespace component

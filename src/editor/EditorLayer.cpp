@@ -163,6 +163,8 @@ void EditorLayer::OnUpdateRuntime() {
   ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
+
+
 }
 void EditorLayer::OnImGuiRender() {
   // glViewport(0U, 0U, 800, 600);
@@ -172,7 +174,7 @@ void EditorLayer::OnImGuiRender() {
 
   ImGuiWrapper::Begin();
 
-  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar ;
   const ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -180,6 +182,7 @@ void EditorLayer::OnImGuiRender() {
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
+  ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
   window_flags |=
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
   window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
@@ -198,6 +201,7 @@ void EditorLayer::OnImGuiRender() {
     ImGui::EndMenuBar();
   }
 
+
   static bool hirerchy_panel_open = true;
   m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
 
@@ -206,7 +210,7 @@ void EditorLayer::OnImGuiRender() {
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
   static ImGuiWindowFlags viewport_window_flags =
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
-  if (ImGui::Begin("ViewPort", &viewportOpen, viewport_window_flags)) {
+  if (ImGui::Begin("ViewPort")) {
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
     uint32_t texture_id = main_fbo->get_color_texture().get_id();
     ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});

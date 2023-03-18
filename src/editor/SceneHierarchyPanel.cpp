@@ -324,6 +324,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       }
     }
   });
+
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
