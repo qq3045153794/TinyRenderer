@@ -18,5 +18,6 @@ project(TinyRenderer VERSION 0.0.1 LANGUAGES C CXX)
 include(config/saber.cmake)
 
 add_subdirectory(src)
+add_subdirectory(examples/demo_yaml)
 
 file(COPY ${RresourceDir} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
