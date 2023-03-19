@@ -158,23 +158,23 @@ void EditorLayer::OnDetach() {
   // TODO
 }
 void EditorLayer::OnUpdateRuntime() {
+  // glfwSetInputMode(::core::Window::m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   main_fbo->bind();
   glViewport(0U, 0U, 1026, 576);
   ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
 
-
 }
 void EditorLayer::OnImGuiRender() {
   // glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
   static bool dockspaceOpen = true;
-  static bool viewportOpen = true;
+  // static bool viewportOpen = true;
+  TriggerViewPort();
 
   ImGuiWrapper::Begin();
-
-  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar ;
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
   const ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -201,16 +201,21 @@ void EditorLayer::OnImGuiRender() {
     ImGui::EndMenuBar();
   }
 
-
   static bool hirerchy_panel_open = true;
   m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-  //ImGui::SetNextWindowPos(ImVec2{0, 30});
+  // ImGui::SetNextWindowPos(ImVec2{0, 30});
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
-  static ImGuiWindowFlags viewport_window_flags =
-      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
+  // static ImGuiWindowFlags viewport_window_flags =
+  //    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
   if (ImGui::Begin("ViewPort")) {
+    auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+    auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+    auto viewportOffset = ImGui::GetWindowPos();
+    bound_viewport[0] = {viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y};
+    bound_viewport[1] = {viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y};
+
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
     uint32_t texture_id = main_fbo->get_color_texture().get_id();
     ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
@@ -234,6 +239,28 @@ void EditorLayer::OpenScene() {
 void EditorLayer::SaveScene() {
   // TODO
 }
+
+void EditorLayer::TriggerViewPort() {
+  // 未解除不能隐藏鼠标问题 初步判断和平台有问题
+  ::core::Window::layer = ::core::Layer::ImGui;
+  auto mouse_pos = ImGui::GetMousePos();
+  bool is_pressed = ImGui::IsMouseDown(0);
+  static bool is_first_pressed = true;
+  if (mouse_pos.x >= bound_viewport[0].x && mouse_pos.x <= bound_viewport[1].x && mouse_pos.y >= bound_viewport[0].y &&
+      mouse_pos.y <= bound_viewport[1].y && is_pressed) {
+    ::core::Window::layer = ::core::Layer::OnViewPort;
+
+    if (is_first_pressed) {
+      ::core::Window::bound_viewport_x = mouse_pos.x;
+      ::core::Window::bound_viewport_y = mouse_pos.y;
+      is_first_pressed = false;
+    }
+  }else {
+    is_first_pressed = true;
+  }
+
+}
+
 
 void EditorLayer::OnEvent() {}
 

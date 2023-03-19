@@ -56,7 +56,7 @@ CameraFps::CameraFps(Transform* t, float left, float right, float bottom,
 
 void CameraFps::update() {
   float dt = Clock::dt;
-  float velocity = dt;
+  float velocity = dt * 5.F;
 
   if (Input::get_key_down('w')) {
     T->translate(T->m_forward * velocity);
@@ -82,9 +82,11 @@ void CameraFps::update() {
     T->translate(world_up * velocity * -1.0f);
   }
 
-  auto eular_x = glm::clamp(T->get_eular().x + Input::get_offset_y() * 0.1f,
+
+  const float kSensitivity = 25.F  * dt;
+  auto eular_x = glm::clamp(T->get_eular().x + Input::get_offset_y() * kSensitivity,
                             -89.0f, 89.0f);
-  auto eular_y = T->get_eular().y + Input::get_offset_x() * 0.1;
+  auto eular_y = T->get_eular().y + Input::get_offset_x() * kSensitivity;
 
 
   T->set_ealar_YZX(glm::vec3(eular_x, eular_y, 0.0f));

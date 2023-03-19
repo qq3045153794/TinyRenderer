@@ -20,7 +20,7 @@
 // clang-format on
 
 namespace core {
-enum Layer { Scene = 0, ImGui, Win32 };
+enum Layer { Scene = 0, ImGui, OnViewPort};
 class Window {
  public:
   /**
@@ -69,6 +69,8 @@ class Window {
   static inline std::string title = "";
   static inline GLFWwindow* m_window = 0;
   static inline Layer layer = Layer::ImGui;
+  static inline float bound_viewport_x = 0;
+  static inline float bound_viewport_y = 0;
 
  private:
   Window();

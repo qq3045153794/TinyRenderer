@@ -63,6 +63,11 @@ class Input {
   static void set_cursor(float new_x, float new_y);
 
   /**
+   * @brief : 设置鼠标在pinit点下
+   */
+  static void set_cursor_point(float new_x, float new_y, float point_x, float point_y);
+
+  /**
    * @brief : 设置是否是第一次进入窗口
    * @param        {bool} is_first_enter
    * @return       {*}

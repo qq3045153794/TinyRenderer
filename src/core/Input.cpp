@@ -82,6 +82,20 @@ void Input::set_cursor(float new_x, float new_y) {
   glfwSetCursorPos(Window::m_window, cursor_x, cursor_y);
 }
 
+
+void Input::set_cursor_point(float new_x, float new_y, float point_x, float point_y) {
+  if (first_enter_window) {
+    cursor_dx = 0.0;
+    cursor_dy = 0.0;
+    first_enter_window = false;
+  } else {
+    cursor_dx = new_x - point_x;
+    cursor_dy = new_y - point_y;
+  }
+  // 让鼠标一直居中
+  glfwSetCursorPos(Window::m_window, point_x, point_y);
+}
+
 void Input::set_first_enter_window(bool is_first_enter) {
   first_enter_window = is_first_enter;
 }

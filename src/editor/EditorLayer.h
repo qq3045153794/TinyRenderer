@@ -21,10 +21,13 @@ class EditorLayer {
   void NewScene();
   void OpenScene();
   void SaveScene();
+  void TriggerViewPort();
   std::shared_ptr<scene::Scene> m_cur_scene;
   ::scene::Entity m_editor_camera;
   std::shared_ptr<::asset::FBO> main_fbo;
   std::unique_ptr<SceneHierarchyPanel> m_hierarchy_panel{nullptr};
+  // 场景区域 左上 右下两点
+  glm::vec2 bound_viewport[2];
 };
 }  // namespace editor
 }  // namespace saber

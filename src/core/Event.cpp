@@ -17,6 +17,8 @@ void Event::cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   if (Window::layer == Layer::Scene) {
     Input::set_cursor(xpos, ypos);
   } else if (Window::layer == Layer::ImGui) {
+  } else if (Window::layer == Layer::OnViewPort) {
+    Input::set_cursor_point(xpos, ypos, Window::bound_viewport_x, Window::bound_viewport_y);
   }
 }
 
@@ -55,6 +57,8 @@ void Event::key_callback(GLFWwindow* window, int key, int scancode, int action,
   }
 
   if (Window::layer == Layer::Scene) {
+    Input::set_key_down(_key, action != GLFW_RELEASE);
+  } else if (Window::layer == Layer::OnViewPort) {
     Input::set_key_down(_key, action != GLFW_RELEASE);
   }
 }
