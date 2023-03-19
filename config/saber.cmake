@@ -73,5 +73,14 @@ set(MAIN_INCLUDE
 
 FILE(GLOB_RECURSE MAIN_SRC "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
+set(YAML-CPP_INCLUDE
+  ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/include
+)
+
+
+set(YAML-CPP_LIBS
+  ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/lib/libyaml-cpp.a
+)
+
 
 set(RresourceDir ${PROJECT_SOURCE_DIR}/resource)
