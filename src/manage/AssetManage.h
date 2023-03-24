@@ -6,7 +6,7 @@ namespace saber {
 
 class AssetManage : public BaseManage {
  public:
-  virtual void Import(const std::string& import_path) override;
+  virtual void Import(const std::string& from_path, const std::string& to_path) override;
  private:
 };
 

@@ -22,9 +22,11 @@ target_include_directories(saber
         ${MAIN_INCLUDE}
         #${ImGuizmo_INCLUDE}
         ${VEN_INCLUDE}
+        ${YAML-CPP_INCLUDE}
 )
 
 target_link_libraries(saber
     PUBLIC
       ${VEN_LIBS}
+      ${YAML-CPP_LIBS}
 )
