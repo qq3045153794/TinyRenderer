@@ -27,4 +27,11 @@ std::string File::read_file(const std::string& file_path) {
   return out;
 }
 
+void File::write_file(const std::string& flie_path, YAML::Emitter& out) {
+
+  std::ofstream outfile("out.yml");
+  outfile << out.c_str();
+  outfile.close();
+}
+
 }  // namespace utils
