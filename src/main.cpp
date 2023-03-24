@@ -24,6 +24,9 @@ int main() {
   std::cout << "  Fragment shader: " << app.gl_maxf_ubos << std::endl;
   std::cout << "  Fragment shader: " << app.gl_maxf_ubos << std::endl;
 
+  std::cout << "$ RunTime Information: " << '\n' << std::endl;
+  std::cout << "  Root path: " << app.root_path << '\n' << std::endl;
+
   app.AttachLayer();
   app.Run();
   app.Clean();

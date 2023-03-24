@@ -8,6 +8,7 @@
 #include "core/Input.h"
 #include "core/Event.h"
 #include "scene/RenderCommand.h"
+#include <manage/AssetManage.h>
 // clang-format on
 
 namespace core {
@@ -47,6 +48,13 @@ void App::Init() {
   glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &gl_maxv_ubos);
   glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &gl_maxg_ubos);
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &gl_maxf_ubos);
+
+  const int MAXPATH = 255;
+  char root_path[MAXPATH];
+  getcwd(root_path, MAXPATH);
+  this->root_path = std::string(root_path);
+  ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().root_path = std::string(root_path) + "/texture";
+
 }
 
 void App::AttachLayer() {

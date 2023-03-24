@@ -24,6 +24,8 @@ class App {
   GLint gl_maxf_ssbos, gl_maxc_ssbos;
   GLint cs_nx, cs_ny, cs_nz, cs_sx, cs_sy, cs_sz, cs_max_invocations;
 
+  std::string root_path;
+
  private:
   App();
   App(const App&) = delete;
