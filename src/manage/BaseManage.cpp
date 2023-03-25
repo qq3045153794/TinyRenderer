@@ -2,6 +2,6 @@
 
 namespace saber {
 
-const std::vector<std::string>& BaseManage::GetResource() const { return m_resource_storage; }
+const std::vector<std::filesystem::path>& BaseManage::GetResource() const { return m_resource_storage; }
 
 }  // namespace saber

@@ -3,6 +3,7 @@
 // clang-format off
 #include <scene/Scene.h>
 #include <editor/SceneHierarchyPanel.h>
+#include <editor/ContentBrowerPanel.h>
 // clang-format on
 namespace saber {
 namespace editor {
@@ -26,6 +27,7 @@ class EditorLayer {
   ::scene::Entity m_editor_camera;
   std::shared_ptr<::asset::FBO> main_fbo;
   std::unique_ptr<SceneHierarchyPanel> m_hierarchy_panel{nullptr};
+  std::unique_ptr<ContentBrowerPanel> m_content_brower_panel{nullptr};
   // 场景区域 左上 右下两点
   glm::vec2 bound_viewport[2];
 };

@@ -9,6 +9,7 @@
 #include "core/Event.h"
 #include "scene/RenderCommand.h"
 #include <manage/AssetManage.h>
+#include <manage/ConfigManage.h>
 // clang-format on
 
 namespace core {
@@ -49,11 +50,13 @@ void App::Init() {
   glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &gl_maxg_ubos);
   glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &gl_maxf_ubos);
 
+  // 设置runtime 路径即资源路径
   const int MAXPATH = 255;
   char root_path[MAXPATH];
   getcwd(root_path, MAXPATH);
   this->root_path = std::string(root_path);
   ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().root_path = std::string(root_path) + "/texture";
+  ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().root_path = std::string(root_path) + "/resource";
 
 }
 

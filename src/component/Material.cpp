@@ -118,7 +118,6 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
 Material::ubo_variant Material::get_uniform(pbr_u id) {
   std::string uniform_key = uniform_dictionary[(uint16_t)id];
   CORE_ASERT(m_uniforms_cache.count(uniform_key) > 0, "No find uniform (id = {})", (uint16_t)id);
-  CORE_DEBUG("id : {}, uniform_key : {}", (uint16_t)id, uniform_key);
   return m_uniforms_cache[uniform_key];
 }
 

@@ -330,6 +330,9 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   std::string local_name = entity.GetComponent<component::Tag>().m_name;
   ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+  if (m_select_entity.id == entity.id) {
+    flags |= ImGuiTreeNodeFlags_Selected;
+  }
   bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity.id, flags, "");
   if (ImGui::IsItemClicked()) {
     m_select_entity = entity;

@@ -22,6 +22,7 @@ void EditorLayer::OnAttach() {
   using Entity = ::scene::Entity;
   m_cur_scene = std::make_shared<scene::Scene>("hello world");
   m_hierarchy_panel = std::make_unique<SceneHierarchyPanel>(m_cur_scene);
+  m_content_brower_panel = std::make_unique<ContentBrowerPanel>();
 
   ImGuiWrapper::Init();
 
@@ -174,7 +175,7 @@ void EditorLayer::OnImGuiRender() {
   TriggerViewPort();
 
   ImGuiWrapper::Begin();
-  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+  ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
   const ImGuiViewport* viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -182,13 +183,15 @@ void EditorLayer::OnImGuiRender() {
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
+
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
   window_flags |=
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
   window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
   ImGui::Begin("test", &dockspaceOpen, window_flags);
-  if (ImGui::BeginMenuBar()) {
+  // 设置BeginMainMenuBar才不会docking遮盖
+  if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
 
@@ -198,11 +201,13 @@ void EditorLayer::OnImGuiRender() {
 
       ImGui::EndMenu();
     }
-    ImGui::EndMenuBar();
+    ImGui::EndMainMenuBar();
   }
 
   static bool hirerchy_panel_open = true;
   m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
+
+  m_content_brower_panel->OnImGuiRender();
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
   // ImGui::SetNextWindowPos(ImVec2{0, 30});

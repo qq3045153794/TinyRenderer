@@ -3,7 +3,7 @@
 
 namespace saber {
 
-void AssetManage::Import(const std::string& from_path, const std::string& to_path) {
+void AssetManage::Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) {
   // TODO
 
   YAML::Emitter meta_out;
@@ -15,7 +15,7 @@ void AssetManage::Import(const std::string& from_path, const std::string& to_pat
   // 加载份扩展解释该文件
   // 包含 MD5
   // 该资源引用的MD5与文件绝对路径的映射
-  std::string expend_meta = to_path + ".meta";
+  std::string expend_meta = to_path.filename().string() + ".meta";
   ::utils::File::write_file(expend_meta, meta_out);
   // 复制份到目标路径
   std::filesystem::copy(from_path, to_path);
