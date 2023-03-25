@@ -249,7 +249,7 @@ void EditorLayer::TriggerViewPort() {
   // 未解除不能隐藏鼠标问题 初步判断和平台有问题
   ::core::Window::layer = ::core::Layer::ImGui;
   auto mouse_pos = ImGui::GetMousePos();
-  bool is_pressed = ImGui::IsMouseDown(0);
+  bool is_pressed = ImGui::IsMouseDown(2);
   static bool is_first_pressed = true;
   if (mouse_pos.x >= bound_viewport[0].x && mouse_pos.x <= bound_viewport[1].x && mouse_pos.y >= bound_viewport[0].y &&
       mouse_pos.y <= bound_viewport[1].y && is_pressed) {

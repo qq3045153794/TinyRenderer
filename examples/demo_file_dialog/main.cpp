@@ -155,48 +155,6 @@ int main(int, char**) {
 #else
 
   // define style by file extention and Add an icon for .png files
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".png", ImVec4(0.0f, 1.0f, 1.0f, 0.9f),
-                                            ICON_IGFD_FILE_PIC, font1);
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByExtention, ".gif", ImVec4(0.0f, 1.0f, 0.5f, 0.9f), "[GIF]");
-
-  // define style for all directories
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir, "", ImVec4(0.5f, 1.0f, 0.9f, 0.9f),
-                                            ICON_IGFD_FOLDER);
-  // can be for a specific directory
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeDir, ".git", ImVec4(0.5f, 1.0f, 0.9f, 0.9f),
-                                            ICON_IGFD_FOLDER);
-
-  // define style for all files
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile, "", ImVec4(0.5f, 1.0f, 0.9f, 0.9f),
-                                            ICON_IGFD_FILE);
-  // can be for a specific file
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile, ".git", ImVec4(0.5f, 1.0f, 0.9f, 0.9f),
-                                            ICON_IGFD_FILE);
-
-  // define style for all links
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeLink, "", ImVec4(0.5f, 1.0f, 0.9f, 0.9f));
-  // can be for a specific link
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeLink, "Readme.md", ImVec4(0.5f, 1.0f, 0.9f, 0.9f));
-
-  // define style for any files/dirs/links by fullname
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByFullName, "doc", ImVec4(0.9f, 0.2f, 0.0f, 0.9f),
-                                            ICON_IGFD_FILE_PIC);
-
-  // define style by file who are containing this string
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByContainedInFullName, ".git", ImVec4(0.9f, 0.2f, 0.0f, 0.9f),
-                                            ICON_IGFD_BOOKMARK);
-
-  all of theses can be miwed with IGFD_FileStyleByTypeDir / IGFD_FileStyleByTypeFile /
-      IGFD_FileStyleByTypeLink like theses by ex : ImGuiFileDialog::Instance()->SetFileStyle(
-                                                       IGFD_FileStyleByTypeDir | IGFD_FileStyleByContainedInFullName,
-                                                       ".git", ImVec4(0.9f, 0.2f, 0.0f, 0.9f), ICON_IGFD_BOOKMARK);
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByTypeFile | IGFD_FileStyleByFullName, "cmake",
-                                            ImVec4(0.5f, 0.8f, 0.5f, 0.9f), ICON_IGFD_SAVE);
-
-  // for all these,s you can use a regex
-  // ex for color files like Custom*.h
-  ImGuiFileDialog::Instance()->SetFileStyle(IGFD_FileStyleByFullName, "(Custom.+[.]h)", ImVec4(0.0f, 1.0f, 1.0f, 0.9f),
-                                            ICON_IGFD_FILE_PIC, font1);
   while (!glfwWindowShouldClose(window))
 #endif
   {

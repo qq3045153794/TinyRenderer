@@ -3,6 +3,7 @@ add_executable(saber
     ${MAIN_SRC}
     ${ImGUI_SRC}
     #${ImGuizmo_SRC}
+    ${IMGUI_FILEDIALOG_SRC}
     ${PROJECT_SOURCE_DIR}/vendor/glad/src/glad.c
 )
 
@@ -23,6 +24,7 @@ target_include_directories(saber
         #${ImGuizmo_INCLUDE}
         ${VEN_INCLUDE}
         ${YAML-CPP_INCLUDE}
+        ${IMGUI_FILEDIALOG_INCLUDE}
 )
 
 target_link_libraries(saber

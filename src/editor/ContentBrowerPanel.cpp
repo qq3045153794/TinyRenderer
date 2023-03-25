@@ -1,7 +1,8 @@
+#include <ImGuiFileDialog.h>
+#include <core/Log.h>
 #include <editor/ContentBrowerPanel.h>
 #include <imGui/ImGuiWrapper.h>
 #include <manage/ConfigManage.h>
-#include <core/Log.h>
 
 namespace saber {
 
@@ -28,11 +29,10 @@ void ContentBrowerPanel::OnImGuiRender() {
 
   if (ImGui::BeginChild("Content")) {
     ImGui::Text("This is content");
-    if (ImGui::Button("Import")) {
-      CORE_DEBUG("click Improt");
-      if(m_selected_directory) {
-        DrawContent();
-      }
+
+    DrawFileBrower();
+    if (m_selected_directory) {
+      DrawContent();
     }
   }
   ImGui::EndChild();
@@ -40,10 +40,7 @@ void ContentBrowerPanel::OnImGuiRender() {
   ImGui::End();
 }
 
-void ContentBrowerPanel::DrawTree() {
-  DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().root_path);
-
-}
+void ContentBrowerPanel::DrawTree() { DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().root_path); }
 
 void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_path) {
   ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -60,7 +57,7 @@ void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_
 
   // ImGui::SameLine();
   ImGui::SameLine();
-  ImGui::Text(current_path.filename().string().c_str() ,"%s");
+  ImGui::Text(current_path.filename().string().c_str(), "%s");
 
   if (node_open) {
     for (auto& path : std::filesystem::directory_iterator(current_path)) {
@@ -71,21 +68,37 @@ void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_
     }
     ImGui::TreePop();
   }
-
 }
 
 void ContentBrowerPanel::DrawContent() {
-
-  m_current_directory = * m_selected_directory;
+  m_current_directory = *m_selected_directory;
 
   std::vector<std::filesystem::path> contents;
   for (auto& path : std::filesystem::directory_iterator(m_current_directory)) {
     if (!is_directory(path)) {
-
     }
   }
-
 }
 
+void ContentBrowerPanel::DrawFileBrower() {
+  // open Dialog Simple
+  if (ImGui::Button("Open File Dialog"))
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg", ".");
+
+  // display
+  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+    // action if OK
+    if (ImGuiFileDialog::Instance()->IsOk()) {
+      std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+      std::cout << "file pathname :" << filePathName << std::endl;
+      std::cout << "file path" << filePath << std::endl;
+      // action
+    }
+
+    // close
+    ImGuiFileDialog::Instance()->Close();
+  }
+}
 
 }  // namespace saber
