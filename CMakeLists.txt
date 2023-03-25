@@ -19,5 +19,6 @@ include(config/saber.cmake)
 
 add_subdirectory(src)
 add_subdirectory(examples/demo_yaml)
+add_subdirectory(examples/demo_file_dialog)
 
 file(COPY ${RresourceDir} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

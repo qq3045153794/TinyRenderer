@@ -79,6 +79,10 @@ set(YAML-CPP_LIBS
   ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/lib/libyaml-cpp.a
 )
 
+set(IMGUI_FILEDIALOG_SRC ${PROJECT_SOURCE_DIR}/vendor/ImGuiFileDialog/ImGuiFileDialog.cpp)
+
+set(IMGUI_FILEDIALOG_INCLUDE ${PROJECT_SOURCE_DIR}/vendor/ImGuiFileDialog)
+
 FILE(GLOB_RECURSE MAIN_SRC "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 set(RresourceDir ${PROJECT_SOURCE_DIR}/resource)

@@ -1,6 +1,7 @@
 #include <editor/ContentBrowerPanel.h>
 #include <imGui/ImGuiWrapper.h>
 #include <manage/ConfigManage.h>
+#include <core/Log.h>
 
 namespace saber {
 
@@ -27,6 +28,12 @@ void ContentBrowerPanel::OnImGuiRender() {
 
   if (ImGui::BeginChild("Content")) {
     ImGui::Text("This is content");
+    if (ImGui::Button("Import")) {
+      CORE_DEBUG("click Improt");
+      if(m_selected_directory) {
+        DrawContent();
+      }
+    }
   }
   ImGui::EndChild();
   // ImGui::Columns(1);
@@ -66,5 +73,19 @@ void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_
   }
 
 }
+
+void ContentBrowerPanel::DrawContent() {
+
+  m_current_directory = * m_selected_directory;
+
+  std::vector<std::filesystem::path> contents;
+  for (auto& path : std::filesystem::directory_iterator(m_current_directory)) {
+    if (!is_directory(path)) {
+
+    }
+  }
+
+}
+
 
 }  // namespace saber
