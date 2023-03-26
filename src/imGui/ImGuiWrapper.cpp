@@ -33,7 +33,6 @@ void ImGuiWrapper::Init() {
   config_main.GlyphExtraSpacing.x = 0.0f;  // 字间距离
   main_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
 
-
   std::string ttf_config = "resource/fronts/OpenSans/OpenSans-Regular.ttf";
   float font_config_sz = 14.0f;
   ImFontConfig config_cig;
@@ -45,7 +44,7 @@ void ImGuiWrapper::Init() {
   config_font = io.Fonts->AddFontFromFileTTF(ttf_config.c_str(), font_config_sz, &config_cig);
 
   // load default dark theme
-  ImGui::StyleColorsDark();
+  ImGui::StyleColorsLight();
 
   // setup custom styles
   style.WindowBorderSize = 0.0f;
@@ -58,7 +57,8 @@ void ImGuiWrapper::Init() {
 
   style.WindowPadding = ImVec2(8.0f, 8.0f);
   style.FramePadding = ImVec2(4.0f, 6.0f);
-  style.ItemSpacing = ImVec2(10.0f, 10.0f);
+  // 每项距离
+  style.ItemSpacing = ImVec2(10.0f, 5.0f);
   style.ItemInnerSpacing = ImVec2(10.0f, 10.0f);
   style.IndentSpacing = 16.0f;
 
@@ -120,6 +120,7 @@ void ImGuiWrapper::Init() {
   c[ImGuiCol_TabUnfocusedActive] = ImVec4(0.2f, 0.2f, 0.2f, 0.9f);
 #endif
 
+#if 0
   auto& colors = ImGui::GetStyle().Colors;
   colors[ImGuiCol_WindowBg] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
 
@@ -167,6 +168,8 @@ void ImGuiWrapper::Init() {
   // Slider
   colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
   colors[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+
+#endif
 
   ImGui_ImplGlfw_InitForOpenGL(Window::m_window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);

@@ -148,7 +148,9 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   // ImGui::SetNextWindowSize(ImVec2{576, 288});
   ImGui::Begin("Entity Property");
   if (m_select_entity.id != entt::null) {
+    ImGui::PushFont(ImGuiWrapper::config_font);
     draw_components(m_select_entity);
+    ImGui::PopFont();
   }
   ImGui::End();
 }
@@ -161,7 +163,7 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values, float
   ImGui::TableSetColumnIndex(0);
 
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
-  float lineHeight = 30.F;
+  float lineHeight = 25.F;
   ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
@@ -245,7 +247,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       name = std::string(buffer);
     }
   }
-  ImGui::SameLine();
+  // ImGui::SameLine();
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
     auto temp_position = component.get_position();
     draw_vec3_control("Position", temp_position, 0.F, 0.1F, 0.0F, 0.0F);
@@ -260,7 +262,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     component.set_scale(temp_scale);
   });
 
-  ImGui::SameLine();
+  // ImGui::SameLine();
 
   draw_component<::component::Material>("Material", entity, [](::component::Material& component) {
     using Material = ::component::Material;
@@ -339,8 +341,8 @@ void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   }
   float lineHeight = 20.F;
   ImGui::SameLine();
-  ImGui::Image((void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture()->get_id(),
-               ImVec2{lineHeight - 5.0f, lineHeight - 5.0f}, {0, 1}, {1, 0});
+  ImGui::Image((void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetRabbitIcon()->get_id(),
+               ImVec2{lineHeight, lineHeight}, {0, 1}, {1, 0});
   ImGui::SameLine();
   ImGui::Text(local_name.c_str(), "%s");
 

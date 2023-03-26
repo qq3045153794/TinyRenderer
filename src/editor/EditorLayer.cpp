@@ -172,12 +172,12 @@ void EditorLayer::OnUpdateRuntime() {
   ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
   main_fbo->ubind();
-
 }
 void EditorLayer::OnImGuiRender() {
   // glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
   static bool dockspaceOpen = true;
+  static bool demo_window_open = false;
   // static bool viewportOpen = true;
   TriggerViewPort();
 
@@ -189,7 +189,6 @@ void EditorLayer::OnImGuiRender() {
   ImGui::SetNextWindowViewport(viewport->ID);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-
 
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
   window_flags |=
@@ -208,6 +207,14 @@ void EditorLayer::OnImGuiRender() {
 
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Help")) {
+      if (ImGui::MenuItem("ImGui Demo Window")) {
+        demo_window_open = true;
+      }
+      ImGui::EndMenu();
+    }
+
     ImGui::EndMainMenuBar();
   }
 
@@ -233,6 +240,10 @@ void EditorLayer::OnImGuiRender() {
     ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
     ImGui::End();
     ImGui::PopStyleVar();
+  }
+
+  if (demo_window_open) {
+    ImGui::ShowDemoWindow(&demo_window_open);
   }
   ImGui::End();
 
@@ -267,12 +278,10 @@ void EditorLayer::TriggerViewPort() {
       ::core::Window::bound_viewport_y = mouse_pos.y;
       is_first_pressed = false;
     }
-  }else {
+  } else {
     is_first_pressed = true;
   }
-
 }
-
 
 void EditorLayer::OnEvent() {}
 
