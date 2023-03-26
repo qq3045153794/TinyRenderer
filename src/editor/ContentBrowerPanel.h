@@ -14,7 +14,7 @@ class ContentBrowerPanel {
   void DrawTree();
   void DrawTreeRecursive(const std::filesystem::path& current_path);
   void DrawContent();
-  void DrawFileBrower();
+  void DrawFileBrower(const std::filesystem::path& to);
   std::filesystem::path m_current_directory;
   std::optional<std::filesystem::path> m_selected_directory;
 };

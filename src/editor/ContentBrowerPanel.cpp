@@ -30,8 +30,9 @@ void ContentBrowerPanel::OnImGuiRender() {
   if (ImGui::BeginChild("Content")) {
     ImGui::Text("This is content");
 
-    DrawFileBrower();
     if (m_selected_directory) {
+
+      DrawFileBrower(*m_selected_directory);
       DrawContent();
     }
   }
@@ -76,11 +77,12 @@ void ContentBrowerPanel::DrawContent() {
   std::vector<std::filesystem::path> contents;
   for (auto& path : std::filesystem::directory_iterator(m_current_directory)) {
     if (!is_directory(path)) {
+      // ImGui::ImageButton();
     }
   }
 }
 
-void ContentBrowerPanel::DrawFileBrower() {
+void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
   // open Dialog Simple
   if (ImGui::Button("Open File Dialog"))
     ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg", ".");

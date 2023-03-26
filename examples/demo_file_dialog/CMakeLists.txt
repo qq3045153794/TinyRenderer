@@ -20,6 +20,7 @@ target_include_directories(file_dialog
     PUBLIC
         ${ImGUI_INCLUDE}
         ${IMGUI_FILEDIALOG_INCLUDE}
+        ${IconFontCppHeaders_INCLUDE}
 )
 
 target_link_libraries(file_dialog
