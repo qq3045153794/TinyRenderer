@@ -55,8 +55,12 @@ void App::Init() {
   char root_path[MAXPATH];
   getcwd(root_path, MAXPATH);
   this->root_path = std::string(root_path);
-  ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().root_path = std::string(root_path) + "/texture";
-  ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().root_path = std::string(root_path) + "/resource";
+
+
+  ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().Init();
+  ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().resource_path = std::string(root_path) + "/resource";
+
+  ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().Init();
 
 }
 

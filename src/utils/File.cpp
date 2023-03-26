@@ -1,10 +1,5 @@
 #include "utils/File.h"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-
 #include "core/Log.h"
 namespace utils {
 std::string File::read_file(const std::string& file_path) {
@@ -27,11 +22,16 @@ std::string File::read_file(const std::string& file_path) {
   return out;
 }
 
-void File::write_file(const std::string& file_path, YAML::Emitter& out) {
+void File::write_yml_file(const std::string& file_path, YAML::Emitter& out) {
 
   std::ofstream outfile(file_path);
   outfile << out.c_str();
   outfile.close();
+}
+
+void File::parser_yml_file(const std::string& file_path, YAML::Node& doc) {
+  std::ifstream fin(file_path.c_str());
+  doc = YAML::Load(fin);
 }
 
 }  // namespace utils

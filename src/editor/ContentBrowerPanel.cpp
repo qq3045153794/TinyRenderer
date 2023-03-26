@@ -34,6 +34,7 @@ void ContentBrowerPanel::OnImGuiRender() {
 
     if (m_selected_directory) {
       DrawFileBrower(*m_selected_directory);
+      DrawSave();
       DrawContent();
     }
   }
@@ -42,7 +43,7 @@ void ContentBrowerPanel::OnImGuiRender() {
   ImGui::End();
 }
 
-void ContentBrowerPanel::DrawTree() { DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().root_path); }
+void ContentBrowerPanel::DrawTree() { DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().resource_path); }
 
 void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_path) {
   ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -122,15 +123,19 @@ void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
       std::cout << "file path" << filePath << std::endl;
 
       std::filesystem::path file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
-
-
       PublicSingleton<AssetManage>::GetInstance().Import(file_path_name, *m_selected_directory);
-
       // action
     }
 
     // close
     ImGuiFileDialog::Instance()->Close();
+  }
+}
+
+
+void ContentBrowerPanel::DrawSave() {
+  if (ImGui::Button("Save Resource")) {
+    PublicSingleton<AssetManage>::GetInstance().SaveConfig();
   }
 }
 

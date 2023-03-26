@@ -5,11 +5,14 @@
 
 namespace saber {
 
-class ConfigManage : public BaseManage {
+class ConfigManage : public PublicSingleton<ConfigManage> {
  public:
-  virtual void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) override;
+  void Init();
+  void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path);
   // 暂时相对路径
   std::filesystem::path icons_path {"resource/config/icons"};
+  std::filesystem::path config_path {};
+  std::filesystem::path resource_path{};
 };
 
 }  // namespace saber

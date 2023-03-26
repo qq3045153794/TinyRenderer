@@ -6,15 +6,22 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <yaml-cpp/yaml.h>
+#include <core/Log.h>
 namespace saber {
 class BaseManage : public PublicSingleton<BaseManage> {
  public:
-  std::filesystem::path root_path;
+  virtual void Init() = 0;
+  virtual void SaveConfig() = 0;
   virtual void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) = 0;
+
   const std::vector<std::filesystem::path>& GetResource() const;
   bool CheckResExit(const std::filesystem::path& flie_path);
 
  protected:
+  void Serialize(const std::filesystem::path& file_name);
+  void DeSerialize(const std::filesystem::path& file_name);
+
   std::vector<std::filesystem::path> m_resource_storage;
   std::unordered_map<std::filesystem::path, std::filesystem::path> m_resource_register;
 };
