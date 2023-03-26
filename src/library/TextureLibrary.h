@@ -10,6 +10,12 @@ class Library<asset::Texture> : public LibraryBase<Library, asset::Texture> {
   Library();
   [[nodiscard]] std::shared_ptr<asset::Texture> GetDefaultTexture();
   [[nodiscard]] std::shared_ptr<asset::Texture> GetWhiteTexture();
+
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetAddIcon();
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetFolderIcon();
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetPictureIcon();
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetTxtFileIcon();
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetRabbitIcon();
 };
 }  // namespace saber
 #endif

@@ -2,6 +2,7 @@
 #include <core/Log.h>
 #include <editor/ContentBrowerPanel.h>
 #include <imGui/ImGuiWrapper.h>
+#include <library/TextureLibrary.h>
 #include <manage/ConfigManage.h>
 
 namespace saber {
@@ -31,7 +32,6 @@ void ContentBrowerPanel::OnImGuiRender() {
     ImGui::Text("This is content");
 
     if (m_selected_directory) {
-
       DrawFileBrower(*m_selected_directory);
       DrawContent();
     }
@@ -74,17 +74,40 @@ void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_
 void ContentBrowerPanel::DrawContent() {
   m_current_directory = *m_selected_directory;
 
+  static float padding = 32.0F;
+  static float content_size = 32.0F;
+  float cell_size = content_size + padding;
+
+  float panelWidth = ImGui::GetContentRegionAvail().x;
+  int columnCount = (int)(panelWidth / cell_size);
+  if (columnCount < 1) columnCount = 1;
+
+  ImGui::Columns(columnCount, 0, false);
   std::vector<std::filesystem::path> contents;
+
+  ImGui::PushFont(ImGuiWrapper::config_font);
   for (auto& path : std::filesystem::directory_iterator(m_current_directory)) {
     if (!is_directory(path)) {
-      // ImGui::ImageButton();
+      ImGui::BeginGroup();
+      ImTextureID texture_id =
+          (void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetTxtFileIcon()->get_id();
+      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+      ImGui::ImageButton(texture_id, {content_size, content_size}, {0, 1}, {1, 0});
+      ImGui::PopStyleColor();
+      ImGui::TextWrapped(path.path().filename().string().c_str(), "%-8s");
+      ImGui::EndGroup();
+      ImGui::NextColumn();
     }
   }
+  ImGui::PopFont();
 }
 
 void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
   // open Dialog Simple
-  if (ImGui::Button("Open File Dialog"))
+
+  ImTextureID texture_id =
+      (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
+  if (ImGui::ImageButton(texture_id, {32, 32}, {0, 1}, {1, 0}))
     ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg", ".");
 
   // display

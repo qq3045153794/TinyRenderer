@@ -31,11 +31,13 @@ void EditorLayer::OnAttach() {
   Entity sun_light = scene->create_entity("sum light");
   sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
+  CHECK_ERROR();
 
   Entity point_light = scene->create_entity("point light");
   point_light.AddComponent<PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   point_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
   point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
+  CHECK_ERROR();
 
   auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
   scene->registry_shader(default_shader->get_id());
@@ -43,23 +45,27 @@ void EditorLayer::OnAttach() {
   scene->registry_shader(skybox_shader->get_id());
   auto pbr_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("pbr");
   scene->registry_shader(pbr_shader->get_id());
+  CHECK_ERROR();
 
   auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
   auto brdf_lut_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
   auto irradian_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("irradian");
   auto prefiltermap = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
   auto skybox_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("hdr");
+  CHECK_ERROR();
 
   Entity skybox = scene->create_entity("skybox", ETag::Skybox);
   skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
   skybox.AddComponent<Material>(skybox_shader);
   skybox.GetComponent<Material>().set_texture(0, skybox_texture);
+  CHECK_ERROR();
 
   Entity quad = scene->create_entity("quad");
   quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
   quad.AddComponent<Material>(Material::ShadingModel::DEFAULT);
   quad.GetComponent<Material>().set_texture(0, brdf_lut_texture);
   quad.GetComponent<Transform>().set_position(glm::vec3(-4, 0.0, 0.0));
+  CHECK_ERROR();
   CORE_INFO("{} created", quad.name);
 
   Entity cube = scene->create_entity("cube");
@@ -67,6 +73,7 @@ void EditorLayer::OnAttach() {
   cube.AddComponent<Material>(Material::ShadingModel::DEFAULT);
   cube.GetComponent<Material>().set_texture(0, default_texture);
   cube.GetComponent<Transform>().translate(glm::vec3(8.0, 0.0, 0.0));
+  CHECK_ERROR();
   CORE_INFO("{} created", cube.name);
 
   Entity sphere = scene->create_entity("sphere");

@@ -1,0 +1,4 @@
+#ifndef _SRC_LIBRARY_ICONS_LIBRARY_H_
+#define _SRC_LIBRARY_ICONS_LIBRARY_H_
+#endif
+

@@ -5,8 +5,9 @@ namespace saber {
 
 static const char* glsl_version = "#version 330";
 
-static ImFont* truetype_font;  // TrueType, Lato-Regular, 18pt (main font)
-
+// static ImFont* truetype_font;  // TrueType, Lato-Regular, 18pt (main font)
+ImFont* ImGuiWrapper::main_font;
+ImFont* ImGuiWrapper::config_font;
 void ImGuiWrapper::Init() {
   using Window = ::core::Window;
 
@@ -19,8 +20,10 @@ void ImGuiWrapper::Init() {
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
   ImGuiStyle& style = ImGui::GetStyle();
 
-  // 设置字体
-  std::string ttf_main = "../resource/fronts/Lato.ttf";
+  // 设置字体 有多套字体
+  // 其中第一次加载的为默认字体
+  // 需要使用其他字体时 `pushFont`
+  std::string ttf_main = "resource/fronts/Lato.ttf";
   float font_main_sz = 18.0f;
   ImFontConfig config_main;
   config_main.PixelSnapH = true;
@@ -28,7 +31,18 @@ void ImGuiWrapper::Init() {
   config_main.OversampleV = 4;
   config_main.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
   config_main.GlyphExtraSpacing.x = 0.0f;  // 字间距离
-  truetype_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
+  main_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
+
+
+  std::string ttf_config = "resource/fronts/OpenSans/OpenSans-Regular.ttf";
+  float font_config_sz = 14.0f;
+  ImFontConfig config_cig;
+  config_cig.PixelSnapH = true;
+  config_cig.OversampleH = 4;
+  config_cig.OversampleV = 4;
+  config_cig.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
+  config_cig.GlyphExtraSpacing.x = 0.0f;  // 字间距离
+  config_font = io.Fonts->AddFontFromFileTTF(ttf_config.c_str(), font_config_sz, &config_cig);
 
   // load default dark theme
   ImGui::StyleColorsDark();

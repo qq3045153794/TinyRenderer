@@ -25,7 +25,8 @@ public:
   static void Begin();
   static void End();
   static void Clean();
-
+  static ImFont* config_font;
+  static ImFont* main_font;
 };
 
 }
