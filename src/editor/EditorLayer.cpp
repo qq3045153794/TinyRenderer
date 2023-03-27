@@ -1,4 +1,5 @@
 #include <component/Light.h>
+#include <core/Input.h>
 #include <core/Window.h>
 #include <editor/EditorLayer.h>
 #include <imGui/ImGuiWrapper.h>
@@ -267,19 +268,26 @@ void EditorLayer::TriggerViewPort() {
   // 未解除不能隐藏鼠标问题 初步判断和平台有问题
   ::core::Window::layer = ::core::Layer::ImGui;
   auto mouse_pos = ImGui::GetMousePos();
-  bool is_pressed = ImGui::IsMouseDown(2);
+  bool is_pressed = ImGui::IsMouseDown(1);
   static bool is_first_pressed = true;
+  static bool is_first_release = false;
   if (mouse_pos.x >= bound_viewport[0].x && mouse_pos.x <= bound_viewport[1].x && mouse_pos.y >= bound_viewport[0].y &&
       mouse_pos.y <= bound_viewport[1].y && is_pressed) {
     ::core::Window::layer = ::core::Layer::OnViewPort;
 
     if (is_first_pressed) {
+      // 鼠标刚点击第一帧
       ::core::Window::bound_viewport_x = mouse_pos.x;
       ::core::Window::bound_viewport_y = mouse_pos.y;
       is_first_pressed = false;
     }
-  } else {
+    is_first_release  = true;
+  } else if (is_first_release) {
+    // 鼠标刚释放第一帧
+    is_first_release = false;
     is_first_pressed = true;
+
+    ::core::Input::clear();
   }
 }
 
