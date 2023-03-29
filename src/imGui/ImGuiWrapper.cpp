@@ -1,5 +1,6 @@
 #include <core/Window.h>
 #include <imGui/ImGuiWrapper.h>
+#include <manage/ConfigManage.h>
 
 namespace saber {
 
@@ -23,7 +24,8 @@ void ImGuiWrapper::Init() {
   // 设置字体 有多套字体
   // 其中第一次加载的为默认字体
   // 需要使用其他字体时 `pushFont`
-  std::string ttf_main = "resource/fronts/Lato.ttf";
+  // std::string ttf_main = "resource/fronts/Lato.ttf";
+  std::string ttf_main = PublicSingleton<ConfigManage>::GetInstance().fonts_path / "Lato.ttf";
   float font_main_sz = 18.0f;
   ImFontConfig config_main;
   config_main.PixelSnapH = true;
@@ -33,7 +35,8 @@ void ImGuiWrapper::Init() {
   config_main.GlyphExtraSpacing.x = 0.0f;  // 字间距离
   main_font = io.Fonts->AddFontFromFileTTF(ttf_main.c_str(), font_main_sz, &config_main);
 
-  std::string ttf_config = "resource/fronts/OpenSans/OpenSans-Regular.ttf";
+  // std::string ttf_config = "resource/fronts/OpenSans/OpenSans-Regular.ttf";
+  std::string ttf_config = PublicSingleton<ConfigManage>::GetInstance().fonts_path / "OpenSans/OpenSans-Regular.ttf";
   float font_config_sz = 14.0f;
   ImFontConfig config_cig;
   config_cig.PixelSnapH = true;

@@ -5,6 +5,7 @@
 #include <imGui/ImGuiWrapper.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
+#include <manage/ConfigManage.h>
 #include <scene/RenderCommand.h>
 
 #include <scene/Entity.hpp>
@@ -100,20 +101,16 @@ void EditorLayer::OnAttach() {
   sphere_mat_pbr.bind_texture(Material::pbr_t::irradiance_map, irradian_texture);
   sphere_mat_pbr.bind_texture(Material::pbr_t::prefilter_map, prefiltermap);
   sphere_mat_pbr.bind_texture(Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-  auto albedo_pbr = std::make_shared<::asset::Texture>(
-      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Color.jpg");
+  auto content_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "textures";
+  auto albedo_pbr = std::make_shared<::asset::Texture>((content_path / "pbr_0/MetalPlates013_2K_Color.jpg").c_str());
   sphere_mat_pbr.bind_texture(Material::pbr_t::albedo, albedo_pbr);
-  auto normal_pbr = std::make_shared<::asset::Texture>(
-      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_NormalGL.jpg");
+  auto normal_pbr = std::make_shared<::asset::Texture>((content_path / "pbr_0/MetalPlates013_2K_NormalGL.jpg").c_str());
   sphere_mat_pbr.bind_texture(Material::pbr_t::normal, normal_pbr);
-  auto metalness_pbr = std::make_shared<::asset::Texture>(
-      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Metalness.jpg");
+  auto metalness_pbr = std::make_shared<::asset::Texture>((content_path / "pbr_0/MetalPlates013_2K_Metalness.jpg").c_str());
   sphere_mat_pbr.bind_texture(Material::pbr_t::metalness, metalness_pbr);
-  auto roughness_pbr = std::make_shared<::asset::Texture>(
-      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_Roughness.jpg");
+  auto roughness_pbr = std::make_shared<::asset::Texture>((content_path / "pbr_0/MetalPlates013_2K_Roughness.jpg").c_str());
   sphere_mat_pbr.bind_texture(Material::pbr_t::roughness, roughness_pbr);
-  auto ao_pbr = std::make_shared<::asset::Texture>(
-      "/home/xietao/git/TinyRenderer/resource/texture/pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg");
+  auto ao_pbr = std::make_shared<::asset::Texture>((content_path / "pbr_0/MetalPlates013_2K_AmbientOcclusion.jpg").c_str());
   sphere_mat_pbr.bind_texture(Material::pbr_t::ao, ao_pbr);
   CHECK_ERROR();
   CORE_INFO("{} created", sphere_pbr.name);
@@ -126,26 +123,27 @@ void EditorLayer::OnAttach() {
   CORE_INFO("{} created", sphere.name);
 
   Entity paimon = scene->create_entity("paimon");
-  paimon.AddComponent<Model>("../resource/objects/paimon/untitled.obj", Quality::Auto);
+  auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
+  paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
   paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
   paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
   auto paimon_1 = std::make_shared<Material>(default_shader);
   auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
-  temp_mat_1.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/披风2.jpg", false, 5));
+  temp_mat_1.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/披风2.jpg").c_str(), false, 5));
   auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
-  temp_mat_2.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+  temp_mat_2.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/头发.jpg").c_str(), false, 5));
   auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
-  temp_mat_3.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+  temp_mat_3.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/衣服.jpg").c_str(), false, 5));
   auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
-  temp_mat_4.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/衣服.jpg", false, 5));
+  temp_mat_4.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/衣服.jpg").c_str(), false, 5));
   auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
-  temp_mat_5.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/头发.jpg", false, 5));
+  temp_mat_5.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/头发.jpg").c_str(), false, 5));
   auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
-  temp_mat_6.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/表情.png", false, 5));
+  temp_mat_6.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/表情.png").c_str(), false, 5));
   auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
-  temp_mat_7.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
+  temp_mat_7.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/脸.jpg").c_str(), false, 5));
   auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
-  temp_mat_8.set_texture(0, std::make_shared<asset::Texture>("../resource/objects/paimon/Texture/脸.jpg", false, 5));
+  temp_mat_8.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/脸.jpg").c_str(), false, 5));
   CHECK_ERROR();
 
   // 展示设置 800 600
@@ -281,7 +279,7 @@ void EditorLayer::TriggerViewPort() {
       ::core::Window::bound_viewport_y = mouse_pos.y;
       is_first_pressed = false;
     }
-    is_first_release  = true;
+    is_first_release = true;
   } else if (is_first_release) {
     // 鼠标刚释放第一帧
     is_first_release = false;

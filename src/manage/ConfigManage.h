@@ -11,8 +11,12 @@ class ConfigManage : public PublicSingleton<ConfigManage> {
   void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path);
   // 暂时相对路径
   std::filesystem::path icons_path {"resource/config/icons"};
-  std::filesystem::path config_path {};
-  std::filesystem::path resource_path{};
+  std::filesystem::path config_path;
+  std::filesystem::path resource_path;
+  std::filesystem::path system_texture_path;
+  std::filesystem::path fonts_path;
+  std::filesystem::path shader_path;
+  std::filesystem::path content_path;
 };
 
 }  // namespace saber
