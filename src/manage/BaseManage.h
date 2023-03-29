@@ -1,4 +1,5 @@
 #ifndef _SRC_MANAGE_BASEMANAGE_H_
+
 #define _SRC_MANAGE_BASEMANAGE_H_
 #include <core/PublicSingleton.h>
 
@@ -21,6 +22,7 @@ class BaseManage : public PublicSingleton<BaseManage> {
  protected:
   void Serialize(const std::filesystem::path& file_name);
   void DeSerialize(const std::filesystem::path& file_name);
+  bool CheckPathExit();
 
   std::vector<std::filesystem::path> m_resource_storage;
   std::unordered_map<std::filesystem::path, std::filesystem::path> m_resource_register;

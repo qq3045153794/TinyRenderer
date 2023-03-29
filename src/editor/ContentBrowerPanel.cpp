@@ -43,7 +43,7 @@ void ContentBrowerPanel::OnImGuiRender() {
   ImGui::End();
 }
 
-void ContentBrowerPanel::DrawTree() { DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().resource_path); }
+void ContentBrowerPanel::DrawTree() { DrawTreeRecursive(PublicSingleton<ConfigManage>::GetInstance().content_path); }
 
 void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_path) {
   ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -111,7 +111,7 @@ void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
   ImTextureID texture_id =
       (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
   if (ImGui::ImageButton(texture_id, {32, 32}, {0, 1}, {1, 0}))
-    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg", ".");
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.jpeg", ".");
 
   // display
   if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {

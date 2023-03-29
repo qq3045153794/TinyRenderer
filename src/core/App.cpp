@@ -58,8 +58,6 @@ void App::Init() {
 
 
   ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().Init();
-  ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().resource_path = std::string(root_path) + "/resource";
-
   ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().Init();
 
 }

@@ -39,4 +39,21 @@ void BaseManage::DeSerialize(const std::filesystem::path& file_name) {
   }
 }
 
+bool BaseManage::CheckPathExit() {
+  // 检查内存内文件在磁盘内是否存在
+  // false 不存在 出错
+  // true 存在
+  for (auto& origin_path : m_resource_storage) {
+    CORE_ASERT(m_resource_register.count(origin_path) > 0, "Unexpect Error");
+    auto& meta_path = m_resource_register.at(origin_path);
+    if (!std::filesystem::exists(origin_path)) {
+      return false;
+    }
+    if (!std::filesystem::exists(meta_path)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace saber

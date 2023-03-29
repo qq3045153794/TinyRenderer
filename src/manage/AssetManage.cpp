@@ -9,6 +9,10 @@ void AssetManage::Init() {
   auto path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
   if (std::filesystem::exists(path)) {
     DeSerialize(path);
+    // 检查序列化的文件是否存在与磁盘中
+    if (!CheckPathExit()) {
+      return throw std::runtime_error("The loaded file does not exist on disk (file = asset_path.yml)");
+    }
   } else {
     CORE_WARN("Asset Path no exists");
   }
