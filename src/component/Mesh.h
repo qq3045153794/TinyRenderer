@@ -31,6 +31,7 @@ class Mesh {
 
   void set_material_id(GLuint mid) const;
 
+  primitive m_obj;
   mutable GLuint material_id;
 
  private:

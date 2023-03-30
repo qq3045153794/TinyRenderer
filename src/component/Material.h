@@ -22,6 +22,7 @@
 #include "asset/Shader.h"
 #include "asset/Texture.h"
 #include "core/Log.h"
+#include <scene/SerializeEntity.h>
 
 namespace component {
 
@@ -44,6 +45,7 @@ class UboData {
 
 class Material {
  public:
+   friend ::scene::SerializeObject;
   // 引用 : https://zhuanlan.zhihu.com/p/260973533
   enum class pbr_u : uint16_t {
     albedo = 0U,     // 反射率 向量 sRGB 主要体现纹理和颜色
@@ -121,10 +123,8 @@ class Material {
   ubo_variant get_uniform(pbr_u pbr);
   ubo_variant get_uniform(pbr_t pbr);
  public:
-
   ShadingModel m_shading_model{ShadingModel::COSTEM};
  private:
-  // std::vector<ubo_variant> m_ubo_datas;
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
   std::unordered_map<std::string, ubo_variant> m_uniforms_cache;
 };

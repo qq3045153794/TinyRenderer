@@ -6,15 +6,14 @@
 #include "core/Log.h"
 namespace component {
 
-static const std::vector<GLuint> va_offset = {
-    offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal),
-    offsetof(Mesh::Vertex, uv),       offsetof(Mesh::Vertex, uv2),
-    offsetof(Mesh::Vertex, tangent),  offsetof(Mesh::Vertex, binormal),
-    offsetof(Mesh::Vertex, bone_id),  offsetof(Mesh::Vertex, bone_wt)};
+static const std::vector<GLuint> va_offset = {offsetof(Mesh::Vertex, position), offsetof(Mesh::Vertex, normal),
+                                              offsetof(Mesh::Vertex, uv),       offsetof(Mesh::Vertex, uv2),
+                                              offsetof(Mesh::Vertex, tangent),  offsetof(Mesh::Vertex, binormal),
+                                              offsetof(Mesh::Vertex, bone_id),  offsetof(Mesh::Vertex, bone_wt)};
 
 static const std::vector<GLuint> va_sz{3U, 3U, 2U, 2U, 3U, 3U, 4U, 4U};
 
-Mesh::Mesh(primitive obj) {
+Mesh::Mesh(primitive obj) : m_obj(obj) {
   // clang-format off
   switch (obj) {
     case QUAD: create_quat(); break;
@@ -27,8 +26,7 @@ Mesh::Mesh(primitive obj) {
   // clang-format on
 }
 
-Mesh::Mesh(const std::vector<Vertex>& vertices,
-           const std::vector<GLuint>& indices) {
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) {
   create_buffer(vertices, indices);
   material_id = m_vao->get_id();
 }
@@ -51,10 +49,8 @@ void Mesh::create_quat() {
   for (size_t i = 0; i < 4; i++) {
     GLuint offset = i * stride;
     Vertex vec;
-    vec.position =
-        glm::vec3(data[offset + 0], data[offset + 1], data[offset + 2]);
-    vec.normal =
-        glm::vec3(data[offset + 3], data[offset + 4], data[offset + 5]);
+    vec.position = glm::vec3(data[offset + 0], data[offset + 1], data[offset + 2]);
+    vec.normal = glm::vec3(data[offset + 3], data[offset + 4], data[offset + 5]);
     vec.uv = glm::vec2(data[offset + 6], data[offset + 7]);
     vertices.push_back(vec);
   }
@@ -75,27 +71,27 @@ void Mesh::create_cube() {
     -1.0f, -1.0f, +1.0f,   +0.0f, -1.0f, +0.0f,   0.0f, 1.0f,
     +1.0f, -1.0f, +1.0f,   +0.0f, -1.0f, +0.0f,   1.0f, 1.0f,
     +1.0f, -1.0f, -1.0f,   +0.0f, -1.0f, +0.0f,   1.0f, 0.0f,
-    
+
     -1.0f, +1.0f, -1.0f,   +0.0f, +1.0f, +0.0f,   1.0f, 0.0f,
     -1.0f, +1.0f, +1.0f,   +0.0f, +1.0f, +0.0f,   1.0f, 1.0f,
     +1.0f, +1.0f, +1.0f,   +0.0f, +1.0f, +0.0f,   0.0f, 1.0f,
     +1.0f, +1.0f, -1.0f,   +0.0f, +1.0f, +0.0f,   0.0f, 0.0f,
-    
+
     -1.0f, -1.0f, -1.0f,   +0.0f, +0.0f, -1.0f,   0.0f, 0.0f,
     -1.0f, +1.0f, -1.0f,   +0.0f, +0.0f, -1.0f,   0.0f, 1.0f,
     +1.0f, +1.0f, -1.0f,   +0.0f, +0.0f, -1.0f,   1.0f, 1.0f,
     +1.0f, -1.0f, -1.0f,   +0.0f, +0.0f, -1.0f,   1.0f, 0.0f,
-    
+
     -1.0f, -1.0f, +1.0f,   +0.0f, +0.0f, +1.0f,   0.0f, 0.0f,
     -1.0f, +1.0f, +1.0f,   +0.0f, +0.0f, +1.0f,   0.0f, 1.0f,
     +1.0f, +1.0f, +1.0f,   +0.0f, +0.0f, +1.0f,   1.0f, 1.0f,
     +1.0f, -1.0f, +1.0f,   +0.0f, +0.0f, +1.0f,   1.0f, 0.0f,
-    
+
     -1.0f, -1.0f, -1.0f,   -1.0f, +0.0f, +0.0f,   0.0f, 0.0f,
     -1.0f, -1.0f, +1.0f,   -1.0f, +0.0f, +0.0f,   0.0f, 1.0f,
     -1.0f, +1.0f, +1.0f,   -1.0f, +0.0f, +0.0f,   1.0f, 1.0f,
     -1.0f, +1.0f, -1.0f,   -1.0f, +0.0f, +0.0f,   1.0f, 0.0f,
-    
+
     +1.0f, -1.0f, -1.0f,   +1.0f, +0.0f, +0.0f,   0.0f, 0.0f,
     +1.0f, -1.0f, +1.0f,   +1.0f, +0.0f, +0.0f,   0.0f, 1.0f,
     +1.0f, +1.0f, +1.0f,   +1.0f, +0.0f, +0.0f,   1.0f, 1.0f,
@@ -110,10 +106,8 @@ void Mesh::create_cube() {
   for (size_t i = 0; i < n_vec; i++) {
     GLuint offset = i * stride;
     Vertex vec;
-    vec.position =
-        glm::vec3(data[offset + 0], data[offset + 1], data[offset + 2]);
-    vec.normal =
-        glm::vec3(data[offset + 3], data[offset + 4], data[offset + 5]);
+    vec.position = glm::vec3(data[offset + 0], data[offset + 1], data[offset + 2]);
+    vec.normal = glm::vec3(data[offset + 3], data[offset + 4], data[offset + 5]);
     vec.uv = glm::vec2(data[offset + 6], data[offset + 7]);
     vertices.push_back(vec);
   }
@@ -153,10 +147,8 @@ void Mesh::create_sphere() {
       float u = static_cast<float>(col) / n_cols;
       float v = static_cast<float>(row) / n_rows;
 
-      float theta =
-          PI * v - PI_2;  // ~ [-PI/2, PI/2], latitude from south to north pole
-      float phi =
-          PI * 2 * u;  // ~ [0, 2PI], longitude around the equator circle
+      float theta = PI * v - PI_2;  // ~ [-PI/2, PI/2], latitude from south to north pole
+      float phi = PI * 2 * u;       // ~ [0, 2PI], longitude around the equator circle
       // 球的极坐标方程
       float x = cos(phi) * cos(theta);
       float y = sin(theta);
@@ -203,12 +195,9 @@ void Mesh::create_sphere() {
 
 void Mesh::draw() const { m_vao->draw(); }
 
-void Mesh::create_buffer(const std::vector<Vertex>& vertices,
-                         const std::vector<GLuint>& indices) {
-  m_vbo = std::make_shared<asset::VBO>(sizeof(Vertex) * vertices.size(),
-                                       (void*)vertices.data(), GL_STATIC_DRAW);
-  m_ibo = std::make_shared<asset::IBO>(sizeof(GLuint) * indices.size(),
-                                       (void*)indices.data(), GL_STATIC_DRAW,
+void Mesh::create_buffer(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) {
+  m_vbo = std::make_shared<asset::VBO>(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_STATIC_DRAW);
+  m_ibo = std::make_shared<asset::IBO>(sizeof(GLuint) * indices.size(), (void*)indices.data(), GL_STATIC_DRAW,
                                        indices.size());
   m_vao = std::make_shared<asset::VAO>();
 

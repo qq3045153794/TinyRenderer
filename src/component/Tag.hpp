@@ -28,8 +28,6 @@ class Tag {
     return (static_cast<int>(m_tag) & static_cast<int>(tag)) > 0;
   }
   std::string m_name;
-
- private:
   ETag m_tag;
 };
 

@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "glad/glad.h"
+#include <filesystem>
+#include  <optional>
 
 namespace asset {
 class Texture {
@@ -39,7 +41,10 @@ class Texture {
   GLuint m_internal_format;
   GLuint m_image_format;
   GLuint m_target;
+ public:
   GLuint m_levels = 0;
+  bool m_flip;
+  std::optional<std::filesystem::path> m_image_path;
 };
 
 }  // namespace asset

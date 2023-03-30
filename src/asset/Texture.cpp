@@ -11,7 +11,7 @@
 namespace asset {
 
 Texture::Texture(const GLchar* img_path, bool flip, GLuint levels)
-    : m_target(GL_TEXTURE_2D), m_levels(levels) {
+    : m_target(GL_TEXTURE_2D), m_levels(levels), m_flip(flip), m_image_path(img_path) {
   const auto& image = utils::Image(img_path, flip);
   m_width = image.get_width();
   m_height = image.get_height();

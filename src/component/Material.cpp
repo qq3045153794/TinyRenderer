@@ -108,7 +108,6 @@ void Material::set_texture(GLuint uid, std::shared_ptr<asset::Texture> texture) 
     m_textures.insert_or_assign(uid, texture);
 
     m_uniforms_cache[texture_dictionary[uid]] = UboData<GLuint>(texture_dictionary[uid], m_shader, uid);
-    // m_ubo_datas.push_back(UboData<GLuint>(texture_dictionary[uid], m_shader, uid));
   } else {
     CORE_ERROR("Can't find valid texture units (uid = {})", uid);
   }
@@ -133,10 +132,6 @@ void Material::bind() const {
   for (const auto& item : m_textures) {
     item.second->bind(item.first);
   }
-
-  //for (auto& ubo_data : m_ubo_datas) {
-    //std::visit([](auto& val) { val.bind(); }, ubo_data);
-  //}
 
   for (auto& [i, uniform] : m_uniforms_cache) {
     std::visit([](auto& val) { val.bind(); }, uniform);

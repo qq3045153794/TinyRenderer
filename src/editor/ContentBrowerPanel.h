@@ -2,7 +2,7 @@
 #define _SRC_EDITOR_CONTEN_BROWER_PANEL_H_
 
 #include <filesystem>
-#include  <optional>
+#include <optional>
 
 namespace saber {
 class ContentBrowerPanel {
