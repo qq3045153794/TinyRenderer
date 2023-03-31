@@ -30,17 +30,23 @@ void EditorLayer::OnAttach() {
 
   // 创建 Entity
   auto& scene = m_cur_scene;
+
+/*
   Entity sun_light = scene->create_entity("sum light");
   sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / sun_light.name, sun_light);
+*/
+  ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "sum light", *scene);
   CHECK_ERROR();
-
+/*
   Entity point_light = scene->create_entity("point light");
   point_light.AddComponent<PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   point_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
   point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / point_light.name, point_light);
+*/
+  ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "point light", *scene);
   CHECK_ERROR();
 
   auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
@@ -57,12 +63,15 @@ void EditorLayer::OnAttach() {
   auto prefiltermap = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
   auto skybox_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("hdr");
   CHECK_ERROR();
-
+/*
   Entity skybox = scene->create_entity("skybox", ETag::Skybox);
   skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
   skybox.AddComponent<Material>(skybox_shader);
   skybox.GetComponent<Material>().set_texture(0, skybox_texture);
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / skybox.name, skybox);
+*/
+
+  auto skybox = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "skybox", *scene);
   CHECK_ERROR();
 
   Entity quad = scene->create_entity("quad");
@@ -74,6 +83,7 @@ void EditorLayer::OnAttach() {
   CHECK_ERROR();
   CORE_INFO("{} created", quad.name);
 
+/*
   Entity cube = scene->create_entity("cube");
   cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
   cube.AddComponent<Material>(Material::ShadingModel::DEFAULT);
@@ -82,8 +92,11 @@ void EditorLayer::OnAttach() {
   // 序列化
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / cube.name, cube);
   CHECK_ERROR();
+*/
+  auto cube = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "cube", *scene);
   CORE_INFO("{} created", cube.name);
 
+/*
   Entity sphere = scene->create_entity("sphere");
   sphere.AddComponent<Mesh>(Mesh::primitive::SPHERE);
   sphere.GetComponent<Transform>().translate(glm::vec3(4.0, 0.0, 0.0));
@@ -96,10 +109,14 @@ void EditorLayer::OnAttach() {
   sphere_mat.bind_uniform(Material::pbr_u::metalness, sphere_metalness);
   sphere_mat.bind_uniform(Material::pbr_u::roughness, sphere_roughness);
   sphere_mat.bind_uniform(Material::pbr_u::ao, sphere_ao);
-  ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "test", sphere);
+  ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / sphere.name, sphere);
   CHECK_ERROR();
+*/
+
+  auto sphere = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "sphere", *scene);
   CORE_INFO("{} created", sphere.name);
 
+/*
   Entity sphere_pbr = scene->create_entity("sphere pbr");
   sphere_pbr.AddComponent<Mesh>(Mesh::primitive::SPHERE);
   sphere_pbr.GetComponent<Transform>().translate(glm::vec3(4.0, 4.0, 0.0));
@@ -121,6 +138,10 @@ void EditorLayer::OnAttach() {
   sphere_mat_pbr.bind_texture(Material::pbr_t::ao, ao_pbr);
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / sphere_pbr.name, sphere_pbr);
   CHECK_ERROR();
+*/
+
+  auto sphere_pbr = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "sphere pbr", *scene);
+  CORE_INFO("{} created", sphere_pbr.name);
   CORE_INFO("{} created", sphere_pbr.name);
 
   m_editor_camera = scene->create_entity("main_camera");

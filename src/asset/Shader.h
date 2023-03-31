@@ -9,6 +9,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "utils/File.h"
+#include <filesystem>
 
 namespace asset {
 using namespace utils;
@@ -30,6 +31,9 @@ class Shader {
 
   void bind() const;
   void ubind() const;
+  std::filesystem::path m_vertex_file_name_path;
+  std::filesystem::path m_fragment_file_name_path;
+  std::filesystem::path m_geometry_file_name_path;
 
  private:
   GLuint m_id;

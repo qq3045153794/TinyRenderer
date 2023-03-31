@@ -3,10 +3,11 @@
 #include <filesystem>
 namespace scene {
 class Entity;
+class Scene;
 class SerializeObject {
  public:
   static void SerializeEntity(const std::filesystem::path& file_name_path, Entity& entity);
-  static void DeserializeEntity();
+  static Entity DeserializeEntity(const std::filesystem::path& file_name_path, Scene& scene);
 };
 }  // namespace scene
 

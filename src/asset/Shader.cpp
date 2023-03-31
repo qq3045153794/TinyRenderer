@@ -5,15 +5,18 @@ namespace asset {
 
 static GLuint g_cur_bound_program = 0;
 
-Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file,
-               const GLchar *geometry_file) {
+Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file, const GLchar *geometry_file)
+    : m_vertex_file_name_path(vertex_file),
+      m_fragment_file_name_path(fragment_file),
+      m_geometry_file_name_path(geometry_file) {
   const std::string &vertex_code = File::read_file(vertex_file);
   const std::string &fragment_code = File::read_file(fragment_file);
   const std::string &geometry_code = File::read_file(geometry_file);
   compile(vertex_code.c_str(), fragment_code.c_str(), geometry_code.c_str());
 }
 
-Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file) {
+Shader::Shader(const GLchar *vertex_file, const GLchar *fragment_file)
+    : m_vertex_file_name_path(vertex_file), m_fragment_file_name_path(fragment_file) {
   const std::string &vertex_code = File::read_file(vertex_file);
   const std::string &fragment_code = File::read_file(fragment_file);
   compile(vertex_code.c_str(), fragment_code.c_str());
@@ -53,8 +56,7 @@ void Shader::compile(const GLchar *vertex_code, const GLchar *fragment_code) {
   this->m_id = program;
 }
 
-void Shader::compile(const GLchar *vertex_code, const GLchar *fragment_code,
-                     const GLchar *geometry_code) {
+void Shader::compile(const GLchar *vertex_code, const GLchar *fragment_code, const GLchar *geometry_code) {
   GLuint program = glCreateProgram();
   GLuint vs = create_shader(vertex_code, GL_VERTEX_SHADER);
   GLuint fs = create_shader(fragment_code, GL_FRAGMENT_SHADER);
@@ -153,9 +155,7 @@ void Shader::set_uniform(const GLchar *name, const T &val) {
   }
 }
 
-#define INSTANTIATE_TEMPLATE(T) \
-  template void Shader::set_uniform(const GLchar *name, const T &val);
-
+#define INSTANTIATE_TEMPLATE(T) template void Shader::set_uniform(const GLchar *name, const T &val);
 
 INSTANTIATE_TEMPLATE(int)
 INSTANTIATE_TEMPLATE(bool)

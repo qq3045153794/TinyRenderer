@@ -35,7 +35,7 @@ std::map<GLuint, std::string> Material::texture_dictionary{
 };
 // clang-format on
 
-Material::Material(std::shared_ptr<asset::Shader> shader) {
+Material::Material(std::shared_ptr<asset::Shader> shader) : m_shading_model(ShadingModel::COSTEM) {
   set_shader(shader);
   if (m_shader != nullptr) {
     set_uniform(100U, false);

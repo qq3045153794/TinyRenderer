@@ -34,8 +34,8 @@ class Camera {
 
   Transform* T;
 
- protected:
   enum CameraProjection { PERSPECTIVE, ORTHOGRAPHIC };
+ protected:
 
   CameraProjection m_camera_projection;
 
