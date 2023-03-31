@@ -370,7 +370,7 @@ Entity SerializeObject::DeserializeEntity(const std::filesystem::path& file_name
   }
 
   auto camerafps_component = doc["CameraFPSComponent"];
-  if (camera_component) {
+  if (camerafps_component) {
     auto Projection = camerafps_component["Projection"].as<int>();
     auto fov = camerafps_component["Fov"].as<float>();
     auto aspect = camerafps_component["Aspect"].as<float>();
@@ -381,10 +381,10 @@ Entity SerializeObject::DeserializeEntity(const std::filesystem::path& file_name
     auto z_near = camerafps_component["Znear"].as<float>();
     auto z_far = camerafps_component["Zfar"].as<float>();
 
-    if (Projection == ::component::Camera::CameraProjection::PERSPECTIVE) {
-      entity.AddComponent<::component::Camera>(fov, aspect, z_near, z_far);
-    } else if (Projection == ::component::Camera::CameraProjection::ORTHOGRAPHIC) {
-      entity.AddComponent<::component::Camera>(left, right, bottom, top, z_near, z_far);
+    if (Projection == ::component::CameraFps::CameraProjection::PERSPECTIVE) {
+      entity.AddComponent<::component::CameraFps>(fov, aspect, z_near, z_far);
+    } else if (Projection == ::component::CameraFps::CameraProjection::ORTHOGRAPHIC) {
+      entity.AddComponent<::component::CameraFps>(left, right, bottom, top, z_near, z_far);
     } else {
       CORE_ERROR("Unexpection CameraProjection...");
     }

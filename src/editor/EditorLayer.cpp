@@ -142,15 +142,17 @@ void EditorLayer::OnAttach() {
 
   auto sphere_pbr = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "sphere pbr", *scene);
   CORE_INFO("{} created", sphere_pbr.name);
-  CORE_INFO("{} created", sphere_pbr.name);
 
+/*
   m_editor_camera = scene->create_entity("main_camera");
   m_editor_camera.AddComponent<CameraFps>(
       60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / m_editor_camera.name, m_editor_camera);
+*/
+  m_editor_camera = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "main_camera", *scene);
   CHECK_ERROR();
-  CORE_INFO("{} created", sphere.name);
+  CORE_INFO("{} created", m_editor_camera.name);
 
   Entity paimon = scene->create_entity("paimon");
   auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
