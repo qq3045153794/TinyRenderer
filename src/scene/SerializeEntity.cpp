@@ -1,7 +1,6 @@
 #include <library/TextureLibrary.h>
 #include <scene/Scene.h>
 #include <scene/SerializeEntity.h>
-#include <utils/File.h>
 
 #include <scene/Entity.hpp>
 namespace YAML {
@@ -122,10 +121,10 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::mat4& v) {
   return out;
 }
 
-void SerializeObject::SerializeEntity(const std::filesystem::path& file_name_path, Entity& entity) {
-  YAML::Emitter out;
-  out << YAML::BeginMap;
 
+void SerializeObject::SerializeEntity(Entity& entity, YAML::Emitter& out) {
+
+  out << YAML::BeginMap;
   auto& tag_component = entity.GetComponent<::component::Tag>();
   out << YAML::Key << "TagComponent";
   out << YAML::BeginMap;
@@ -240,14 +239,55 @@ void SerializeObject::SerializeEntity(const std::filesystem::path& file_name_pat
     out << YAML::EndMap;
   }
   out << YAML::EndMap;
+}
 
+void SerializeObject::SerializeEntity(const std::filesystem::path& file_name_path, Entity& entity) {
+  YAML::Emitter out;
+  SerializeEntity(entity, out);
   ::utils::File::write_yml_file(file_name_path, out);
 }
 
 Entity SerializeObject::DeserializeEntity(const std::filesystem::path& file_name_path, Scene& scene) {
   YAML::Node doc;
   ::utils::File::parser_yml_file(file_name_path.c_str(), doc);
+  return DeserializeEntity(scene, doc);
+}
 
+void SerializeObject::SerializeScene(const std::filesystem::path& file_name_path, Scene& scene) {
+  YAML::Emitter out;
+  out << YAML::BeginMap;
+  out << YAML::Key << "SceneName" << YAML::Value << scene.m_title;
+  out << YAML::Key << "Entitys" << YAML::Value << YAML::BeginSeq;
+  scene.registry.each([&](auto& entity_id) {
+    Entity e {"temp", entity_id, &scene.registry};
+    if (!scene.is_exclude_entity(entity_id)) {
+      SerializeEntity(e, out);
+    }
+  });
+  out << YAML::EndSeq;
+  out << YAML::EndMap;
+  ::utils::File::write_yml_file(file_name_path, out);
+}
+
+
+void SerializeObject::DeserializeScene(const std::filesystem::path& file_name_path, Scene& scene) {
+  YAML::Node doc;
+  ::utils::File::parser_yml_file(file_name_path.c_str(), doc);
+  YAML::Node entitys = doc["Entitys"];
+  if(entitys) {
+    for (int i = 0; i < entitys.size(); i++) {
+      auto entity = DeserializeEntity(scene, entitys[i]);
+      auto& tag = entity.GetComponent<::component::Tag>();
+      if (tag.m_tag == ::component::ETag::MainCamera || tag.m_tag == ::component::ETag::Lamplight) {
+        CORE_DEBUG("It is not render");
+      } else {
+        scene.SubmitRender(entity.id);
+      }
+    }
+  }
+}
+
+Entity SerializeObject::DeserializeEntity(Scene& scene, const YAML::Node& doc) {
   auto tag_component = doc["TagComponent"];
   CORE_ASERT(tag_component, "tag_component is no exits");
   auto tag = tag_component["Tag"].as<int>();
@@ -328,13 +368,12 @@ Entity SerializeObject::DeserializeEntity(const std::filesystem::path& file_name
       }
     } else if (static_cast<::component::Material::ShadingModel>(shading_model) ==
                ::component::Material::ShadingModel::COSTEM) {
-
       // 目前自定义材质不完善 等后续修改
       auto vertex_shader_path = material_component["VertexShaderPath"].as<std::string>();
       auto fragment_shader_path = material_component["FragmentShaderPath"].as<std::string>();
 
-      auto& material =
-          entity.AddComponent<::component::Material>(std::make_shared<::asset::Shader>(vertex_shader_path.c_str(), fragment_shader_path.c_str()));
+      auto& material = entity.AddComponent<::component::Material>(
+          std::make_shared<::asset::Shader>(vertex_shader_path.c_str(), fragment_shader_path.c_str()));
       for (std::size_t i = 0; i < texture_dictionary.size(); i++) {
         auto texture_key = texture_dictionary[i];
         auto texture_path_doc = material_component[texture_key + "_path"];
@@ -417,7 +456,6 @@ Entity SerializeObject::DeserializeEntity(const std::filesystem::path& file_name
     auto& spot_light = entity.AddComponent<::component::Spotlight>(color, intensity);
     spot_light.set_cutoff(range, inner_cutoff, outer_cutoff);
   }
-
   return entity;
 }
 

@@ -46,14 +46,13 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     ubo->set_uniform(1, glm::value_ptr(view));
     ubo->set_uniform(2, glm::value_ptr(pos));
     ubo->set_uniform(3, glm::value_ptr(forward));
+
   }
 
   // 设置平行光
   auto dl_view = m_scene->registry.view<DirectionLight, Transform>();
   for (auto& e : dl_view) {
     auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("DL");
-    // auto& dl = sun_light.GetComponent<DirectionLight>();
-    // auto& dt = sun_light.GetComponent<Transform>();
     auto& dl = dl_view.get<DirectionLight>(e);
     auto& dt = dl_view.get<Transform>(e);
     auto color = glm::vec4(dl.m_color, 1.0);

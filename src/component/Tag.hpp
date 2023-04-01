@@ -10,7 +10,8 @@ enum ETag {
   WorldPlane = 1 << 3,
   Skybox = 1 << 4,
   Water = 1 << 5,
-  Particle = 1 << 6
+  Particle = 1 << 6,
+  Lamplight = 1 << 7
 };
 
 class Tag {

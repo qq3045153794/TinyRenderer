@@ -364,7 +364,7 @@ void main() {
 
     Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
 
-    // Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
+    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
 
     // Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
 

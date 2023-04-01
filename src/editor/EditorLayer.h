@@ -30,6 +30,7 @@ class EditorLayer {
   std::unique_ptr<ContentBrowerPanel> m_content_brower_panel{nullptr};
   // 场景区域 左上 右下两点
   glm::vec2 bound_viewport[2];
+  // 创建entity 例如 editor camera等
 };
 }  // namespace editor
 }  // namespace saber

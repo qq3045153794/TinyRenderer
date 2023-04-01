@@ -30,9 +30,9 @@ void EditorLayer::OnAttach() {
 
   // 创建 Entity
   auto& scene = m_cur_scene;
-
+#if 0
 /*
-  Entity sun_light = scene->create_entity("sum light");
+  Entity sun_light = scene->create_entity("sum light", ::component::ETag::Lamplight);
   sun_light.AddComponent<DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   sun_light.GetComponent<Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / sun_light.name, sun_light);
@@ -40,7 +40,7 @@ void EditorLayer::OnAttach() {
   ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "sum light", *scene);
   CHECK_ERROR();
 /*
-  Entity point_light = scene->create_entity("point light");
+  Entity point_light = scene->create_entity("point light", ::component::ETag::Lamplight);
   point_light.AddComponent<PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
   point_light.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
   point_light.GetComponent<PointLight>().set_attenuation(0.09f, 0.032f);
@@ -73,7 +73,7 @@ void EditorLayer::OnAttach() {
 
   auto skybox = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "skybox", *scene);
   CHECK_ERROR();
-
+/*
   Entity quad = scene->create_entity("quad");
   quad.AddComponent<Mesh>(Mesh::primitive::QUAD);
   quad.AddComponent<Material>(Material::ShadingModel::DEFAULT);
@@ -82,7 +82,7 @@ void EditorLayer::OnAttach() {
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / quad.name, quad);
   CHECK_ERROR();
   CORE_INFO("{} created", quad.name);
-
+*/
 /*
   Entity cube = scene->create_entity("cube");
   cube.AddComponent<Mesh>(Mesh::primitive::CUBE);
@@ -149,11 +149,13 @@ void EditorLayer::OnAttach() {
       60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
   ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / m_editor_camera.name, m_editor_camera);
-*/
+
   m_editor_camera = ::scene::SerializeObject::DeserializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "main_camera", *scene);
   CHECK_ERROR();
   CORE_INFO("{} created", m_editor_camera.name);
+*/
 
+/*
   Entity paimon = scene->create_entity("paimon");
   auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
   paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
@@ -177,19 +179,40 @@ void EditorLayer::OnAttach() {
   auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
   temp_mat_8.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/脸.jpg").c_str(), false, 5));
   CHECK_ERROR();
+*/
+#endif
+
+  // 着色器与UBO绑定
+  auto default_shader = PublicSingleton<Library<Shader>>::GetInstance().GetDefaultShader();
+  scene->registry_shader(default_shader->get_id());
+  auto skybox_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("skybox");
+  scene->registry_shader(skybox_shader->get_id());
+  auto pbr_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("pbr");
+  scene->registry_shader(pbr_shader->get_id());
+
+  m_editor_camera = scene->create_entity("editor camera", ::component::ETag::MainCamera);
+  m_editor_camera.AddComponent<CameraFps>(60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
+  m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+  // editor camera 不序列化
+  scene->exclude_entity(m_editor_camera.id);
+  CHECK_ERROR();
+  CORE_INFO("{} created", m_editor_camera.name);
+
+//  ::scene::SerializeObject::SerializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path / scene->m_title, *scene);
+   ::scene::SerializeObject::DeserializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path / scene->m_title, *scene);
 
   // 展示设置 800 600
   main_fbo = std::make_shared<asset::FBO>(1024, 576);
   main_fbo->set_color_texture();
   main_fbo->set_depth_texture();
 
-  scene->SubmitRender(quad.id);
-  scene->SubmitRender(cube.id);
-  scene->SubmitRender(sphere.id);
-  scene->SubmitRender(sphere_pbr.id);
-  scene->SubmitRender(paimon.id);
+  // scene->SubmitRender(quad.id);
+  //scene->SubmitRender(cube.id);
+  //scene->SubmitRender(sphere.id);
+  //scene->SubmitRender(sphere_pbr.id);
+  // scene->SubmitRender(paimon.id);
   // 最后渲染
-  scene->SubmitRender(skybox.id);
+  //scene->SubmitRender(skybox.id);
 }
 
 void EditorLayer::Awake() { m_cur_scene->Awake(); }
@@ -293,6 +316,7 @@ void EditorLayer::OpenScene() {
 void EditorLayer::SaveScene() {
   // TODO
 }
+
 
 void EditorLayer::TriggerViewPort() {
   // 未解除不能隐藏鼠标问题 初步判断和平台有问题

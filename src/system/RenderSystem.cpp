@@ -27,7 +27,7 @@ void RenderSystem::OnEditorRumtime(scene::Entity& editor_camera) {
   // TODO
   ::scene::RenderCommand::eable_depth_test(true);
   ::scene::RenderCommand::eable_alpha_blend(true);
-  ::scene::RenderCommand::eable_face_culling(true);
+  // ::scene::RenderCommand::eable_face_culling(true);
   using namespace ::component;
   auto& reg = m_scene->registry;
   auto mesh_group = reg.group<Mesh>(entt::get<Transform, Material, Tag>);

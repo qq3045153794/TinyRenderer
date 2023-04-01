@@ -37,6 +37,8 @@ class Scene {
 
 
   void registry_shader(GLuint shader_id);
+  void exclude_entity(const entt::entity& id);
+  bool is_exclude_entity(const entt::entity& id);
 
   template <typename... Args>
   void SubmitRender(Args&&... args) {
@@ -51,6 +53,7 @@ class Scene {
  protected:
 
   std::map<entt::entity, std::string> directory;
+  std::set<entt::entity> exclude_entitys;
   std::vector<entt::entity> render_queue;
   std::set<uint32_t> shader_id_set;
   std::vector<std::shared_ptr<saber::system::System>> m_systems;
