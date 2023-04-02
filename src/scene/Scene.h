@@ -30,6 +30,7 @@ class Scene {
   friend class ::saber::system::EnvironmentSystem;
  public:
   std::string m_title;
+  Scene();
   Scene(const std::string& title);
   virtual ~Scene();
   Entity create_entity(const std::string& name,

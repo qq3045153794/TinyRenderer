@@ -273,6 +273,8 @@ void SerializeObject::SerializeScene(const std::filesystem::path& file_name_path
 void SerializeObject::DeserializeScene(const std::filesystem::path& file_name_path, Scene& scene) {
   YAML::Node doc;
   ::utils::File::parser_yml_file(file_name_path.c_str(), doc);
+  auto scene_name = doc["SceneName"].as<std::string>();
+  scene.m_title = scene_name;
   YAML::Node entitys = doc["Entitys"];
   if(entitys) {
     for (int i = 0; i < entitys.size(); i++) {

@@ -8,7 +8,9 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
+#include <ImGuiFileDialog.h>
+#include <filesystem>
+#include <optional>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -25,6 +27,8 @@ public:
   static void Begin();
   static void End();
   static void Clean();
+  static std::optional<std::filesystem::path> DrawFileBrower(bool& open, const char* filters);
+  static std::optional<std::filesystem::path> DrawDirBrower(bool& open);
   static ImFont* config_font;
   static ImFont* main_font;
 };

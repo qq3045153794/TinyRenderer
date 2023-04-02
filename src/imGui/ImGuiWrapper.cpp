@@ -195,4 +195,51 @@ void ImGuiWrapper::Clean() {
   ImGui::DestroyContext();
 }
 
+std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(bool& open, const char* filters) {
+  std::optional<std::filesystem::path> ret_path;
+  if (open) {
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", filters, ".");
+  }
+  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+    // action if OK
+    if (ImGuiFileDialog::Instance()->IsOk()) {
+      std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+      ret_path = filePathName;
+      std::filesystem::path file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
+      // action
+    }
+
+    // close
+    open = false;
+    ImGuiFileDialog::Instance()->Close();
+  }
+
+  return ret_path;
+}
+
+
+std::optional<std::filesystem::path> ImGuiWrapper::DrawDirBrower(bool& open) {
+  std::optional<std::filesystem::path> ret_path;
+  if (open) {
+    ImGuiFileDialog::Instance()->OpenDialog("ChooseDirDlgKey", "Choose a Directory", nullptr, ".");
+  }
+  if (ImGuiFileDialog::Instance()->Display("ChooseDirDlgKey")) {
+    // action if OK
+    if (ImGuiFileDialog::Instance()->IsOk()) {
+      std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+      std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+      ret_path = filePathName;
+      std::filesystem::path file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
+      // action
+    }
+
+    // close
+    open = false;
+    ImGuiFileDialog::Instance()->Close();
+  }
+
+  return ret_path;
+}
+
 }  // namespace saber

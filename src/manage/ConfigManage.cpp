@@ -14,6 +14,8 @@ void ConfigManage::Init() {
   fonts_path = core::App::instand().root_path + "/resource/config/fonts";
   shader_path = core::App::instand().root_path + "/resource/config/shader";
   content_path = core::App::instand().root_path + "/resource/content";
+  content_scenes_path = core::App::instand().root_path + "/resource/content/scenes";
+
 
 }
 

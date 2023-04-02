@@ -8,6 +8,7 @@
 #include <manage/ConfigManage.h>
 #include <scene/RenderCommand.h>
 #include <scene/SerializeEntity.h>
+
 #include <scene/Entity.hpp>
 namespace saber {
 namespace editor {
@@ -18,6 +19,13 @@ static float sphere_roughness = 0.2f;
 static float sphere_ao = 1.0f;
 
 EditorLayer::EditorLayer() {}
+
+::scene::Entity EditorLayer::create_entity(const std::string& name, component::ETag tag) {
+  ::scene::Entity e = {name, registry.create(), &registry};
+  e.AddComponent<component::Transform>();
+  e.AddComponent<component::Tag>(tag, name);
+  return e;
+}
 
 void EditorLayer::OnAttach() {
   using namespace ::component;
@@ -190,16 +198,26 @@ void EditorLayer::OnAttach() {
   auto pbr_shader = PublicSingleton<Library<Shader>>::GetInstance().Get("pbr");
   scene->registry_shader(pbr_shader->get_id());
 
-  m_editor_camera = scene->create_entity("editor camera", ::component::ETag::MainCamera);
-  m_editor_camera.AddComponent<CameraFps>(60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
-  m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
-  // editor camera 不序列化
-  scene->exclude_entity(m_editor_camera.id);
-  CHECK_ERROR();
-  CORE_INFO("{} created", m_editor_camera.name);
+  m_cur_scene_name = "Unnamed";
 
-//  ::scene::SerializeObject::SerializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path / scene->m_title, *scene);
-   ::scene::SerializeObject::DeserializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path / scene->m_title, *scene);
+  // m_editor_camera = scene->create_entity("editor camera", ::component::ETag::MainCamera);
+  // m_editor_camera.AddComponent<CameraFps>(
+  // 60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
+  // m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+  // editor camera 不序列化
+  // scene->exclude_entity(m_editor_camera.id);
+  // CHECK_ERROR();
+  // CORE_INFO("{} created", m_editor_camera.name);
+
+  m_editor_camera = this->create_entity("editor camera", ::component::ETag::MainCamera);
+  m_editor_camera.AddComponent<CameraFps>(
+      60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
+  m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
+
+  //  ::scene::SerializeObject::SerializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path /
+  //  scene->m_title, *scene);
+  //   ::scene::SerializeObject::DeserializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path /
+  //   scene->m_title, *scene);
 
   // 展示设置 800 600
   main_fbo = std::make_shared<asset::FBO>(1024, 576);
@@ -207,12 +225,12 @@ void EditorLayer::OnAttach() {
   main_fbo->set_depth_texture();
 
   // scene->SubmitRender(quad.id);
-  //scene->SubmitRender(cube.id);
-  //scene->SubmitRender(sphere.id);
-  //scene->SubmitRender(sphere_pbr.id);
+  // scene->SubmitRender(cube.id);
+  // scene->SubmitRender(sphere.id);
+  // scene->SubmitRender(sphere_pbr.id);
   // scene->SubmitRender(paimon.id);
   // 最后渲染
-  //scene->SubmitRender(skybox.id);
+  // scene->SubmitRender(skybox.id);
 }
 
 void EditorLayer::Awake() { m_cur_scene->Awake(); }
@@ -232,6 +250,10 @@ void EditorLayer::OnImGuiRender() {
   ::scene::RenderCommand::clear_buffer();
   static bool dockspaceOpen = true;
   static bool demo_window_open = false;
+  static bool new_scene_popup_open = false;
+  static bool open_scene_popup_open = false;
+  static bool save_scene_dir_popup_open = false;
+  static bool save_scene_name_popup_open = false;
   // static bool viewportOpen = true;
   TriggerViewPort();
 
@@ -253,11 +275,12 @@ void EditorLayer::OnImGuiRender() {
   // 设置BeginMainMenuBar才不会docking遮盖
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
-      if (ImGui::MenuItem("New", "Ctrl+N")) NewScene();
-
-      if (ImGui::MenuItem("Open...", "Ctrl+O")) OpenScene();
-
-      if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) SaveScene();
+      if (ImGui::MenuItem("New", "Ctrl+N")) new_scene_popup_open = true;
+      if (ImGui::MenuItem("Open...", "Ctrl+O")) open_scene_popup_open = true;
+      if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S")) {
+        save_scene_name_popup_open = true;
+        save_scene_dir_popup_open = true;
+      }
 
       ImGui::EndMenu();
     }
@@ -278,10 +301,7 @@ void EditorLayer::OnImGuiRender() {
   m_content_brower_panel->OnImGuiRender();
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-  // ImGui::SetNextWindowPos(ImVec2{0, 30});
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
-  // static ImGuiWindowFlags viewport_window_flags =
-  //    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize;
   if (ImGui::Begin("ViewPort")) {
     auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
     auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
@@ -299,24 +319,111 @@ void EditorLayer::OnImGuiRender() {
   if (demo_window_open) {
     ImGui::ShowDemoWindow(&demo_window_open);
   }
+
+  if (new_scene_popup_open) {
+    NewScene(new_scene_popup_open);
+  }
+
+  if (open_scene_popup_open) {
+    OpenScene(open_scene_popup_open);
+  }
+
+  CORE_INFO("save : {} {}",save_scene_dir_popup_open, save_scene_name_popup_open);
+  if (save_scene_dir_popup_open || save_scene_name_popup_open) {
+    SaveScene(save_scene_dir_popup_open, save_scene_name_popup_open);
+  }
+
   ImGui::End();
 
   ImGuiWrapper::End();
   // TODO
 }
 
-void EditorLayer::NewScene() {
-  // TODO
+void EditorLayer::NewScene(bool& open) {
+  ImGui::OpenPopup("New Scene");
+  if (ImGui::BeginPopupModal("New Scene", &open)) {
+    ImGui::Text("New Scene Name");
+    std::array<char, 255> scene_name;
+    scene_name.fill(0);
+    ImGui::InputText("##scene name", scene_name.data(), sizeof(scene_name));
+
+    if (ImGui::Button("confirm")) {
+      CORE_DEBUG("m_cur_scene count : {}", m_cur_scene.use_count());
+      m_cur_scene_name = std::string(scene_name.data());
+      m_new_scene = std::make_shared<::scene::Scene>(m_cur_scene_name);
+      m_cur_scene = std::move(m_new_scene);
+      m_hierarchy_panel->ResetScene(m_cur_scene);
+      if (m_new_scene == nullptr) {
+        CORE_DEBUG("old scene clean...");
+      }
+
+      open = false;
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+    if (ImGui::Button("Close")) {
+      ImGui::CloseCurrentPopup();
+      open = false;
+    }
+    ImGui::EndPopup();
+  }
 }
 
-void EditorLayer::OpenScene() {
-  // TODO
+void EditorLayer::OpenScene(bool& open) {
+  auto file_name_path = ImGuiWrapper::DrawFileBrower(open, ".sa");
+  if (file_name_path) {
+    m_new_scene = std::make_shared<::scene::Scene>();
+    ::scene::SerializeObject::DeserializeScene(*file_name_path, *m_new_scene);
+    m_cur_scene = std::move(m_new_scene);
+    m_hierarchy_panel->ResetScene(m_cur_scene);
+    if (m_new_scene == nullptr) {
+      CORE_DEBUG("old scene clean...");
+    }
+  }
 }
 
-void EditorLayer::SaveScene() {
-  // TODO
-}
+void EditorLayer::SaveScene(bool& file_open, bool& name_open) {
+  static bool is_first_save = true;
+  static std::optional<std::filesystem::path> file_name_path;
+  if (is_first_save) {
+    auto save_scene_dir = ImGuiWrapper::DrawDirBrower(file_open);
 
+    if (save_scene_dir) {
+      ImGui::OpenPopup("Save Scene");
+      CORE_INFO("path : {}", save_scene_dir->string());
+      if (ImGui::BeginPopupModal("Save Scene", &name_open)) {
+        ImGui::Text("Save Scene Name");
+        std::array<char, 255> scene_name;
+        scene_name.fill(0);
+        ImGui::InputText("##save name", scene_name.data(), sizeof(scene_name));
+
+        if (ImGui::Button("confirm")) {
+          std::string scene_name_string = std::string(scene_name.data());
+          std::string extention = ".sa";
+          file_name_path = *save_scene_dir / (scene_name_string + extention);
+          CORE_DEBUG("save name : {}", file_name_path->string());
+
+          is_first_save = false;
+          name_open = false;
+          ImGui::CloseCurrentPopup();
+        }
+
+        if (ImGui::Button("Close")) {
+          name_open = false;
+          ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+      }
+    }
+  }
+
+  if (file_name_path) {
+    ::scene::SerializeObject::SerializeScene(*file_name_path, *m_cur_scene);
+    CORE_INFO("Save scene succuss... (path = {})", file_name_path->string());
+  }
+}
 
 void EditorLayer::TriggerViewPort() {
   // 未解除不能隐藏鼠标问题 初步判断和平台有问题

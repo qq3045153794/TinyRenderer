@@ -14,6 +14,11 @@ using Entity = ::scene::Entity;
 
 SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<::scene::Scene> scene) : m_scene{scene}, m_select_entity{} {}
 
+
+void SceneHierarchyPanel::ResetScene(std::shared_ptr<::scene::Scene> scene) {
+  m_scene = scene;
+}
+
 void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   // ImGui::SetNextWindowPos(ImVec2{1024, 30});
   // ImGui::SetNextWindowSize(ImVec2{576, 288});

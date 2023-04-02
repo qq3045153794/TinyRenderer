@@ -16,6 +16,7 @@ class ConfigManage : public PublicSingleton<ConfigManage> {
   std::filesystem::path fonts_path;
   std::filesystem::path shader_path;
   std::filesystem::path content_path;
+  std::filesystem::path content_scenes_path;
 };
 
 }  // namespace saber

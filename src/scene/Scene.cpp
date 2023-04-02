@@ -10,14 +10,20 @@
 
 namespace scene {
 
-Scene::Scene(const std::string& title) : m_title(title) {
+Scene::Scene() {
+  // 注意顺序
+  m_systems.push_back(std::make_shared<saber::system::EnvironmentSystem>(this));
+  m_systems.push_back(std::make_shared<saber::system::RenderSystem>(this));
+}
 
+Scene::Scene(const std::string& title) : m_title(title) {
   // 注意顺序
   m_systems.push_back(std::make_shared<saber::system::EnvironmentSystem>(this));
   m_systems.push_back(std::make_shared<saber::system::RenderSystem>(this));
 }
 
 Scene::~Scene() {
+  CORE_INFO("call ~Scene");
   registry.each([this](auto id) { CORE_TRACE("Destroying entity: {0}", directory.at(id)); });
   registry.clear();
 }
@@ -30,19 +36,11 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   return e;
 }
 
-void Scene::registry_shader(GLuint shader_id) {
-  shader_id_set.insert(shader_id);
-}
+void Scene::registry_shader(GLuint shader_id) { shader_id_set.insert(shader_id); }
 
+void Scene::exclude_entity(const entt::entity& id) { exclude_entitys.insert(id); }
 
-void Scene::exclude_entity(const entt::entity& id) {
-  exclude_entitys.insert(id);
-}
-
-bool Scene::is_exclude_entity(const entt::entity& id) {
-  return exclude_entitys.count(id);
-}
-
+bool Scene::is_exclude_entity(const entt::entity& id) { return exclude_entitys.count(id); }
 
 void Scene::Awake() {
   for (auto& system : m_systems) {
