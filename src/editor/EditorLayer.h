@@ -23,6 +23,7 @@ class EditorLayer {
   void NewScene(bool& open);
   void OpenScene(bool& open);
   void SaveScene(bool& dir_open, bool& name_open);
+  void Reset();
   void TriggerViewPort();
   ::scene::Entity create_entity(const std::string& name, component::ETag tag = component::ETag::Untagged);
   entt::registry registry;
@@ -35,6 +36,7 @@ class EditorLayer {
   // 场景区域 左上 右下两点
   glm::vec2 bound_viewport[2];
   std::string m_cur_scene_name{""};
+  std::optional<std::filesystem::path> m_save_file_name_path;
   // 创建entity 例如 editor camera等
 };
 }  // namespace editor

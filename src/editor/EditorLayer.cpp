@@ -328,7 +328,6 @@ void EditorLayer::OnImGuiRender() {
     OpenScene(open_scene_popup_open);
   }
 
-  CORE_INFO("save : {} {}",save_scene_dir_popup_open, save_scene_name_popup_open);
   if (save_scene_dir_popup_open || save_scene_name_popup_open) {
     SaveScene(save_scene_dir_popup_open, save_scene_name_popup_open);
   }
@@ -336,7 +335,6 @@ void EditorLayer::OnImGuiRender() {
   ImGui::End();
 
   ImGuiWrapper::End();
-  // TODO
 }
 
 void EditorLayer::NewScene(bool& open) {
@@ -348,11 +346,10 @@ void EditorLayer::NewScene(bool& open) {
     ImGui::InputText("##scene name", scene_name.data(), sizeof(scene_name));
 
     if (ImGui::Button("confirm")) {
-      CORE_DEBUG("m_cur_scene count : {}", m_cur_scene.use_count());
       m_cur_scene_name = std::string(scene_name.data());
       m_new_scene = std::make_shared<::scene::Scene>(m_cur_scene_name);
       m_cur_scene = std::move(m_new_scene);
-      m_hierarchy_panel->ResetScene(m_cur_scene);
+      Reset();
       if (m_new_scene == nullptr) {
         CORE_DEBUG("old scene clean...");
       }
@@ -377,6 +374,7 @@ void EditorLayer::OpenScene(bool& open) {
     ::scene::SerializeObject::DeserializeScene(*file_name_path, *m_new_scene);
     m_cur_scene = std::move(m_new_scene);
     m_hierarchy_panel->ResetScene(m_cur_scene);
+    m_save_file_name_path = file_name_path;
     if (m_new_scene == nullptr) {
       CORE_DEBUG("old scene clean...");
     }
@@ -384,31 +382,37 @@ void EditorLayer::OpenScene(bool& open) {
 }
 
 void EditorLayer::SaveScene(bool& file_open, bool& name_open) {
-  static bool is_first_save = true;
-  static std::optional<std::filesystem::path> file_name_path;
-  if (is_first_save) {
-    auto save_scene_dir = ImGuiWrapper::DrawDirBrower(file_open);
+  if (!m_save_file_name_path) {
+    static std::optional<std::filesystem::path> save_scene_dir;
+    if (file_open) {
+      save_scene_dir = ImGuiWrapper::DrawDirBrower(file_open);
+    }
 
     if (save_scene_dir) {
       ImGui::OpenPopup("Save Scene");
-      CORE_INFO("path : {}", save_scene_dir->string());
       if (ImGui::BeginPopupModal("Save Scene", &name_open)) {
         ImGui::Text("Save Scene Name");
-        std::array<char, 255> scene_name;
-        scene_name.fill(0);
-        ImGui::InputText("##save name", scene_name.data(), sizeof(scene_name));
+        // std::array<char, 255> scene_name;
+        // scene_name.fill(0);
+        static std::string scene_name_string = "Unnamed";
+        char scene_name[256];
+        memset(scene_name, 0, sizeof name_open);
+        strcpy(scene_name, scene_name_string.c_str());
+        if (ImGui::InputText("##save name", scene_name, sizeof(scene_name))) {
+          scene_name_string = std::string(scene_name);
+        }
 
         if (ImGui::Button("confirm")) {
-          std::string scene_name_string = std::string(scene_name.data());
+          CORE_DEBUG("scene name : {}", scene_name_string);
           std::string extention = ".sa";
-          file_name_path = *save_scene_dir / (scene_name_string + extention);
-          CORE_DEBUG("save name : {}", file_name_path->string());
+          m_save_file_name_path = *save_scene_dir / (scene_name_string + extention);
+          CORE_DEBUG("save name : {}", m_save_file_name_path->string());
 
-          is_first_save = false;
           name_open = false;
           ImGui::CloseCurrentPopup();
         }
 
+        ImGui::SameLine();
         if (ImGui::Button("Close")) {
           name_open = false;
           ImGui::CloseCurrentPopup();
@@ -417,11 +421,12 @@ void EditorLayer::SaveScene(bool& file_open, bool& name_open) {
         ImGui::EndPopup();
       }
     }
-  }
+  } else {
+    ::scene::SerializeObject::SerializeScene(*m_save_file_name_path, *m_cur_scene);
 
-  if (file_name_path) {
-    ::scene::SerializeObject::SerializeScene(*file_name_path, *m_cur_scene);
-    CORE_INFO("Save scene succuss... (path = {})", file_name_path->string());
+    file_open = false;
+    name_open = false;
+    CORE_INFO("Save scene succuss... (path = {})", m_save_file_name_path->string());
   }
 }
 
@@ -450,6 +455,11 @@ void EditorLayer::TriggerViewPort() {
 
     ::core::Input::clear();
   }
+}
+
+void EditorLayer::Reset() {
+  m_hierarchy_panel->ResetScene(m_cur_scene);
+  m_save_file_name_path.reset();
 }
 
 void EditorLayer::OnEvent() {}

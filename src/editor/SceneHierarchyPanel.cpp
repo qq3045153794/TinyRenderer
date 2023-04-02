@@ -17,6 +17,7 @@ SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<::scene::Scene> scene) 
 
 void SceneHierarchyPanel::ResetScene(std::shared_ptr<::scene::Scene> scene) {
   m_scene = scene;
+  m_select_entity = ::scene::Entity();
 }
 
 void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
