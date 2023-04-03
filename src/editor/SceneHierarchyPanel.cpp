@@ -292,45 +292,43 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
         ImGui::TableSetColumnIndex(1);
         std::vector<std::filesystem::path> albedo_items;
-        static const char* current_item = nullptr;
+        static std::optional<std::string> current_item;
         static Entity last_entity;
-        if (last_entity.id != m_select_entity.id) current_item = nullptr;
+        if (last_entity.id != m_select_entity.id) {current_item.reset();}
         last_entity = m_select_entity;
         albedo_items.push_back("None");
         if (sample_albedo) {
           auto albedo = component.get_texture(Material::pbr_t::albedo);
-          if(current_item == nullptr) current_item = albedo->m_image_path->c_str();
+          if(!current_item){ current_item = albedo->m_image_path->string();}
           CORE_ASERT(textures_cache.count(*albedo->m_image_path) > 0, "No import the Texture (path = {})",
                      albedo->m_image_path->string());
-          // albedo_items.push_back(*albedo->m_image_path);
         }
 
-        if(current_item == nullptr) CORE_DEBUG("current_item is NULL");
-        if (current_item == nullptr) current_item = "None";
+        if (!current_item) CORE_DEBUG("current_item is NULL");
+        if (!current_item) {current_item = "None";}
 
         for (const auto& [path, texture] : textures_cache) {
           albedo_items.push_back(path);
         }
-        CORE_DEBUG("current item : {}", current_item);
-        if (ImGui::BeginCombo("##Albedo", current_item)) {
+
+        if (ImGui::BeginCombo("##Albedo", current_item->c_str())) {
           for (const auto& item : albedo_items) {
-            bool is_selected = (strcmp(current_item, item.c_str()) == 0);
+            bool is_selected = (current_item == item.string());
             if (ImGui::Selectable(item.c_str(), is_selected)) {
-              current_item = item.c_str();
+              current_item = item.string();
               CORE_DEBUG("click {}", item.string());
+              if (item == "None") {
+                component.set_uniform(100U, false);
+              } else {
+                auto albedo = textures_cache[item];
+                component.bind_texture(Material::pbr_t::albedo, albedo);
+              }
             }
 
-            if (is_selected && item == "None") {
-              component.set_uniform(100U, false);
-
-              ImGui::SetItemDefaultFocus();
-            } else if (is_selected && item != "None") {
-              CORE_ASERT(textures_cache.count(item) > 0, "No find texture in textures cache (key = {})", item.string());
-              auto albedo = textures_cache[item];
-              component.bind_texture(Material::pbr_t::albedo, albedo);
-
+            if (is_selected) {
               ImGui::SetItemDefaultFocus();
             }
+
           }
           ImGui::EndCombo();
         }
