@@ -3,8 +3,8 @@
 #include <editor/ContentBrowerPanel.h>
 #include <imGui/ImGuiWrapper.h>
 #include <library/TextureLibrary.h>
-#include <manage/ConfigManage.h>
 #include <manage/AssetManage.h>
+#include <manage/ConfigManage.h>
 
 namespace saber {
 
@@ -30,11 +30,22 @@ void ContentBrowerPanel::OnImGuiRender() {
   ImGui::NextColumn();
 
   if (ImGui::BeginChild("Content")) {
-    ImGui::Text("This is content");
-
     if (m_selected_directory) {
-      DrawFileBrower(*m_selected_directory);
-      DrawSave();
+      ImTextureID texture_id =
+          (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
+
+      static bool file_brower_open = false;
+      if (ImGui::ImageButton(texture_id, {32, 32}, {0, 1}, {1, 0})) {
+        file_brower_open = true;
+      }
+
+      if (file_brower_open) {
+        auto file_path_name = ImGuiWrapper::DrawFileBrower("Choose image", file_brower_open, ".png,.jpg,.jpeg");
+        if (file_path_name) {
+          PublicSingleton<AssetManage>::GetInstance().Import(*file_path_name, *m_selected_directory);
+        }
+      }
+
       DrawContent();
     }
   }
@@ -58,7 +69,6 @@ void ContentBrowerPanel::DrawTreeRecursive(const std::filesystem::path& current_
     std::cout << "selected : " << m_selected_directory->filename().string() << std::endl;
   }
 
-  // ImGui::SameLine();
   ImGui::SameLine();
   ImGui::Text(current_path.filename().string().c_str(), "%s");
 
@@ -105,33 +115,32 @@ void ContentBrowerPanel::DrawContent() {
   ImGui::PopFont();
 }
 
-void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
-  // open Dialog Simple
+// void ContentBrowerPanel::DrawFileBrower(const std::filesystem::path& to) {
+//   open Dialog Simple
+// ImTextureID texture_id =
+//(ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
+// if (ImGui::ImageButton(texture_id, {32, 32}, {0, 1}, {1, 0}))
+// ImGuiFileDialog::Instance()->OpenDialog("ChooseFileKey", "Choose File", ".png,.jpg,.jpeg", ".");
 
-  ImTextureID texture_id =
-      (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
-  if (ImGui::ImageButton(texture_id, {32, 32}, {0, 1}, {1, 0}))
-    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.jpeg", ".");
+//   display
+// if (ImGuiFileDialog::Instance()->Display("ChooseFileKey")) {
+// std::cout << "call ContentBrowerPanel DrawFileBrower" << std::endl;
+//     action if OK
+// if (ImGuiFileDialog::Instance()->IsOk()) {
+// std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+// std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+// std::cout << "file pathname :" << filePathName << std::endl;
+// std::cout << "file path" << filePath << std::endl;
 
-  // display
-  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
-    // action if OK
-    if (ImGuiFileDialog::Instance()->IsOk()) {
-      std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
-      std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-      std::cout << "file pathname :" << filePathName << std::endl;
-      std::cout << "file path" << filePath << std::endl;
+// std::filesystem::path file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
+// PublicSingleton<AssetManage>::GetInstance().Import(file_path_name, *m_selected_directory);
+//       action
+//}
 
-      std::filesystem::path file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
-      PublicSingleton<AssetManage>::GetInstance().Import(file_path_name, *m_selected_directory);
-      // action
-    }
-
-    // close
-    ImGuiFileDialog::Instance()->Close();
-  }
-}
-
+//    close
+// ImGuiFileDialog::Instance()->Close();
+//}
+//}
 
 void ContentBrowerPanel::DrawSave() {
   if (ImGui::Button("Save Resource")) {

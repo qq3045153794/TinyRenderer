@@ -368,7 +368,7 @@ void EditorLayer::NewScene(bool& open) {
 }
 
 void EditorLayer::OpenScene(bool& open) {
-  auto file_name_path = ImGuiWrapper::DrawFileBrower(open, ".sa");
+  auto file_name_path = ImGuiWrapper::DrawFileBrower("Choose Scene", open, ".sa");
   if (file_name_path) {
     m_new_scene = std::make_shared<::scene::Scene>();
     ::scene::SerializeObject::DeserializeScene(*file_name_path, *m_new_scene);

@@ -2,6 +2,7 @@
 #include <imGui/ImGuiWrapper.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
+#include <manage/AssetManage.h>
 #include <scene/Scene.h>
 
 #include <component/Tag.hpp>
@@ -13,7 +14,6 @@ using Scene = ::scene::Scene;
 using Entity = ::scene::Entity;
 
 SceneHierarchyPanel::SceneHierarchyPanel(std::shared_ptr<::scene::Scene> scene) : m_scene{scene}, m_select_entity{} {}
-
 
 void SceneHierarchyPanel::ResetScene(std::shared_ptr<::scene::Scene> scene) {
   m_scene = scene;
@@ -270,20 +270,71 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   // ImGui::SameLine();
 
-  draw_component<::component::Material>("Material", entity, [](::component::Material& component) {
+  draw_component<::component::Material>("Material", entity, [this](::component::Material& component) {
     using Material = ::component::Material;
+    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
     if (component.m_shading_model == Material::ShadingModel::PBR) {
       if (ImGui::Text("Albedo"); true) {
-        ImGui::BeginTable("##Albedo", 1);
+        ImGui::BeginTable("##Albedo", 2);
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         float f_albedo[4];
         auto ubo_var = component.get_uniform(Material::pbr_u::albedo);
         auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
+        auto sample_albedo_var = component.get_uniform("sample_albedo");
+        bool sample_albedo = std::get<::component::UboData<bool>>(sample_albedo_var).m_data;
         for (std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
-        ImGui::ColorEdit4("albedo", f_albedo);
+        if (sample_albedo) ImGui::BeginDisabled();
+        ImGui::ColorEdit4("##albedo", f_albedo);
+        if (sample_albedo) ImGui::EndDisabled();
         for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
         component.bind_uniform(Material::pbr_u::albedo, albedo);
+
+        ImGui::TableSetColumnIndex(1);
+        std::vector<std::filesystem::path> albedo_items;
+        static const char* current_item = nullptr;
+        static Entity last_entity;
+        if (last_entity.id != m_select_entity.id) current_item = nullptr;
+        last_entity = m_select_entity;
+        albedo_items.push_back("None");
+        if (sample_albedo) {
+          auto albedo = component.get_texture(Material::pbr_t::albedo);
+          if(current_item == nullptr) current_item = albedo->m_image_path->c_str();
+          CORE_ASERT(textures_cache.count(*albedo->m_image_path) > 0, "No import the Texture (path = {})",
+                     albedo->m_image_path->string());
+          // albedo_items.push_back(*albedo->m_image_path);
+        }
+
+        if(current_item == nullptr) CORE_DEBUG("current_item is NULL");
+        if (current_item == nullptr) current_item = "None";
+
+        for (const auto& [path, texture] : textures_cache) {
+          albedo_items.push_back(path);
+        }
+        CORE_DEBUG("current item : {}", current_item);
+        if (ImGui::BeginCombo("##Albedo", current_item)) {
+          for (const auto& item : albedo_items) {
+            bool is_selected = (strcmp(current_item, item.c_str()) == 0);
+            if (ImGui::Selectable(item.c_str(), is_selected)) {
+              current_item = item.c_str();
+              CORE_DEBUG("click {}", item.string());
+            }
+
+            if (is_selected && item == "None") {
+              component.set_uniform(100U, false);
+
+              ImGui::SetItemDefaultFocus();
+            } else if (is_selected && item != "None") {
+              CORE_ASERT(textures_cache.count(item) > 0, "No find texture in textures cache (key = {})", item.string());
+              auto albedo = textures_cache[item];
+              component.bind_texture(Material::pbr_t::albedo, albedo);
+
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
+        }
+
         ImGui::EndTable();
       }
 
@@ -293,7 +344,11 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::roughness);
         float reghness = std::get<::component::UboData<float>>(ubo_var).m_data;
+        auto sample_reghness_var = component.get_uniform("sample_roughness");
+        bool sample_reghness = std::get<::component::UboData<bool>>(sample_reghness_var).m_data;
+        if (sample_reghness) ImGui::BeginDisabled();
         ImGui::DragFloat("##Roughness", &reghness, 0.01F, 0.F, 1.F, "%.2f");
+        if (sample_reghness) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::roughness, reghness);
         ImGui::EndTable();
       }
@@ -304,7 +359,11 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::metalness);
         float metalness = std::get<::component::UboData<float>>(ubo_var).m_data;
+        auto sample_metalness_var = component.get_uniform("sample_metalness");
+        bool sample_metalness = std::get<::component::UboData<bool>>(sample_metalness_var).m_data;
+        if (sample_metalness) ImGui::BeginDisabled();
         ImGui::DragFloat("##Metalness", &metalness, 0.01F, 0.F, 1.F, "%.2f");
+        if (sample_metalness) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::metalness, metalness);
         ImGui::EndTable();
       }
@@ -315,7 +374,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::specular);
         float specular = std::get<::component::UboData<float>>(ubo_var).m_data;
-        ImGui::DragFloat("##Specular", &specular, 0.01F, 0.F, 1.F,  "%.2f");
+        ImGui::DragFloat("##Specular", &specular, 0.01F, 0.F, 1.F, "%.2f");
         component.bind_uniform(Material::pbr_u::specular, specular);
         ImGui::EndTable();
       }
@@ -326,13 +385,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::ao);
         float ao = std::get<::component::UboData<float>>(ubo_var).m_data;
-        ImGui::DragFloat("##Ao", &ao, 0.01F, 0.F, 1.F,  "%.2f");
+        auto sample_ao_var = component.get_uniform("sample_ao");
+        bool sample_ao = std::get<::component::UboData<bool>>(sample_ao_var).m_data;
+        if (sample_ao) ImGui::BeginDisabled();
+        ImGui::DragFloat("##Ao", &ao, 0.01F, 0.F, 1.F, "%.2f");
+        if (sample_ao) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::ao, ao);
         ImGui::EndTable();
       }
     }
   });
-
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {

@@ -27,7 +27,7 @@ public:
   static void Begin();
   static void End();
   static void Clean();
-  static std::optional<std::filesystem::path> DrawFileBrower(bool& open, const char* filters);
+  static std::optional<std::filesystem::path> DrawFileBrower(const std::string& key, bool& open, const char* filters);
   static std::optional<std::filesystem::path> DrawDirBrower(bool& open);
   static ImFont* config_font;
   static ImFont* main_font;

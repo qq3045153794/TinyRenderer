@@ -121,7 +121,8 @@ class Material {
   }
 
   ubo_variant get_uniform(pbr_u pbr);
-  ubo_variant get_uniform(pbr_t pbr);
+  ubo_variant get_uniform(const std::string& key);
+  std::shared_ptr<::asset::Texture> get_texture(pbr_t pbr);
  public:
   ShadingModel m_shading_model{ShadingModel::COSTEM};
  private:

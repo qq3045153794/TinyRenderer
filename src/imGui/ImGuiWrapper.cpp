@@ -195,12 +195,13 @@ void ImGuiWrapper::Clean() {
   ImGui::DestroyContext();
 }
 
-std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(bool& open, const char* filters) {
+std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(const std::string& key, bool& open, const char* filters) {
   std::optional<std::filesystem::path> ret_path;
   if (open) {
-    ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", filters, ".");
+    ImGuiFileDialog::Instance()->OpenDialog(key.c_str(), "Choose File", filters, ".");
   }
-  if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey")) {
+  // "ChooseFileDlgKey"
+  if (ImGuiFileDialog::Instance()->Display(key.c_str())) {
     // action if OK
     if (ImGuiFileDialog::Instance()->IsOk()) {
       std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();

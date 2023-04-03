@@ -47,11 +47,13 @@ void Scene::Awake() {
     system->Awake();
   }
 }
+
 void Scene::OnUpdateRuntime() {
   for (auto& system : m_systems) {
     system->OnUpdateRuntime();
   }
 }
+
 void Scene::OnEditorRumtime(::scene::Entity& editor_camera) {
   for (auto& system : m_systems) {
     system->OnEditorRumtime(editor_camera);

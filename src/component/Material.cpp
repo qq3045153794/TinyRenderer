@@ -120,11 +120,17 @@ Material::ubo_variant Material::get_uniform(pbr_u id) {
   return m_uniforms_cache[uniform_key];
 }
 
-Material::ubo_variant Material::get_uniform(pbr_t id) {
 
-  std::string texture_key = texture_dictionary[(uint16_t)id];
-  CORE_ASERT(m_uniforms_cache.count(texture_key) > 0, "No find uniform (id = {})", (uint16_t)id);
-  return m_uniforms_cache[texture_key];
+Material::ubo_variant Material::get_uniform(const std::string& key) {
+  CORE_ASERT(m_uniforms_cache.count(key) > 0, "No find uniform (key = {})", key);
+  return m_uniforms_cache[key];
+}
+
+
+std::shared_ptr<::asset::Texture> Material::get_texture(pbr_t pbr) {
+  auto texture_key = static_cast<GLuint>(pbr);
+  CORE_ASERT(m_textures.count(static_cast<GLuint>(pbr)) > 0, "No find Textures (key = {})", texture_key);
+  return m_textures[texture_key];
 }
 
 void Material::bind() const {
