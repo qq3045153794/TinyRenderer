@@ -150,8 +150,6 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
   }
   ImGui::End();
 
-  // ImGui::SetNextWindowPos(ImVec2{1024, 318});
-  // ImGui::SetNextWindowSize(ImVec2{576, 288});
   ImGui::Begin("Entity Property");
   if (m_select_entity.id != entt::null) {
     ImGui::PushFont(ImGuiWrapper::config_font);
@@ -270,9 +268,49 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   // ImGui::SameLine();
 
-  draw_component<::component::Material>("Material", entity, [this](::component::Material& component) {
+  draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
     auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
+
+    auto PbrTextureCombo= [& textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item, auto& component, const Entity& entity, bool is_samle)->void {
+
+        //static std::optional<std::string> current_item;
+        //static Entity last_entity;
+        //if (last_entity.id != entity.id) {
+          //current_item.reset();
+        //}
+        //last_entity = entity;
+        std::vector<std::filesystem::path> items;
+        items.push_back("None");
+        if (is_samle) {
+          if (!current_item) {
+            auto texture = component.get_texture(pbr);
+            current_item = texture->m_image_path->string();
+            CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
+                       texture->m_image_path->string());
+          }
+        }
+
+        if (!current_item) {
+          current_item = "None";
+        }
+
+
+        for (const auto& [path, texture] : textures_cache) {
+          items.push_back(path);
+        }
+
+        ImGuiWrapper::DrawCombo(combo_key, items, current_item,
+                                [&component, &textures_cache, &pbr](const auto& item) {
+                                  if (item == "None") {
+                                    component.set_uniform(100U, false);
+                                  } else {
+                                    auto texture = textures_cache[item];
+                                    component.bind_texture(pbr, texture);
+                                  }
+                                });
+    };
+
     if (component.m_shading_model == Material::ShadingModel::PBR) {
       if (ImGui::Text("Albedo"); true) {
         ImGui::BeginTable("##Albedo", 2);
@@ -290,54 +328,21 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
         component.bind_uniform(Material::pbr_u::albedo, albedo);
 
-        ImGui::TableSetColumnIndex(1);
-        std::vector<std::filesystem::path> albedo_items;
+
         static std::optional<std::string> current_item;
         static Entity last_entity;
-        if (last_entity.id != m_select_entity.id) {current_item.reset();}
-        last_entity = m_select_entity;
-        albedo_items.push_back("None");
-        if (sample_albedo) {
-          auto albedo = component.get_texture(Material::pbr_t::albedo);
-          if(!current_item){ current_item = albedo->m_image_path->string();}
-          CORE_ASERT(textures_cache.count(*albedo->m_image_path) > 0, "No import the Texture (path = {})",
-                     albedo->m_image_path->string());
+        if (last_entity.id != entity.id) {
+          current_item.reset();
         }
+        last_entity = entity;
 
-        if (!current_item) CORE_DEBUG("current_item is NULL");
-        if (!current_item) {current_item = "None";}
-
-        for (const auto& [path, texture] : textures_cache) {
-          albedo_items.push_back(path);
-        }
-
-        if (ImGui::BeginCombo("##Albedo", current_item->c_str())) {
-          for (const auto& item : albedo_items) {
-            bool is_selected = (current_item == item.string());
-            if (ImGui::Selectable(item.c_str(), is_selected)) {
-              current_item = item.string();
-              CORE_DEBUG("click {}", item.string());
-              if (item == "None") {
-                component.set_uniform(100U, false);
-              } else {
-                auto albedo = textures_cache[item];
-                component.bind_texture(Material::pbr_t::albedo, albedo);
-              }
-            }
-
-            if (is_selected) {
-              ImGui::SetItemDefaultFocus();
-            }
-
-          }
-          ImGui::EndCombo();
-        }
-
+        ImGui::TableSetColumnIndex(1);
+        PbrTextureCombo("##Albedo", Material::pbr_t::albedo, current_item, component, entity, sample_albedo);
         ImGui::EndTable();
       }
 
       if (ImGui::Text("Roughness"); true) {
-        ImGui::BeginTable("##Roughness", 1);
+        ImGui::BeginTable("##Roughness", 2);
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::roughness);
@@ -348,11 +353,20 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::DragFloat("##Roughness", &reghness, 0.01F, 0.F, 1.F, "%.2f");
         if (sample_reghness) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::roughness, reghness);
+
+        ImGui::TableSetColumnIndex(1);
+        static std::optional<std::string> current_item;
+        static Entity last_entity;
+        if (last_entity.id != entity.id) {
+          current_item.reset();
+        }
+        last_entity = entity;
+        PbrTextureCombo("##RoughnessA", Material::pbr_t::roughness, current_item, component, entity, sample_reghness);
         ImGui::EndTable();
       }
 
       if (ImGui::Text("Metalness"); true) {
-        ImGui::BeginTable("##Metalness", 1);
+        ImGui::BeginTable("##Metalness", 2);
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::metalness);
@@ -363,6 +377,15 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::DragFloat("##Metalness", &metalness, 0.01F, 0.F, 1.F, "%.2f");
         if (sample_metalness) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::metalness, metalness);
+
+        ImGui::TableSetColumnIndex(1);
+        static std::optional<std::string> current_item;
+        static Entity last_entity;
+        if (last_entity.id != entity.id) {
+          current_item.reset();
+        }
+        last_entity = entity;
+        PbrTextureCombo("##MetalnessA", Material::pbr_t::metalness, current_item, component, entity, sample_metalness);
         ImGui::EndTable();
       }
 
@@ -372,13 +395,13 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::specular);
         float specular = std::get<::component::UboData<float>>(ubo_var).m_data;
-        ImGui::DragFloat("##Specular", &specular, 0.01F, 0.F, 1.F, "%.2f");
+        ImGui::DragFloat("##SpecularA", &specular, 0.01F, 0.F, 1.F, "%.2f");
         component.bind_uniform(Material::pbr_u::specular, specular);
         ImGui::EndTable();
       }
 
       if (ImGui::Text("AO"); true) {
-        ImGui::BeginTable("##Ao", 1);
+        ImGui::BeginTable("##Ao", 2);
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::ao);
@@ -389,6 +412,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::DragFloat("##Ao", &ao, 0.01F, 0.F, 1.F, "%.2f");
         if (sample_ao) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::ao, ao);
+
+
+        ImGui::TableSetColumnIndex(1);
+        static std::optional<std::string> current_item;
+        static Entity last_entity;
+        if (last_entity.id != entity.id) {
+          current_item.reset();
+        }
+        last_entity = entity;
+        PbrTextureCombo("##AO", Material::pbr_t::ao, current_item, component, entity, sample_ao);
         ImGui::EndTable();
       }
     }

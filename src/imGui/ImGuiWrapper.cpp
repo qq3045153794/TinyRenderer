@@ -195,7 +195,8 @@ void ImGuiWrapper::Clean() {
   ImGui::DestroyContext();
 }
 
-std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(const std::string& key, bool& open, const char* filters) {
+std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(const std::string& key, bool& open,
+                                                                  const char* filters) {
   std::optional<std::filesystem::path> ret_path;
   if (open) {
     ImGuiFileDialog::Instance()->OpenDialog(key.c_str(), "Choose File", filters, ".");
@@ -219,7 +220,6 @@ std::optional<std::filesystem::path> ImGuiWrapper::DrawFileBrower(const std::str
   return ret_path;
 }
 
-
 std::optional<std::filesystem::path> ImGuiWrapper::DrawDirBrower(bool& open) {
   std::optional<std::filesystem::path> ret_path;
   if (open) {
@@ -241,6 +241,24 @@ std::optional<std::filesystem::path> ImGuiWrapper::DrawDirBrower(bool& open) {
   }
 
   return ret_path;
+}
+
+void ImGuiWrapper::DrawCombo(const std::string& key, const std::vector<std::filesystem::path>& items,
+                             std::optional<std::string>& current_item, std::function<void(const std::filesystem::path&)> event) {
+  if (ImGui::BeginCombo(key.c_str(), current_item->c_str())) {
+    for (const auto& item : items) {
+      bool is_selected = (current_item == item.string());
+      if (ImGui::Selectable(item.c_str(), is_selected)) {
+        current_item = item.string();
+        event(item);
+      }
+
+      if (is_selected) {
+        ImGui::SetItemDefaultFocus();
+      }
+    }
+    ImGui::EndCombo();
+  }
 }
 
 }  // namespace saber

@@ -13,28 +13,39 @@ void AssetManage::Init() {
     if (!CheckPathExit()) {
       return throw std::runtime_error("The loaded file does not exist on disk (file = asset_path.yml)");
     }
+
+    for (const auto& path : m_resource_storage) {
+      BuildTexture(path, 7U, true);
+    }
+
   } else {
     CORE_WARN("Asset Path no exists");
   }
 }
 
 void AssetManage::Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) {
-  // TODO
 
   CORE_ASERT(!std::filesystem::is_directory(from_path), "From path is Dir!");
   CORE_ASERT(std::filesystem::is_directory(to_path), "From path is not Dir!");
 
-
   std::string expend_meta = to_path.string() + "/" + from_path.filename().string() + ".extend";
   std::filesystem::path import_name_path = to_path.string() + "/" + from_path.filename().string();
-  // 复制份到目标路径
+
+  // 已经导入过 skip
+  if (m_resource_register.count(import_name_path) > 0) {
+    return;
+  }
 
   CORE_DEBUG("from_path : {} to_path : {}", from_path.string(), to_path.string());
   if (!std::filesystem::equivalent(from_path.parent_path(), to_path)) {
     std::filesystem::copy(from_path, to_path, std::filesystem::copy_options::overwrite_existing);
   }
-  m_resource_storage.emplace_back(import_name_path);
-  m_resource_register[import_name_path] = std::filesystem::path(expend_meta);
+
+  // 判断重复
+  if (m_resource_register.count(import_name_path) <= 0) {
+    m_resource_storage.emplace_back(import_name_path);
+    m_resource_register[import_name_path] = std::filesystem::path(expend_meta);
+  }
 
   // 加载份扩展解释该文件
   // 包含 MD5
@@ -46,9 +57,6 @@ void AssetManage::Import(const std::filesystem::path& from_path, const std::file
   meta_out << YAML::EndMap;
   ::utils::File::write_yml_file(expend_meta, meta_out);
 
-
-  auto asset_path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
-
   BuildTexture(import_name_path, 7U, true);
   SaveConfig();
 }
@@ -57,7 +65,6 @@ void AssetManage::SaveConfig() {
   auto path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
   Serialize(path);
 }
-
 
 void AssetManage::BuildTexture(const std::filesystem::path& file_name_path, uint32_t level, bool is_filp) {
   CORE_INFO("Build texture...(path = {})", file_name_path.string());

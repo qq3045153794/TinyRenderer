@@ -5,12 +5,15 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+#include <ImGuiFileDialog.h>
+
+#include <filesystem>
+#include <optional>
+#include <vector>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <ImGuiFileDialog.h>
-#include <filesystem>
-#include <optional>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -22,16 +25,18 @@
 namespace saber {
 
 class ImGuiWrapper {
-public:
+ public:
   static void Init();
   static void Begin();
   static void End();
   static void Clean();
+  static void DrawCombo(const std::string& key, const std::vector<std::filesystem::path>&, std::optional<std::string>&,
+                        std::function<void(const std::filesystem::path&)>);
   static std::optional<std::filesystem::path> DrawFileBrower(const std::string& key, bool& open, const char* filters);
   static std::optional<std::filesystem::path> DrawDirBrower(bool& open);
   static ImFont* config_font;
   static ImFont* main_font;
 };
 
-}
+}  // namespace saber
 #endif
