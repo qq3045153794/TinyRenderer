@@ -106,7 +106,6 @@ class Material {
       m_shader->set_uniform(uniform_dictionary[uid].c_str(), val);
 
       m_uniforms_cache[uniform_dictionary[uid]] = UboData<T>(uniform_dictionary[uid], m_shader, val);
-      // m_ubo_datas.push_back(UboData<T>(uniform_dictionary[uid], m_shader, val));
     } else {
       CORE_ERROR("Can't find valid uniform (uid = {})", uid);
     }

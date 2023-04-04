@@ -21,8 +21,6 @@ void SceneHierarchyPanel::ResetScene(std::shared_ptr<::scene::Scene> scene) {
 }
 
 void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
-  // ImGui::SetNextWindowPos(ImVec2{1024, 30});
-  // ImGui::SetNextWindowSize(ImVec2{576, 288});
   ImGui::Begin("Entity Hierarchy");
   m_scene->registry.each([&](auto& entity_id) {
     Entity e{"temp", entity_id, &m_scene->registry};
@@ -251,7 +249,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       name = std::string(buffer);
     }
   }
-  // ImGui::SameLine();
+
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
     auto temp_position = component.get_position();
     draw_vec3_control("Position", temp_position, 0.F, 0.1F, 0.0F, 0.0F);
@@ -266,7 +264,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     component.set_scale(temp_scale);
   });
 
-  // ImGui::SameLine();
 
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
@@ -274,12 +271,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
     auto PbrTextureCombo= [& textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item, auto& component, const Entity& entity, bool is_samle)->void {
 
-        //static std::optional<std::string> current_item;
-        //static Entity last_entity;
-        //if (last_entity.id != entity.id) {
-          //current_item.reset();
-        //}
-        //last_entity = entity;
         std::vector<std::filesystem::path> items;
         items.push_back("None");
         if (is_samle) {
@@ -295,7 +286,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           current_item = "None";
         }
 
-
         for (const auto& [path, texture] : textures_cache) {
           items.push_back(path);
         }
@@ -303,7 +293,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGuiWrapper::DrawCombo(combo_key, items, current_item,
                                 [&component, &textures_cache, &pbr](const auto& item) {
                                   if (item == "None") {
-                                    component.set_uniform(100U, false);
+                                    // 由于是顺序的 可以通过计算来映射
+                                    component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
                                   } else {
                                     auto texture = textures_cache[item];
                                     component.bind_texture(pbr, texture);
@@ -328,15 +319,13 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
         component.bind_uniform(Material::pbr_u::albedo, albedo);
 
-
+        ImGui::TableSetColumnIndex(1);
         static std::optional<std::string> current_item;
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-
-        ImGui::TableSetColumnIndex(1);
         PbrTextureCombo("##Albedo", Material::pbr_t::albedo, current_item, component, entity, sample_albedo);
         ImGui::EndTable();
       }

@@ -310,8 +310,10 @@ vec3 EvalIBL(const Pixel px) {
     Fd = texture(irradiance_map, px.N).rgb * px.diffuse_color * KD * px.ao;
 
     const float MAX_REFLECTION_LOD = 4.0;
-    vec3 prefilteredColor = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;
-    vec2 envBRDF  = texture(brdf_LUT_map, vec2(max(NoV, 0.0), roughness)).rg;
+    // vec3 prefilteredColor = textureLod(prefilter_map, R,  roughness * MAX_REFLECTION_LOD).rgb;
+    // vec2 envBRDF  = texture(brdf_LUT_map, vec2(max(NoV, 0.0), roughness)).rg;
+    vec3 prefilteredColor = textureLod(prefilter_map, R,  px.alpha * MAX_REFLECTION_LOD).rgb;
+    vec2 envBRDF  = texture(brdf_LUT_map, vec2(max(NoV, 0.0), px.alpha)).rg;
     Fr = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
     Lo = Fd + Fr;
