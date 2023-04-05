@@ -264,42 +264,71 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     component.set_scale(temp_scale);
   });
 
-
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
     auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
 
-    auto PbrTextureCombo= [& textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item, auto& component, const Entity& entity, bool is_samle)->void {
-
-        std::vector<std::filesystem::path> items;
-        items.push_back("None");
-        if (is_samle) {
-          if (!current_item) {
-            auto texture = component.get_texture(pbr);
-            current_item = texture->m_image_path->string();
-            CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
-                       texture->m_image_path->string());
-          }
-        }
-
+    auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
+                                             auto& component, const Entity& entity, bool is_samle) -> void {
+      std::vector<std::filesystem::path> items;
+      items.push_back("None");
+      if (is_samle) {
         if (!current_item) {
-          current_item = "None";
+          auto texture = component.get_texture(pbr);
+          current_item = texture->m_image_path->string();
+          CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
+                     texture->m_image_path->string());
         }
+      }
 
-        for (const auto& [path, texture] : textures_cache) {
-          items.push_back(path);
+      if (!current_item) {
+        current_item = "None";
+      }
+
+      for (const auto& [path, texture] : textures_cache) {
+        items.push_back(path);
+      }
+
+      ImGuiWrapper::DrawCombo(combo_key, items, current_item, [&component, &textures_cache, &pbr](const auto& item) {
+        if (item == "None") {
+          // 由于是顺序的 可以通过计算来映射
+          component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
+        } else {
+          auto texture = textures_cache[item];
+          component.bind_texture(pbr, texture);
         }
+      });
+    };
 
-        ImGuiWrapper::DrawCombo(combo_key, items, current_item,
-                                [&component, &textures_cache, &pbr](const auto& item) {
-                                  if (item == "None") {
-                                    // 由于是顺序的 可以通过计算来映射
-                                    component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
-                                  } else {
-                                    auto texture = textures_cache[item];
-                                    component.bind_texture(pbr, texture);
-                                  }
-                                });
+    auto TextureCombo = [&textures_cache](const std::string& combo_key, auto& current_item, auto& component,
+                                          const Entity& entity) -> void {
+      std::vector<std::filesystem::path> items;
+      items.push_back("DEFAULT");
+      if (!current_item) {
+        auto texture = component.get_texture(0U);
+        current_item = texture->m_image_path->string();
+        // CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
+        //           texture->m_image_path->string());
+      }
+
+      auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+      if (current_item == default_texture->m_image_path->string()) current_item = "DEFAULT";
+
+      for (const auto& [path, texture] : textures_cache) {
+        items.push_back(path);
+      }
+
+      ImGuiWrapper::DrawCombo(combo_key, items, current_item, [&component, &textures_cache](const auto& item) {
+        if (item == "DEFAULT") {
+          // 由于是顺序的 可以通过计算来映射
+          // component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
+          auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+          component.set_texture(0, default_texture);
+        } else {
+          auto texture = textures_cache[item];
+          component.set_texture(0, texture);
+        }
+      });
     };
 
     if (component.m_shading_model == Material::ShadingModel::PBR) {
@@ -326,7 +355,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##Albedo", Material::pbr_t::albedo, current_item, component, entity, sample_albedo);
+        PbrTextureCombo("##AlbedoCombo", Material::pbr_t::albedo, current_item, component, entity, sample_albedo);
         ImGui::EndTable();
       }
 
@@ -350,7 +379,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##RoughnessA", Material::pbr_t::roughness, current_item, component, entity, sample_reghness);
+        PbrTextureCombo("##RoughnessCombo", Material::pbr_t::roughness, current_item, component, entity,
+                        sample_reghness);
         ImGui::EndTable();
       }
 
@@ -374,7 +404,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##MetalnessA", Material::pbr_t::metalness, current_item, component, entity, sample_metalness);
+        PbrTextureCombo("##MetalnessCombo", Material::pbr_t::metalness, current_item, component, entity,
+                        sample_metalness);
         ImGui::EndTable();
       }
 
@@ -384,7 +415,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::TableSetColumnIndex(0);
         auto ubo_var = component.get_uniform(Material::pbr_u::specular);
         float specular = std::get<::component::UboData<float>>(ubo_var).m_data;
-        ImGui::DragFloat("##SpecularA", &specular, 0.01F, 0.F, 1.F, "%.2f");
+        ImGui::DragFloat("##SpecularCombo", &specular, 0.01F, 0.F, 1.F, "%.2f");
         component.bind_uniform(Material::pbr_u::specular, specular);
         ImGui::EndTable();
       }
@@ -402,7 +433,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         if (sample_ao) ImGui::EndDisabled();
         component.bind_uniform(Material::pbr_u::ao, ao);
 
-
         ImGui::TableSetColumnIndex(1);
         static std::optional<std::string> current_item;
         static Entity last_entity;
@@ -410,9 +440,41 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##AO", Material::pbr_t::ao, current_item, component, entity, sample_ao);
+        PbrTextureCombo("##AoCombo", Material::pbr_t::ao, current_item, component, entity, sample_ao);
         ImGui::EndTable();
       }
+
+
+      if (ImGui::Text("Normal"); true) {
+        ImGui::BeginTable("##NorTable", 1);
+        ImGui::TableNextRow();
+        auto sample_normal_var = component.get_uniform("sample_normal");
+        bool sample_normal = std::get<::component::UboData<bool>>(sample_normal_var).m_data;
+
+        ImGui::TableSetColumnIndex(0);
+        static std::optional<std::string> current_item;
+        static Entity last_entity;
+        if (last_entity.id != entity.id) {
+          current_item.reset();
+        }
+        last_entity = entity;
+        PbrTextureCombo("##NormalCombo", Material::pbr_t::normal, current_item, component, entity, sample_normal);
+        ImGui::EndTable();
+      }
+    }
+
+    if (component.m_shading_model == Material::ShadingModel::DEFAULT) {
+      ImGui::BeginTable("##Texture", 1);
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      static std::optional<std::string> current_item;
+      static Entity last_entity;
+      if (last_entity.id != entity.id) {
+        current_item.reset();
+      }
+      last_entity = entity;
+      TextureCombo("##TexutreCombo", current_item, component, entity);
+      ImGui::EndTable();
     }
   });
 }

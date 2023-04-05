@@ -73,7 +73,7 @@ Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_mod
     set_uniform(2U, 1.0f);
     set_uniform(3U, 1.0f);
     set_uniform(4U, 0.5f);
-  } else {
+  } else if (shadering_model == ShadingModel::DEFAULT) {
   }
 }
 
@@ -131,6 +131,13 @@ std::shared_ptr<::asset::Texture> Material::get_texture(pbr_t pbr) {
   auto texture_key = static_cast<GLuint>(pbr);
   CORE_ASERT(m_textures.count(static_cast<GLuint>(pbr)) > 0, "No find Textures (key = {})", texture_key);
   return m_textures[texture_key];
+}
+
+
+std::shared_ptr<::asset::Texture> Material::get_texture(GLuint uid) {
+
+  CORE_ASERT(m_textures.count(static_cast<GLuint>(uid)) > 0, "No find Textures (key = {})", uid);
+  return m_textures[uid];
 }
 
 void Material::bind() const {
