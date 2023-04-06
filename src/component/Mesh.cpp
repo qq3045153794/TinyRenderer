@@ -31,7 +31,37 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indic
   material_id = m_vao->get_id();
 }
 
-Mesh::~Mesh() {}
+
+std::string Mesh::get_primitive_strings() {
+  switch(m_obj) {
+    case QUAD: return "QUAD";
+    case CUBE: return "CUBE";
+    case SPHERE: return "SPHERE";
+    case NONE: return "None";
+    default: {
+      CORE_WARN("MESH primitive INVAILD");
+    }
+  }
+  CORE_ASERT(0, "Unexpected..");
+  return "NONE";
+}
+
+Mesh::primitive Mesh::cast_primitive(const std::string& primitive) {
+  if (primitive == "QUAD") return QUAD;
+  else if (primitive == "CUBE") return CUBE;
+  else if (primitive == "SPHERE") return SPHERE;
+  else if (primitive == "NONE") return NONE;
+  else {
+    std::runtime_error("Invalid primitive");
+  }
+  CORE_ASERT(0, "Unexpected..");
+  return NONE;
+}
+
+
+Mesh::~Mesh() {
+  CORE_INFO("~Mesh");
+}
 
 void Mesh::create_quat() {
   // clang-format off

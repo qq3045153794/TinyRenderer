@@ -19,8 +19,14 @@ using Entity = ::scene::Entity;
 EnvironmentSystem::EnvironmentSystem(scene::Scene* scene) : System(scene) {}
 
 void EnvironmentSystem::Awake() {
+
+  CORE_INFO("Build IBL...");
   SetIBL();
+  CORE_INFO("Complete IBL...");
+
+  CORE_INFO("Build UBO...");
   SetUBO();
+  CORE_INFO("Complete UBO...");
 }
 
 void EnvironmentSystem::OnUpdateRuntime() {

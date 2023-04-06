@@ -10,7 +10,7 @@ namespace component {
 
 class Mesh {
  public:
-  enum primitive { QUAD, CUBE, SPHERE };
+  enum primitive { QUAD = 0, CUBE = 1, SPHERE = 2, NONE = 3 };
 
   struct Vertex {
     glm::vec3 position;
@@ -30,8 +30,10 @@ class Mesh {
   void draw() const;
 
   void set_material_id(GLuint mid) const;
+  std::string get_primitive_strings();
+  static primitive cast_primitive(const std::string& primitive);
 
-  primitive m_obj;
+  primitive m_obj{NONE};
   mutable GLuint material_id;
 
  private:

@@ -392,8 +392,6 @@ void EditorLayer::SaveScene(bool& file_open, bool& name_open) {
       ImGui::OpenPopup("Save Scene");
       if (ImGui::BeginPopupModal("Save Scene", &name_open)) {
         ImGui::Text("Save Scene Name");
-        // std::array<char, 255> scene_name;
-        // scene_name.fill(0);
         static std::string scene_name_string = "Unnamed";
         char scene_name[256];
         memset(scene_name, 0, sizeof name_open);

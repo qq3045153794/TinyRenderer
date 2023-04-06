@@ -1,13 +1,17 @@
 #include "asset/VAO.h"
 
 #include <iostream>
+#include <core/Log.h>
 namespace asset {
 
 GLuint static g_cur_bound_vao = 0;
 
 VAO::VAO() : m_count(0) { glGenVertexArrays(1, &m_id); }
 
-VAO::~VAO() { glDeleteBuffers(1, &m_id); }
+VAO::~VAO() { 
+  glDeleteBuffers(1, &m_id); 
+  CORE_DEBUG("~VAO (id = {})", m_id);
+}
 
 void VAO::set_vbo(const VBO& vbo, GLuint index, GLuint sz, GLuint stride,
                   GLuint offset, GLenum type) {

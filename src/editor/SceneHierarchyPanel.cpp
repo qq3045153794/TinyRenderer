@@ -307,8 +307,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       if (!current_item) {
         auto texture = component.get_texture(0U);
         current_item = texture->m_image_path->string();
-        // CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
-        //           texture->m_image_path->string());
       }
 
       auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
@@ -477,6 +475,30 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::EndTable();
     }
   });
+
+  draw_component<component::Mesh>("Mesh", entity, [&entity](component::Mesh& component) {
+      ImGui::BeginTable("##NorTable", 1);
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      std::array<std::string, 3U> items = {"QUAD", "CUBE", "SPHERE"};
+      std::string current_item = component.get_primitive_strings();
+      if (ImGui::BeginCombo("MeshComb", current_item.c_str())) {
+        for (const auto& item : items) {
+          bool is_selected = (current_item == item);
+          if (ImGui::Selectable(item.c_str(), is_selected)) {
+            auto primitive = ::component::Mesh::cast_primitive(item);
+            entity.SetComponent<::component::Mesh>(primitive);
+          }
+
+          if (is_selected) {
+            ImGui::SetItemDefaultFocus();
+          }
+        }
+        ImGui::EndCombo();
+      }
+      ImGui::EndTable();
+  });
+
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {

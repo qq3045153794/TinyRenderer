@@ -31,7 +31,16 @@ class Camera {
   void set_position(const glm::vec3& position) { T->translate(position); }
 
   void set_eular(const glm::vec3& eular) { T->set_ealar_YZX(eular); };
-
+/*
+  void set_fov(float fov);
+  void set_aspect(float aspect);
+  void set_z_near();
+  void set_z_far();
+  float get_fov() const;
+  float get_aspect() const;
+  float set_z_near() const ;
+  float set_z_far() const;
+*/
   Transform* T;
 
   enum CameraProjection { PERSPECTIVE, ORTHOGRAPHIC };

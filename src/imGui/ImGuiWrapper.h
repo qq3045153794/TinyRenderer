@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <optional>
 #include <vector>
+#include <array>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
