@@ -510,7 +510,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::Text("FOV");
       ImGui::DragFloat("##FovDrag", &component.Fov(), 1.F, 10.F, 150.F, "%.0f");
     } else if (component.get_projection_string() == "ORTHOGRAPHIC") {
-
       ImGui::Text("Left");
       ImGui::DragFloat("##LeftDrag", &component.Left(), 0.1F, -10.F, 10.F, "%.2f");
       ImGui::Text("Right");
@@ -554,6 +553,40 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::EndCombo();
     }
   });
+
+  draw_component<component::PointLight>("Point Light", entity, [](component::PointLight& component) {
+      ImGui::Text("Color");
+      float f_color[3];
+      for (int i = 0; i < 3; i++) {
+        f_color[i] = component.m_color[i];
+      }
+      ImGui::ColorEdit3("##Point Color", f_color);
+      for (int i = 0; i < 3; i++) {
+        component.m_color[i] = f_color[i];
+      }
+      ImGui::Text("Intensity");
+      ImGui::DragFloat("##IntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
+      ImGui::Text("Linear");
+      ImGui::DragFloat("##LinearDrag", &component.m_linear, 0.02F, 0.F, 2.F, "%.2f");
+      ImGui::Text("Quadratic");
+      ImGui::DragFloat("##QuadraticDrag", &component.m_quadratic, 0.02F, 0.F, 2.F, "%.2f");
+  });
+
+
+  draw_component<component::DirectionLight>("Direction Light", entity, [](component::DirectionLight& component) {
+      ImGui::Text("Color");
+      float f_color[3];
+      for (int i = 0; i < 3; i++) {
+        f_color[i] = component.m_color[i];
+      }
+      ImGui::ColorEdit3("##Direction Color", f_color);
+      for (int i = 0; i < 3; i++) {
+        component.m_color[i] = f_color[i];
+      }
+      ImGui::Text("Intensity");
+      ImGui::DragFloat("##DirectionIntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
+  });
+
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
