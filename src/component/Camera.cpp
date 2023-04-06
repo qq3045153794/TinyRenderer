@@ -55,6 +55,36 @@ float& Camera::Zfar() {
   return m_zfar;
 }
 
+
+float& Camera::Left() {
+  return m_left;
+}
+
+float& Camera::Right() {
+  return m_right;
+}
+float& Camera::Top() {
+
+  return m_top;
+}
+
+float& Camera::Bottom() {
+  return m_bottom;
+}
+
+
+std::string Camera::get_projection_string() {
+  switch(m_camera_projection) {
+    case PERSPECTIVE : return "PERSPECTIVE";
+    case ORTHOGRAPHIC : return "ORTHOGRAPHIC";
+    default: {
+      CORE_ERROR("Invaild projection");
+    }
+  }
+
+  std::runtime_error("Unexpection");
+}
+
 glm::mat4 Camera::get_projection_mat() const {
   if (m_camera_projection == PERSPECTIVE) {
     return glm::perspective(glm::radians(m_fov), m_aspect, m_znear, m_zfar);

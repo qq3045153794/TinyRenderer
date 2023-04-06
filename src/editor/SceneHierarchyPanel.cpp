@@ -1,3 +1,4 @@
+#include <core/Window.h>
 #include <editor/SceneHierarchyPanel.h>
 #include <imGui/ImGuiWrapper.h>
 #include <library/ShaderLibrary.h>
@@ -446,7 +447,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         ImGui::EndTable();
       }
 
-
       if (ImGui::Text("Normal"); true) {
         ImGui::BeginTable("##NorTable", 1);
         ImGui::TableNextRow();
@@ -481,55 +481,96 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   });
 
   draw_component<component::Mesh>("Mesh", entity, [&entity](component::Mesh& component) {
-      ImGui::BeginTable("##NorTable", 1);
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      std::array<std::string, 3U> items = {"QUAD", "CUBE", "SPHERE"};
-      std::string current_item = component.get_primitive_strings();
-      if (ImGui::BeginCombo("##MeshComb", current_item.c_str())) {
-        for (const auto& item : items) {
-          bool is_selected = (current_item == item);
-          if (ImGui::Selectable(item.c_str(), is_selected)) {
-            auto primitive = ::component::Mesh::cast_primitive(item);
-            entity.SetComponent<::component::Mesh>(primitive);
-          }
-
-          if (is_selected) {
-            ImGui::SetItemDefaultFocus();
-          }
+    ImGui::BeginTable("##NorTable", 1);
+    ImGui::TableNextRow();
+    ImGui::TableSetColumnIndex(0);
+    std::array<std::string, 3U> items = {"QUAD", "CUBE", "SPHERE"};
+    std::string current_item = component.get_primitive_strings();
+    if (ImGui::BeginCombo("##MeshComb", current_item.c_str())) {
+      for (const auto& item : items) {
+        bool is_selected = (current_item == item);
+        if (ImGui::Selectable(item.c_str(), is_selected)) {
+          auto primitive = ::component::Mesh::cast_primitive(item);
+          entity.SetComponent<::component::Mesh>(primitive);
         }
-        ImGui::EndCombo();
+
+        if (is_selected) {
+          ImGui::SetItemDefaultFocus();
+        }
       }
-      ImGui::EndTable();
+      ImGui::EndCombo();
+    }
+    ImGui::EndTable();
   });
 
-
-  draw_component<component::CameraFps>("CameraFps", entity, [](component::CameraFps& component) {
-      ImGui::BeginTable("##NorTable", 1);
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
+  draw_component<component::CameraFps>("CameraFps", entity, [&entity](component::CameraFps& component) {
+    if (component.get_projection_string() == "PERSPECTIVE") {
       ImGui::Text("Aspect");
       ImGui::DragFloat("##AspectDrag", &component.Aspect(), 0.01F, 0.1F, 10.F, "%.2f");
       ImGui::Text("FOV");
       ImGui::DragFloat("##FovDrag", &component.Fov(), 1.F, 10.F, 150.F, "%.0f");
-      ImGui::EndTable();
-  });
+    } else if (component.get_projection_string() == "ORTHOGRAPHIC") {
 
+      ImGui::Text("Left");
+      ImGui::DragFloat("##LeftDrag", &component.Left(), 0.1F, -10.F, 10.F, "%.2f");
+      ImGui::Text("Right");
+      ImGui::DragFloat("##RightDrag", &component.Right(), 0.1F, -10.0F, 10.F, "%.2f");
+      ImGui::Text("Bottom");
+      ImGui::DragFloat("##BottomDrag", &component.Bottom(), 0.1F, -10.F, 10.F, "%.2f");
+      ImGui::Text("Top");
+      ImGui::DragFloat("##TopDrag", &component.Top(), 0.1F, -10.F, 10.F, "%.2f");
+    }
+
+    ImGui::Text("zNear");
+    ImGui::DragFloat("##zNearDrag", &component.Znear(), 1.F, 0.1F, 100.F, "%.0f");
+    ImGui::Text("FZFar");
+    ImGui::DragFloat("##zFarFovDrag", &component.Zfar(), 1.F, 0.1F, 100.F, "%.0f");
+
+    ImGui::Text("Projection");
+    std::array<std::string, 2U> items = {"PERSPECTIVE", "ORTHOGRAPHIC"};
+    std::string current_item = component.get_projection_string();
+    if (ImGui::BeginCombo("##ProjectionComb", current_item.c_str())) {
+      for (const auto& item : items) {
+        bool is_selected = (current_item == item);
+        if (ImGui::Selectable(item.c_str(), is_selected)) {
+          auto& transform = entity.GetComponent<::component::Transform>();
+          float camera_width = static_cast<float>(core::Window::m_width);
+          float camera_height = static_cast<float>(core::Window::m_height);
+          float default_znear = 0.1F;
+          float default_zfar = 100.F;
+          if (item == "PERSPECTIVE") {
+            float default_fov = 60.F;
+            entity.SetComponent<::component::CameraFps>(&transform, default_fov, camera_width / camera_height,
+                                                        default_znear, default_zfar);
+          } else if (item == "ORTHOGRAPHIC") {
+            entity.SetComponent<::component::CameraFps>(&transform, -1.F, 1.F, -1.F, 1.F, default_znear, default_zfar);
+          }
+        }
+
+        if (is_selected) {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+  });
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   std::string local_name = entity.GetComponent<component::Tag>().m_name;
   ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
   // 由于editor camera的entity_id 会和 scene里的entity冲突
-  if (m_select_entity.id == entity.id && m_select_entity.name != "editor camera") {
+  if (m_select_entity.id == entity.id && m_select_entity.name != "editor camera" && entity.name != "editor camera") {
     flags |= ImGuiTreeNodeFlags_Selected;
   } else if (entity.name == m_select_entity.name && m_select_entity.name == "editor camera") {
     flags |= ImGuiTreeNodeFlags_Selected;
   }
   void* uid = (void*)(uint64_t)(uint32_t)entity.id;
   bool opened;
-  if (entity.name != "editor camera") opened = ImGui::TreeNodeEx(uid, flags, "");
-  else opened = ImGui::TreeNodeEx("##Editor Camera", flags);
+  if (entity.name != "editor camera")
+    opened = ImGui::TreeNodeEx(uid, flags, "");
+  else
+    opened = ImGui::TreeNodeEx("##Editor Camera", flags);
 
   if (ImGui::IsItemClicked()) {
     m_select_entity = entity;

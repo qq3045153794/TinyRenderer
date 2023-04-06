@@ -20,6 +20,7 @@ namespace component {
 class Camera {
  public:
   friend ::scene::SerializeObject;
+  enum CameraProjection { PERSPECTIVE, ORTHOGRAPHIC };
   Camera(Transform* T, float fov, float aspect, float znear, float zfar);
   Camera(Transform* T, float left, float right, float bottom, float top, float znear, float zfar);
   virtual ~Camera(){};
@@ -36,10 +37,14 @@ class Camera {
   float& Aspect();
   float& Znear();
   float& Zfar();
+  float& Left();
+  float& Right();
+  float& Top();
+  float& Bottom();
+  std::string get_projection_string();
 
   Transform* T;
 
-  enum CameraProjection { PERSPECTIVE, ORTHOGRAPHIC };
  protected:
 
   CameraProjection m_camera_projection;
