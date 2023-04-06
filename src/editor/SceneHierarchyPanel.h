@@ -11,7 +11,7 @@ class SceneHierarchyPanel {
   SceneHierarchyPanel() = default;
   SceneHierarchyPanel(std::shared_ptr<::scene::Scene>);
   ~SceneHierarchyPanel() = default;
-  void OnImGuiRender(bool* hierarchy_open);
+  void OnImGuiRender(bool* hierarchy_open, scene::Entity& editor_camera);
   void ResetScene(std::shared_ptr<::scene::Scene> scene);
 
  private:

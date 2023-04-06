@@ -38,6 +38,23 @@ Camera::Camera(Transform* t, float left, float right, float bottom, float top,
       m_zfar(zfar),
       m_camera_projection(ORTHOGRAPHIC) {}
 
+
+float& Camera::Fov() {
+  return m_fov;
+}
+
+float& Camera::Aspect() {
+  return m_aspect;
+}
+
+float& Camera::Znear() {
+  return m_znear;
+}
+
+float& Camera::Zfar() {
+  return m_zfar;
+}
+
 glm::mat4 Camera::get_projection_mat() const {
   if (m_camera_projection == PERSPECTIVE) {
     return glm::perspective(glm::radians(m_fov), m_aspect, m_znear, m_zfar);

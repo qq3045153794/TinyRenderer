@@ -20,12 +20,16 @@ void SceneHierarchyPanel::ResetScene(std::shared_ptr<::scene::Scene> scene) {
   m_select_entity = ::scene::Entity();
 }
 
-void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open) {
+void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& editor_camera) {
   ImGui::Begin("Entity Hierarchy");
   m_scene->registry.each([&](auto& entity_id) {
     Entity e{"temp", entity_id, &m_scene->registry};
     draw_entity_node(e);
   });
+
+  // editor camera生命周期不随着Scene
+  // 需要单独绘制editor camera
+  draw_entity_node(editor_camera);
 
   // 右键点击弹出窗口
   if (ImGui::BeginPopupContextWindow()) {
@@ -482,7 +486,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::TableSetColumnIndex(0);
       std::array<std::string, 3U> items = {"QUAD", "CUBE", "SPHERE"};
       std::string current_item = component.get_primitive_strings();
-      if (ImGui::BeginCombo("MeshComb", current_item.c_str())) {
+      if (ImGui::BeginCombo("##MeshComb", current_item.c_str())) {
         for (const auto& item : items) {
           bool is_selected = (current_item == item);
           if (ImGui::Selectable(item.c_str(), is_selected)) {
@@ -499,15 +503,34 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::EndTable();
   });
 
+
+  draw_component<component::CameraFps>("CameraFps", entity, [](component::CameraFps& component) {
+      ImGui::BeginTable("##NorTable", 1);
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::Text("Aspect");
+      ImGui::DragFloat("##AspectDrag", &component.Aspect(), 0.01F, 0.1F, 10.F, "%.2f");
+      ImGui::Text("FOV");
+      ImGui::DragFloat("##FovDrag", &component.Fov(), 1.F, 10.F, 150.F, "%.0f");
+      ImGui::EndTable();
+  });
+
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   std::string local_name = entity.GetComponent<component::Tag>().m_name;
   ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-  if (m_select_entity.id == entity.id) {
+  // 由于editor camera的entity_id 会和 scene里的entity冲突
+  if (m_select_entity.id == entity.id && m_select_entity.name != "editor camera") {
+    flags |= ImGuiTreeNodeFlags_Selected;
+  } else if (entity.name == m_select_entity.name && m_select_entity.name == "editor camera") {
     flags |= ImGuiTreeNodeFlags_Selected;
   }
-  bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity.id, flags, "");
+  void* uid = (void*)(uint64_t)(uint32_t)entity.id;
+  bool opened;
+  if (entity.name != "editor camera") opened = ImGui::TreeNodeEx(uid, flags, "");
+  else opened = ImGui::TreeNodeEx("##Editor Camera", flags);
+
   if (ImGui::IsItemClicked()) {
     m_select_entity = entity;
   }

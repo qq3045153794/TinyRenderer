@@ -296,7 +296,7 @@ void EditorLayer::OnImGuiRender() {
   }
 
   static bool hirerchy_panel_open = true;
-  m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open);
+  m_hierarchy_panel->OnImGuiRender(&hirerchy_panel_open, m_editor_camera);
 
   m_content_brower_panel->OnImGuiRender();
 
