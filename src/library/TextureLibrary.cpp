@@ -22,6 +22,7 @@ Library<asset::Texture>::Library() {
   Add("picture icon", std::make_shared<Texture>((icons_path / "picture_icon.png").c_str(), true, 7));
   Add("txt file icon", std::make_shared<Texture>((icons_path / "txt_file_icon.png").c_str(), true, 7));
   Add("rabbit icon", std::make_shared<Texture>((icons_path / "rabbit_icon.png").c_str(), true, 7));
+  Add("delete icon", std::make_shared<Texture>((icons_path / "icons8-delete-trash-96.png").c_str(), true, 7));
 }
 
 std::shared_ptr<Texture> Library<asset::Texture>::GetDefaultTexture() {
@@ -50,6 +51,10 @@ std::shared_ptr<asset::Texture> Library<asset::Texture>::GetTxtFileIcon() {
 
 std::shared_ptr<asset::Texture> Library<asset::Texture>::GetRabbitIcon() {
   return m_library["rabbit icon"];
+}
+
+std::shared_ptr<asset::Texture> Library<asset::Texture>::GetDeleteIcon() {
+  return m_library["delete icon"];
 }
 
 }  // namespace saber

@@ -16,6 +16,7 @@ class Library<asset::Texture> : public LibraryBase<Library, asset::Texture> {
   [[nodiscard]] std::shared_ptr<asset::Texture> GetPictureIcon();
   [[nodiscard]] std::shared_ptr<asset::Texture> GetTxtFileIcon();
   [[nodiscard]] std::shared_ptr<asset::Texture> GetRabbitIcon();
+  [[nodiscard]] std::shared_ptr<asset::Texture> GetDeleteIcon();
 };
 }  // namespace saber
 #endif

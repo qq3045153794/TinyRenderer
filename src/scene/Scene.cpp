@@ -36,6 +36,11 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
   return e;
 }
 
+
+void Scene::delete_entity(const entt::entity& id) {
+  registry.destroy(id);
+}
+
 void Scene::registry_shader(GLuint shader_id) { shader_id_set.insert(shader_id); }
 
 void Scene::exclude_entity(const entt::entity& id) { exclude_entitys.insert(id); }

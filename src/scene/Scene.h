@@ -35,6 +35,7 @@ class Scene {
   virtual ~Scene();
   Entity create_entity(const std::string& name,
                        component::ETag tag = component::ETag::Untagged);
+  void delete_entity(const entt::entity& id);
 
 
   void registry_shader(GLuint shader_id);

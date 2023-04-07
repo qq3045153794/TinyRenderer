@@ -31,8 +31,21 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
   // editor camera生命周期不随着Scene
   // 需要单独绘制editor camera
   draw_entity_node(editor_camera);
+  ImTextureID delete_icon =
+      (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDeleteIcon()->get_id();
+  if (m_select_entity.id != entt::null) {
+    ImVec2 icon_size = {24, 24};
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0, 0.0, 0.0, 0.0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0, 0.0, 0.0, 1.0));
+    if (ImGui::ImageButton("Delete", delete_icon, icon_size, {0, 1}, {1, 0})) {
+      m_scene->delete_entity(m_select_entity.id);
+      m_select_entity = Entity();
+    }
+    ImGui::PopStyleColor(2);
+  }
 
   // 右键点击弹出窗口
+
   if (ImGui::BeginPopupContextWindow()) {
     if (ImGui::BeginMenu("Create Render Entity")) {
       if (ImGui::MenuItem("Create Empty")) {
@@ -151,6 +164,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
 
     ImGui::EndPopup();
   }
+
   ImGui::End();
 
   ImGui::Begin("Entity Property");
@@ -555,38 +569,36 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   });
 
   draw_component<component::PointLight>("Point Light", entity, [](component::PointLight& component) {
-      ImGui::Text("Color");
-      float f_color[3];
-      for (int i = 0; i < 3; i++) {
-        f_color[i] = component.m_color[i];
-      }
-      ImGui::ColorEdit3("##Point Color", f_color);
-      for (int i = 0; i < 3; i++) {
-        component.m_color[i] = f_color[i];
-      }
-      ImGui::Text("Intensity");
-      ImGui::DragFloat("##IntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
-      ImGui::Text("Linear");
-      ImGui::DragFloat("##LinearDrag", &component.m_linear, 0.02F, 0.F, 2.F, "%.2f");
-      ImGui::Text("Quadratic");
-      ImGui::DragFloat("##QuadraticDrag", &component.m_quadratic, 0.02F, 0.F, 2.F, "%.2f");
+    ImGui::Text("Color");
+    float f_color[3];
+    for (int i = 0; i < 3; i++) {
+      f_color[i] = component.m_color[i];
+    }
+    ImGui::ColorEdit3("##Point Color", f_color);
+    for (int i = 0; i < 3; i++) {
+      component.m_color[i] = f_color[i];
+    }
+    ImGui::Text("Intensity");
+    ImGui::DragFloat("##IntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
+    ImGui::Text("Linear");
+    ImGui::DragFloat("##LinearDrag", &component.m_linear, 0.02F, 0.F, 2.F, "%.2f");
+    ImGui::Text("Quadratic");
+    ImGui::DragFloat("##QuadraticDrag", &component.m_quadratic, 0.02F, 0.F, 2.F, "%.2f");
   });
-
 
   draw_component<component::DirectionLight>("Direction Light", entity, [](component::DirectionLight& component) {
-      ImGui::Text("Color");
-      float f_color[3];
-      for (int i = 0; i < 3; i++) {
-        f_color[i] = component.m_color[i];
-      }
-      ImGui::ColorEdit3("##Direction Color", f_color);
-      for (int i = 0; i < 3; i++) {
-        component.m_color[i] = f_color[i];
-      }
-      ImGui::Text("Intensity");
-      ImGui::DragFloat("##DirectionIntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
+    ImGui::Text("Color");
+    float f_color[3];
+    for (int i = 0; i < 3; i++) {
+      f_color[i] = component.m_color[i];
+    }
+    ImGui::ColorEdit3("##Direction Color", f_color);
+    for (int i = 0; i < 3; i++) {
+      component.m_color[i] = f_color[i];
+    }
+    ImGui::Text("Intensity");
+    ImGui::DragFloat("##DirectionIntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
   });
-
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
@@ -600,10 +612,11 @@ void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {
   }
   void* uid = (void*)(uint64_t)(uint32_t)entity.id;
   bool opened;
-  if (entity.name != "editor camera")
+  if (entity.name != "editor camera") {
     opened = ImGui::TreeNodeEx(uid, flags, "");
-  else
+  } else {
     opened = ImGui::TreeNodeEx("##Editor Camera", flags);
+  }
 
   if (ImGui::IsItemClicked()) {
     m_select_entity = entity;
