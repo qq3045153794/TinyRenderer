@@ -61,6 +61,16 @@ void AssetManage::Import(const std::filesystem::path& from_path, const std::file
   SaveConfig();
 }
 
+void AssetManage::Remove(const std::filesystem::path& filename_path) {
+  CORE_ASERT(m_resource_register.count(filename_path) > 0, "No find filename (filename_path = {})", filename_path.string());
+  auto find_item = std::find(m_resource_storage.begin(), m_resource_storage.end(), filename_path);
+  CORE_ASERT(find_item != m_resource_storage.end(), "No find filename (filename_path = {})", filename_path.string());
+  m_resource_storage.erase(find_item);
+  m_resource_register.erase(filename_path);
+  DeleteTexture(filename_path);
+  SaveConfig();
+}
+
 void AssetManage::SaveConfig() {
   auto path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
   Serialize(path);
@@ -69,6 +79,12 @@ void AssetManage::SaveConfig() {
 void AssetManage::BuildTexture(const std::filesystem::path& file_name_path, uint32_t level, bool is_filp) {
   CORE_INFO("Build texture...(path = {})", file_name_path.string());
   textures_cache[file_name_path.string()] = std::make_shared<::asset::Texture>(file_name_path.c_str(), is_filp, level);
+}
+
+
+void AssetManage::DeleteTexture(const std::filesystem::path& file_name_path) {
+  CORE_ASERT(textures_cache.count(file_name_path) > 0, "No find Delete Texture...");
+  textures_cache.erase(file_name_path);
 }
 
 }  // namespace saber
