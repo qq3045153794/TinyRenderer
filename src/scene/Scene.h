@@ -11,15 +11,15 @@
 #ifndef _SRC_SCENE_SCENE_H_
 #define _SRC_SCENE_SCENE_H_
 
-#include <string>
 #include <set>
+#include <string>
 
 #include "asset/FBO.h"
 #include "component/Tag.hpp"
 #include "scene/Entity.hpp"
-#include "system/System.h"
 #include "system/EnvironmentSystem.h"
 #include "system/RenderSystem.h"
+#include "system/System.h"
 
 namespace scene {
 
@@ -28,23 +28,24 @@ class Scene {
 
   friend class ::saber::system::RenderSystem;
   friend class ::saber::system::EnvironmentSystem;
+
  public:
   std::string m_title;
   Scene();
   Scene(const std::string& title);
   virtual ~Scene();
-  Entity create_entity(const std::string& name,
-                       component::ETag tag = component::ETag::Untagged);
+  Entity create_entity(const std::string& name, component::ETag tag = component::ETag::Untagged);
   void delete_entity(const entt::entity& id);
-
 
   void registry_shader(GLuint shader_id);
   void exclude_entity(const entt::entity& id);
   bool is_exclude_entity(const entt::entity& id);
 
-  template <typename... Args>
-  void SubmitRender(Args&&... args) {
-    (render_queue.push_back(args), ...);
+  void SubmitRender(const entt::entity& args) {
+    if (std::find(render_queue.begin(), render_queue.end(), args) == render_queue.end()) {
+      CORE_DEBUG("push id : {}", (int)args);
+      render_queue.push_back(args);
+    }
   }
 
   virtual void Awake();
@@ -52,8 +53,8 @@ class Scene {
   virtual void OnEditorRumtime(::scene::Entity& editor_camera);
 
   entt::registry registry;
- protected:
 
+ protected:
   std::map<entt::entity, std::string> directory;
   std::set<entt::entity> exclude_entitys;
   std::vector<entt::entity> render_queue;

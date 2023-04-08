@@ -599,6 +599,57 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     ImGui::Text("Intensity");
     ImGui::DragFloat("##DirectionIntensityDrag", &component.m_intensity, 0.02F, 0.F, 2.F, "%.2f");
   });
+
+  ImGui::Separator();
+  ImGui::PushFont(ImGuiWrapper::main_font);
+  ImVec2 botton_text_size = ImGui::CalcTextSize("Add component");
+  float avail = ImGui::GetContentRegionAvail().x / 2 - botton_text_size.x / 2;
+  ImGui::SetCursorPosX(avail);
+  if (ImGui::Button("Add Component", {botton_text_size.x + 24, botton_text_size.y + 16})) {
+    ImGui::OpenPopup("Add Conponent up");
+  }
+
+  if (ImGui::BeginPopup("Add Conponent up")) {
+    if (ImGui::MenuItem("hello world")) {
+    }
+
+    if (!entity.Contains<::component::Material>()) {
+      if (ImGui::MenuItem("Add PBR Material")) {
+        entity.AddComponent<::component::Material>(::component::Material::ShadingModel::PBR);
+      }
+    }
+
+    if (!entity.Contains<::component::Material>()) {
+      if (ImGui::MenuItem("Add DEFAULT Material")) {
+        auto& component = entity.AddComponent<::component::Material>(::component::Material::ShadingModel::DEFAULT);
+        component.set_texture(0U, PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture());
+      }
+    }
+
+    if (!entity.Contains<::component::Mesh>()) {
+      if (ImGui::MenuItem("Add Mesh")) {
+
+        entity.AddComponent<::component::Mesh>(::component::Mesh::primitive::SPHERE);
+        m_scene->SubmitRender(entity.id);
+      }
+    }
+
+    if(!entity.Contains<::component::DirectionLight>()) {
+      if (ImGui::MenuItem("Add Direction Light")) {
+        entity.AddComponent<::component::DirectionLight>(glm::vec3(1.F, 1.F, 1.F), 1.F);
+      }
+    }
+
+    if(!entity.Contains<::component::PointLight>()) {
+      if (ImGui::MenuItem("Add Point Light")) {
+        auto& component = entity.AddComponent<::component::PointLight>(glm::vec3(1.F, 1.F, 1.F), 1.F);
+        component.set_attenuation(0.F, 0.F);
+      }
+    }
+    ImGui::EndPopup();
+  }
+
+  ImGui::PopFont();
 }
 
 void SceneHierarchyPanel::draw_entity_node(::scene::Entity& entity) {

@@ -38,6 +38,10 @@ Entity Scene::create_entity(const std::string& name, component::ETag tag) {
 
 
 void Scene::delete_entity(const entt::entity& id) {
+  auto find_item = std::find(render_queue.begin(), render_queue.end(), id);
+  if (find_item != render_queue.end()) {
+    render_queue.erase(find_item);
+  }
   registry.destroy(id);
 }
 
