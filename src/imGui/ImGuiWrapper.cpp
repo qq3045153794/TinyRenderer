@@ -9,6 +9,7 @@ static const char* glsl_version = "#version 330";
 // static ImFont* truetype_font;  // TrueType, Lato-Regular, 18pt (main font)
 ImFont* ImGuiWrapper::main_font;
 ImFont* ImGuiWrapper::config_font;
+ImFont* ImGuiWrapper::u8_font;
 void ImGuiWrapper::Init() {
   using Window = ::core::Window;
 
@@ -45,6 +46,17 @@ void ImGuiWrapper::Init() {
   config_cig.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
   config_cig.GlyphExtraSpacing.x = 0.0f;  // 字间距离
   config_font = io.Fonts->AddFontFromFileTTF(ttf_config.c_str(), font_config_sz, &config_cig);
+
+
+  std::string tff_u8 = PublicSingleton<ConfigManage>::GetInstance().fonts_path / "ZCOOL_KuaiLe/ZCOOLKuaiLe-Regular.ttf";
+  float font_u8_sz = 14.0f;
+  ImFontConfig config_u8;
+  config_u8.PixelSnapH = true;
+  config_u8.OversampleH = 4;
+  config_u8.OversampleV = 4;
+  config_u8.RasterizerMultiply = 1.2f;   // brighten up the font to make them more readable
+  config_u8.GlyphExtraSpacing.x = 0.0f;  // 字间距离
+  u8_font = io.Fonts->AddFontFromFileTTF(tff_u8.c_str(), font_u8_sz, &config_u8, io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
 
   // load default dark theme
   ImGui::StyleColorsLight();

@@ -283,6 +283,46 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     component.set_scale(temp_scale);
   });
 
+  draw_component<component::Model>("Model", entity, [](component::Model& component) {
+    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
+    std::vector<std::string> items;
+    items.push_back("DEFAULT");
+    auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+    for (const auto& [path, texture] : textures_cache) {
+      items.push_back(path);
+    }
+    ImGui::PushFont(ImGuiWrapper::u8_font);
+    for (auto& [mat_name, uid] : component.materials_cache) {
+      auto& mat = component.materials.at(uid);
+      if (mat.m_shading_model == ::component::Material::ShadingModel::DEFAULT) {
+        std::string current_item = mat.get_texture(0)->m_image_path->string();
+        if (current_item == default_texture->m_image_path->string()) {
+          current_item = "DEFAULT";
+        }
+        ImGui::Text("%s : ", mat_name.c_str());
+        if (ImGui::BeginCombo(("##" + mat_name).c_str(), current_item.c_str())) {
+          for (const auto& item : items) {
+            bool is_selected = (current_item == item);
+            if (ImGui::Selectable(item.c_str(), is_selected)) {
+              if (item == "DEFAULT") {
+                auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+                mat.set_texture(0, default_texture);
+              } else {
+                mat.set_texture(0, std::make_shared<::asset::Texture>(item.c_str(), false, 7U));
+              }
+            }
+
+            if (is_selected) {
+              ImGui::SetItemDefaultFocus();
+            }
+          }
+          ImGui::EndCombo();
+        }
+      }
+    }
+    ImGui::PopFont();
+  });
+
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
     auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
@@ -319,17 +359,14 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       });
     };
 
-    auto TextureCombo = [&textures_cache](const std::string& combo_key, auto& current_item, auto& component,
-                                          const Entity& entity) -> void {
+    auto TextureCombo = [&textures_cache](const std::string& combo_key, auto& component, const Entity& entity) -> void {
       std::vector<std::filesystem::path> items;
       items.push_back("DEFAULT");
-      if (!current_item) {
-        auto texture = component.get_texture(0U);
-        current_item = texture->m_image_path->string();
-      }
+      auto texture = component.get_texture(0U);
+      std::optional<std::string> current_item = texture->m_image_path->string();
 
       auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
-      if (current_item == default_texture->m_image_path->string()) current_item = "DEFAULT";
+      if (*current_item == default_texture->m_image_path->string()) current_item = "DEFAULT";
 
       for (const auto& [path, texture] : textures_cache) {
         items.push_back(path);
@@ -483,13 +520,13 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::BeginTable("##Texture", 1);
       ImGui::TableNextRow();
       ImGui::TableSetColumnIndex(0);
-      static std::optional<std::string> current_item;
-      static Entity last_entity;
-      if (last_entity.id != entity.id) {
-        current_item.reset();
-      }
-      last_entity = entity;
-      TextureCombo("##TexutreCombo", current_item, component, entity);
+      // static std::optional<std::string> current_item;
+      // static Entity last_entity;
+      // if (last_entity.id != entity.id) {
+      //   current_item.reset();
+      // }
+      // last_entity = entity;
+      TextureCombo("##TexutreCombo", component, entity);
       ImGui::EndTable();
     }
   });
@@ -628,19 +665,18 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
     if (!entity.Contains<::component::Mesh>()) {
       if (ImGui::MenuItem("Add Mesh")) {
-
         entity.AddComponent<::component::Mesh>(::component::Mesh::primitive::SPHERE);
         m_scene->SubmitRender(entity.id);
       }
     }
 
-    if(!entity.Contains<::component::DirectionLight>()) {
+    if (!entity.Contains<::component::DirectionLight>()) {
       if (ImGui::MenuItem("Add Direction Light")) {
         entity.AddComponent<::component::DirectionLight>(glm::vec3(1.F, 1.F, 1.F), 1.F);
       }
     }
 
-    if(!entity.Contains<::component::PointLight>()) {
+    if (!entity.Contains<::component::PointLight>()) {
       if (ImGui::MenuItem("Add Point Light")) {
         auto& component = entity.AddComponent<::component::PointLight>(glm::vec3(1.F, 1.F, 1.F), 1.F);
         component.set_attenuation(0.F, 0.F);

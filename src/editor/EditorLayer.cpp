@@ -214,6 +214,50 @@ void EditorLayer::OnAttach() {
       60.f, static_cast<float>(core::Window::m_width) / static_cast<float>(core::Window::m_height), 0.1f, 100.f);
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
 
+  auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
+
+  Entity paimon = scene->create_entity("paimon");
+  auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
+  paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
+  paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
+  paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
+  auto& paimon_model = paimon.GetComponent<Model>();
+  auto paimon_1 = std::make_shared<Material>(Material::ShadingModel::DEFAULT);
+  for(auto& [texture_name, uid] : paimon_model.materials_cache) {
+    auto& temp_mat = paimon_model.SetMatermial(texture_name, *paimon_1);
+    temp_mat.set_texture(0, default_texture);
+  }
+
+  Entity aili = scene->create_entity("aili");
+  auto aili_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/suzune/suzune.fbx";
+  aili.AddComponent<Model>(aili_path.c_str(), Quality::Auto);
+  auto& aili_model = aili.GetComponent<Model>();
+  auto aili_mat = std::make_shared<Material>(Material::ShadingModel::DEFAULT);
+  for (auto& [texture_name, uid] : aili_model.materials_cache) {
+    auto& temp_mat = aili_model.SetMatermial(texture_name, *aili_mat);
+    temp_mat.set_texture(0, default_texture);
+  }
+
+  /*
+  auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
+  temp_mat_1.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/披风2.jpg").c_str(), false, 5));
+  auto& temp_mat_2 = paimon.GetComponent<Model>().SetMatermial("头发", *paimon_1);
+  temp_mat_2.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/头发.jpg").c_str(), false, 5));
+  auto& temp_mat_3 = paimon.GetComponent<Model>().SetMatermial("衣服", *paimon_1);
+  temp_mat_3.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/衣服.jpg").c_str(), false, 5));
+  auto& temp_mat_4 = paimon.GetComponent<Model>().SetMatermial("皮肤", *paimon_1);
+  temp_mat_4.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/衣服.jpg").c_str(), false, 5));
+  auto& temp_mat_5 = paimon.GetComponent<Model>().SetMatermial("眼睛", *paimon_1);
+  temp_mat_5.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/头发.jpg").c_str(), false, 5));
+  auto& temp_mat_6 = paimon.GetComponent<Model>().SetMatermial("表情", *paimon_1);
+  temp_mat_6.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/表情.png").c_str(), false, 5));
+  auto& temp_mat_7 = paimon.GetComponent<Model>().SetMatermial("脸", *paimon_1);
+  temp_mat_7.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/脸.jpg").c_str(), false, 5));
+  auto& temp_mat_8 = paimon.GetComponent<Model>().SetMatermial("眼白", *paimon_1);
+  temp_mat_8.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/脸.jpg").c_str(), false, 5));
+  */
+  CHECK_ERROR();
+
   //  ::scene::SerializeObject::SerializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path /
   //  scene->m_title, *scene);
   //   ::scene::SerializeObject::DeserializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path /
@@ -228,7 +272,8 @@ void EditorLayer::OnAttach() {
   // scene->SubmitRender(cube.id);
   // scene->SubmitRender(sphere.id);
   // scene->SubmitRender(sphere_pbr.id);
-  // scene->SubmitRender(paimon.id);
+  scene->SubmitRender(paimon.id);
+  scene->SubmitRender(aili.id);
   // 最后渲染
   // scene->SubmitRender(skybox.id);
 }

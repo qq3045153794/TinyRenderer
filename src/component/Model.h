@@ -67,9 +67,12 @@ class Model {
   std::vector<Node> nodes;
   std::vector<Mesh> meshes;
 
+  std::vector<std::string> meshes_name;
   // mesh的材质id与材质的映射
   std::map<GLuint, Material> materials;
 
+  // 模型纹理名称与模型mesh的id的映射
+  std::unordered_map<std::string, GLuint> materials_cache;
  private:
   void process_tree(aiNode* ai_node, int parent);
   void process_node(aiNode* ai_node);
@@ -79,8 +82,6 @@ class Model {
   bool m_animated;
   unsigned int n_nodes = 0, n_bones = 0;
   unsigned int n_meshes = 0, n_verts = 0, n_tris = 0;
-  // 模型纹理名称与模型mesh的id的映射
-  std::unordered_map<std::string, GLuint> materials_cache;
 };
 
 }  // namespace component

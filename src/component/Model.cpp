@@ -60,11 +60,15 @@ Model::Model(const std::string& file_path, Quality quality, bool animated)
   CORE_DEBUG("vertex has tan/btan ? [{0}]", vtx_format.test(4) ? "Y" : "N");
   CORE_TRACE("-----------------------------------------------------");
 
-  CORE_DEBUG(" internal materials");
+  CORE_DEBUG("internal materials");
   for (const auto& it : materials_cache) {
     CORE_DEBUG("{} (id = {})", it.first, it.second);
   }
   CORE_TRACE("-----------------------------------------------------");
+  CORE_DEBUG("internal meshes");
+  for(const auto& it : meshes_name) {
+    CORE_DEBUG("mesh name : {}", it);
+  }
 }
 
 void Model::process_tree(aiNode* ai_node, int parent) {}
@@ -169,6 +173,7 @@ void Model::process_mesh(aiMesh* ai_mesh) {
   process_material(ai_material, mesh);
 
   // 统计mesh数
+  meshes_name.push_back(ai_mesh->mName.C_Str());
   n_meshes++;
 }
 

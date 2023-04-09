@@ -37,6 +37,7 @@ class ImGuiWrapper {
   static std::optional<std::filesystem::path> DrawDirBrower(bool& open);
   static ImFont* config_font;
   static ImFont* main_font;
+  static ImFont* u8_font;
 };
 
 }  // namespace saber
