@@ -71,12 +71,22 @@ set(MAIN_INCLUDE
 )
 
 
+# set(YAML-CPP_INCLUDE
+#   ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/include
+# )
+
+# set(YAML-CPP_LIBS
+#   ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/lib/libyaml-cpp.a
+# )
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/yaml-cpp)
+
 set(YAML-CPP_INCLUDE
   ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/include
 )
 
 set(YAML-CPP_LIBS
-  ${PROJECT_SOURCE_DIR}/vendor/yaml-cpp/lib/libyaml-cpp.a
+  ${CMAKE_BINARY_DIR}/vendor/yaml-cpp/libyaml-cpp.a
 )
 
 set(IMGUI_FILEDIALOG_SRC ${PROJECT_SOURCE_DIR}/vendor/ImGuiFileDialog/ImGuiFileDialog.cpp)

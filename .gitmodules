@@ -1,0 +1,6 @@
+[submodule "verdor/yaml-cpp"]
+	path = verdor/yaml-cpp
+	url = git@github.com:jbeder/yaml-cpp.git
+[submodule "vendor/yaml-cpp"]
+	path = vendor/yaml-cpp
+	url = git@github.com:jbeder/yaml-cpp.git

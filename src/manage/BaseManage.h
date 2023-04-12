@@ -26,7 +26,7 @@ class BaseManage : public PublicSingleton<BaseManage> {
   bool CheckPathExit();
 
   std::vector<std::filesystem::path> m_resource_storage;
-  std::unordered_map<std::filesystem::path, std::filesystem::path> m_resource_register;
+  std::map<std::filesystem::path, std::filesystem::path> m_resource_register;
 };
 };  // namespace saber
 

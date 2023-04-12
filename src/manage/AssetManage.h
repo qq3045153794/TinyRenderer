@@ -9,6 +9,7 @@ namespace saber {
 
 class AssetManage : public BaseManage {
  public:
+
   virtual void Init() override;
   virtual void SaveConfig() override;
   virtual void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) override;
