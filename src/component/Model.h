@@ -29,6 +29,7 @@
 namespace component {
 
 class Mesh;
+class Animation;
 // class Material;
 
 class Node {
@@ -87,15 +88,17 @@ class Model {
   // 模型纹理名称与模型mesh的id的映射
   std::unordered_map<std::string, GLuint> materials_cache;
 
+  bool m_animated;
+  unsigned int n_nodes = 0, n_bones = 0;
+  unsigned int n_meshes = 0, n_verts = 0, n_tris = 0;
+  std::unique_ptr<Animation> animation;
+
  private:
   void process_tree(aiNode* ai_node, int parent);
   void process_node(aiNode* ai_node);
   void process_mesh(aiMesh* ai_mesh);
   void process_material(aiMaterial* ai_material, const Mesh& mesh);
 
-  bool m_animated;
-  unsigned int n_nodes = 0, n_bones = 0;
-  unsigned int n_meshes = 0, n_verts = 0, n_tris = 0;
 };
 
 }  // namespace component
