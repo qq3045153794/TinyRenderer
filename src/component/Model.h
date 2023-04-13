@@ -31,7 +31,20 @@ namespace component {
 class Mesh;
 // class Material;
 
-class Node {};
+class Node {
+ public:
+  Node(int nid, int pid, const std::string& name);
+  bool is_bone() const;
+  bool animated() const;
+  int nid = -1;
+  int pid = -1;
+  int bid = -1;
+  bool alive = false;
+  std::string name;
+  glm::mat4 n2p;
+  glm::mat4 m2n;
+  glm::mat4 n2m;
+};
 
 enum Quality {
   Auto = 0x0,
@@ -73,6 +86,7 @@ class Model {
 
   // 模型纹理名称与模型mesh的id的映射
   std::unordered_map<std::string, GLuint> materials_cache;
+
  private:
   void process_tree(aiNode* ai_node, int parent);
   void process_node(aiNode* ai_node);

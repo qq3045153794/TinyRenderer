@@ -3,14 +3,32 @@
 #include <bitset>
 #include <chrono>
 #include <vector>
+#include <algorithm>
 
 #include "component/Material.h"
 #include "component/Mesh.h"
 #include "core/Log.h"
 namespace component {
 
-Model::Model(const std::string& file_path, Quality quality, bool animated)
-    : m_animated(animated) {
+static constexpr unsigned int max_vtx_bones = 4;
+
+Node::Node(int nid, int pid, const std::string& name) : nid(nid), bid(pid), alive(0), name(name) {
+  CORE_ASERT(nid >= 0 && pid < nid, "Parent node is not procssed before its chidren!");
+}
+
+bool Node::is_bone() const {
+  return bid >= 0;
+}
+
+bool Node::animated() const {
+  return (bid >= 0) && alive;
+}
+
+static inline glm::mat4 AssimpMat2GLM(const aiMatrix4x4& m) {
+  return glm::transpose(glm::make_mat4(&m.a1));
+}
+
+Model::Model(const std::string& file_path, Quality quality, bool animated) : m_animated(animated) {
   // clang-format off
   u_int32_t improt_options = static_cast<unsigned int>(quality) 
     | aiProcess_FlipUVs 
@@ -28,8 +46,7 @@ Model::Model(const std::string& file_path, Quality quality, bool animated)
 
   ai_root = importer.ReadFile(file_path, improt_options);
 
-  if (!ai_root || ai_root->mRootNode == nullptr ||
-      ai_root->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
+  if (!ai_root || ai_root->mRootNode == nullptr || ai_root->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     CORE_ERROR("Failed to import model: {0}", file_path);
     CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
     return;
@@ -43,13 +60,11 @@ Model::Model(const std::string& file_path, Quality quality, bool animated)
   CORE_TRACE("Generating model loading report...... (for reference)");
   CORE_TRACE("-----------------------------------------------------");
 
-  std::chrono::duration<double, std::milli> loading_time =
-      end_time - start_time;
+  std::chrono::duration<double, std::milli> loading_time = end_time - start_time;
   CORE_DEBUG("load model use time {} ms", loading_time.count());
 
   CORE_DEBUG("total # of meshes:     {0}", n_meshes);
-  CORE_DEBUG("total # of vertices:   {0:.2f}k ({1})", n_verts * 0.001f,
-             n_verts);
+  CORE_DEBUG("total # of vertices:   {0:.2f}k ({1})", n_verts * 0.001f, n_verts);
   CORE_DEBUG("total # of triangles:  {0:.2f}k ({1})", n_tris * 0.001f, n_tris);
   CORE_TRACE("-----------------------------------------------------");
 
@@ -66,12 +81,21 @@ Model::Model(const std::string& file_path, Quality quality, bool animated)
   }
   CORE_TRACE("-----------------------------------------------------");
   CORE_DEBUG("internal meshes");
-  for(const auto& it : meshes_name) {
+  for (const auto& it : meshes_name) {
     CORE_DEBUG("mesh name : {}", it);
   }
 }
 
-void Model::process_tree(aiNode* ai_node, int parent) {}
+void Model::process_tree(aiNode* ai_node, int parent) {
+  aiString& ai_name = ai_node->mName;
+  auto& node = nodes.emplace_back(n_nodes++, parent, ai_name.length == 0 ? "unnamed" : ai_name.C_Str());
+  node.n2p = AssimpMat2GLM(ai_node->mTransformation);
+  int next_parent = n_nodes - 1;
+  for (std::size_t i = 0; i < ai_node->mNumChildren; i++) {
+    aiNode* child_node = ai_node->mChildren[i];
+    process_tree(child_node, next_parent);
+  }
+}
 
 void Model::process_node(aiNode* ai_node) {
   meshes.reserve(meshes.size() + ai_node->mNumMeshes);
@@ -99,15 +123,13 @@ void Model::process_mesh(aiMesh* ai_mesh) {
   local_format.set(0, ai_mesh->HasPositions());
   local_format.set(1, ai_mesh->HasNormals());
   local_format.set(2, ai_mesh->HasTextureCoords(0));
-  local_format.set(
-      3, ai_mesh->HasTextureCoords(1) && ai_mesh->GetNumUVChannels() > 1);
+  local_format.set(3, ai_mesh->HasTextureCoords(1) && ai_mesh->GetNumUVChannels() > 1);
   local_format.set(4, ai_mesh->HasTangentsAndBitangents());
   local_format.set(5, ai_mesh->HasTangentsAndBitangents());
 
   static bool warned = false;
   if (vtx_format != local_format && !warned) {
-    CORE_WARN(
-        "Inconsistent vertex format! Some meshes have attributes missing...");
+    CORE_WARN("Inconsistent vertex format! Some meshes have attributes missing...");
     warned = true;
   }
 
@@ -164,7 +186,33 @@ void Model::process_mesh(aiMesh* ai_mesh) {
   }
 
   if (m_animated) {
-    // TODO
+    for (std::size_t i = 0; i < ai_mesh->mNumBones; i++) {
+      aiBone* ai_bone = ai_mesh->mBones[i];
+      std::string name = ai_bone->mName.C_Str();
+      auto it = std::find_if(nodes.begin(), nodes.end(), [&name](const Node& node){ return name == node.name; });
+      CORE_ASERT(it != nodes.end(), "Invaild bone, cannot find a match in the nodes hierarchy!");
+      Node& node = nodes[it->nid];
+      if (node.bid < 0) {
+        node.m2n = AssimpMat2GLM(ai_bone->mOffsetMatrix);
+        node.bid = n_bones++;
+      }
+
+      for (int j = 0; j < ai_bone->mNumWeights; j++) {
+        unsigned int vtx_id = ai_bone->mWeights[j].mVertexId;
+        const float weight = ai_bone->mWeights[j].mWeight;
+        CORE_ASERT(vtx_id < vertices.size(), "Vertex id out of bound!");
+        auto& vertex = vertices[vtx_id];
+        bool full = glm::all(glm::greaterThanEqual(vertex.bone_id, glm::ivec4(0)));
+        CORE_ASERT(!full, "Fuond more than 4 bones pre vertex, check the import settings");
+        for (int k = 0; k < max_vtx_bones; k++) {
+          if(vertex.bone_id[k] < 0) {
+            vertex.bone_id[k] = node.bid;
+            vertex.bone_id[k] = weight;
+            break;
+          }
+        }
+      }
+    }
   }
 
   auto& mesh = meshes.emplace_back(vertices, indices);
@@ -197,10 +245,8 @@ void Model::process_material(aiMaterial* ai_material, const Mesh& mesh) {
   materials_cache[matkey] = matid;
 }
 
-Material& Model::SetMatermial(const std::string& matkey,
-                              const Material& material) {
-  CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}",
-             matkey);
+Material& Model::SetMatermial(const std::string& matkey, const Material& material) {
+  CORE_ASERT(materials_cache.count(matkey) > 0, "Invalid material key: {0}", matkey);
   GLuint matid = materials_cache[matkey];
   materials.insert_or_assign(matid, material);
 
