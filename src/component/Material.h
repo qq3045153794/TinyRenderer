@@ -11,6 +11,8 @@
 #ifndef _SRC_COMPONENT_MATERIAL_H_
 #define _SRC_COMPONENT_MATERIAL_H_
 
+#include <scene/SerializeEntity.h>
+
 #include <any>
 #include <map>
 #include <memory>
@@ -22,7 +24,6 @@
 #include "asset/Shader.h"
 #include "asset/Texture.h"
 #include "core/Log.h"
-#include <scene/SerializeEntity.h>
 
 namespace component {
 
@@ -31,21 +32,34 @@ class UboData {
  public:
   UboData() = default;
   UboData(const std::string& name, std::shared_ptr<::asset::Shader> shader, const T& data)
-      : m_name(name), m_shader(shader), m_data(data) {}
+      : m_name(name), m_shader(shader), m_data(data), m_array_ptr(nullptr) {}
+
+  UboData(const std::string& name, std::shared_ptr<::asset::Shader> shader, const std::vector<T>* data)
+      : m_name(name), m_shader(shader), m_array_ptr(data) {}
   ~UboData() = default;
   void bind() const {
-    m_shader->bind();
-    m_shader->set_uniform(m_name.c_str(), m_data);
+    if (!m_array_ptr) {
+      m_shader->bind();
+      m_shader->set_uniform(m_name.c_str(), m_data);
+    } else {
+      m_shader->bind();
+      std::size_t array_length = (*m_array_ptr).size();
+      for (std::size_t i = 0U; i < array_length; i++) {
+        std::string label = m_name + "[" + std::to_string(i) + "]";
+        m_shader->set_uniform(label.c_str(), (*m_array_ptr)[i]);
+      }
+    }
   }
 
   std::string m_name;
   std::shared_ptr<::asset::Shader> m_shader{nullptr};
   T m_data;
+  const std::vector<T>* m_array_ptr{nullptr};
 };
 
 class Material {
  public:
-   friend ::scene::SerializeObject;
+  friend ::scene::SerializeObject;
   // 引用 : https://zhuanlan.zhihu.com/p/260973533
   enum class pbr_u : uint16_t {
     albedo = 0U,     // 反射率 向量 sRGB 主要体现纹理和颜色
@@ -67,15 +81,12 @@ class Material {
     brdf_LUT_map = 4U
   };
 
-  enum class default_t :uint16_t {
-    image_1 = 1U,
-    image_2 = 2U
-  };
+  enum class default_t : uint16_t { image_1 = 1U, image_2 = 2U };
 
   enum class ShadingModel : uint16_t {
-    COSTEM  = 0U,
-    DEFAULT = 1U, // 贴图
-    PBR = 2U,     // PBR光照模型
+    COSTEM = 0U,
+    DEFAULT = 1U,  // 贴图
+    PBR = 2U,      // PBR光照模型
   };
 
   using ubo_variant =
@@ -98,6 +109,12 @@ class Material {
     m_shader->bind();
     m_shader->set_uniform(name, val);
   }
+
+  template <typename T>
+  void set_bound_arrary(const GLchar* name, GLuint size, const std::vector<T>* array_ptr) {
+
+      m_uniforms_cache[name] = UboData<T>(name, m_shader, array_ptr);
+    }
 
   template <typename T>
   void set_uniform(GLuint uid, const T& val) {
@@ -123,8 +140,10 @@ class Material {
   ubo_variant get_uniform(const std::string& key);
   std::shared_ptr<::asset::Texture> get_texture(GLuint uid);
   std::shared_ptr<::asset::Texture> get_texture(pbr_t pbr);
+
  public:
   ShadingModel m_shading_model{ShadingModel::COSTEM};
+
  private:
   std::unordered_map<GLuint, std::shared_ptr<asset::Texture>> m_textures;
   std::unordered_map<std::string, ubo_variant> m_uniforms_cache;

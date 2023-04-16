@@ -215,7 +215,7 @@ void EditorLayer::OnAttach() {
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
 
   auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
-
+/*
   Entity paimon = scene->create_entity("paimon");
   auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
   paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
@@ -227,15 +227,22 @@ void EditorLayer::OnAttach() {
     auto& temp_mat = paimon_model.SetMatermial(texture_name, *paimon_1);
     temp_mat.set_texture(0, default_texture);
   }
-
+*/
   Entity aili = scene->create_entity("aili");
-  auto aili_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/suzune/suzune.fbx";
-  aili.AddComponent<Model>(aili_path.c_str(), Quality::Auto);
+  auto aili_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/babala/babala.fbx";
+  aili.AddComponent<Model>(aili_path.c_str(), Quality::Auto, true);
   auto& aili_model = aili.GetComponent<Model>();
+  aili_model.AttachMotion(aili_path);
+  auto& animator = aili.AddComponent<Animator>(&aili_model);
+  animator.Update(aili.GetComponent<Model>(), Clock::dt);
+  // CORE_DEBUG("dt : {}", Clock::dt);
   auto aili_mat = std::make_shared<Material>(Material::ShadingModel::DEFAULT);
   for (auto& [texture_name, uid] : aili_model.materials_cache) {
     auto& temp_mat = aili_model.SetMatermial(texture_name, *aili_mat);
     temp_mat.set_texture(0, default_texture);
+    auto& bone_transforms = animator.m_bone_transforms;
+    temp_mat.set_bound_arrary("bone_transform", 0U, &bone_transforms);
+     // temp_mat.set_uniform();
   }
 
   /*
@@ -272,7 +279,7 @@ void EditorLayer::OnAttach() {
   // scene->SubmitRender(cube.id);
   // scene->SubmitRender(sphere.id);
   // scene->SubmitRender(sphere_pbr.id);
-  scene->SubmitRender(paimon.id);
+  // scene->SubmitRender(paimon.id);
   scene->SubmitRender(aili.id);
   // 最后渲染
   // scene->SubmitRender(skybox.id);

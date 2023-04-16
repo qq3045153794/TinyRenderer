@@ -1,4 +1,5 @@
 #include <component/Animator.h>
+#include <utils/math.h>
 
 namespace component {
 
@@ -61,7 +62,6 @@ Channel::Channel(aiNodeAnim* ai_channel, const std::string& name, int id, float 
     if (i == 0) {
       auto& last_frame = scales.back();
       last_frame.value = glm::vec3(value.x, value.y, value.z);
-      last_frame.value = glm::vec3(value.x, value.y, value.z);
       last_frame.timestamp = duration;
     }
   }
@@ -73,7 +73,7 @@ std::tuple<int, int> Channel::GetFrameIndex(const std::vector<TFrame>& frames, f
     return std::tuple(0, 0);
   }
 
-  for (int i = 1; i < frames.size(); i++) {
+  for (std::size_t i = 1U; i < frames.size(); i++) {
     auto& [_, timestamp] = frames.at(i);
     if (time < timestamp) {
       return std::tuple(i - 1, i);
@@ -97,6 +97,20 @@ glm::mat4 Channel::Interpolate(float time) const {
 
   // TODO
   // float percent_t = math::LinearPercent(prev_ts_t, next_ts_t, time);
+  // using math = utils::math;
+  // utils::math
+  float percent_t = utils::math::LinearPercent(prev_ts_t, next_ts_t, time);
+  float percent_r = utils::math::LinearPercent(prev_ts_r, next_ts_r, time);
+  float percent_s = utils::math::LinearPercent(prev_ts_s, next_ts_s, time);
+
+  glm::vec3 new_position = utils::math::Lerp(prev_position, next_position, percent_t);
+  glm::quat new_rotation = utils::math::Slerp(prev_rotation, next_rotation, percent_r);
+  glm::vec3 new_scale = utils::math::Lerp(prev_scale, next_scale, percent_s);
+  glm::mat4 translation = glm::translate(identity_m, new_position);
+  glm::mat4 rotation = glm::toMat4(new_rotation);
+  glm::mat4 scale = glm::scale(identity_m, new_scale);
+
+  return translation * rotation * scale;
 }
 
 Animation::Animation(const aiScene* ai_scene, Model* model) : n_channels(0) {
@@ -147,7 +161,7 @@ void Animator::Reset(Model* model) {
 void Animator::Update(Model& model, float deltatime) {
   const auto& animation = model.animation;
   m_current_time += animation->m_speed * deltatime;
-  m_current_time = std::fmod(m_current_time, animation->m_duration);
+  m_current_time = fmod(m_current_time, animation->m_duration);
   const auto& channels = animation->channels;
   auto& nodes = model.nodes;
 

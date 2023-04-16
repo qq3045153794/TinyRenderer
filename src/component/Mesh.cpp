@@ -226,6 +226,9 @@ void Mesh::create_sphere() {
 void Mesh::draw() const { m_vao->draw(); }
 
 void Mesh::create_buffer(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) {
+  for (auto& it : vertices) {
+    CORE_INFO("bone_id : ({} {} {} {})", it.bone_id.x, it.bone_id.y, it.bone_id.z, it.bone_id.w);
+  }
   m_vbo = std::make_shared<asset::VBO>(sizeof(Vertex) * vertices.size(), (void*)vertices.data(), GL_STATIC_DRAW);
   m_ibo = std::make_shared<asset::IBO>(sizeof(GLuint) * indices.size(), (void*)indices.data(), GL_STATIC_DRAW,
                                        indices.size());

@@ -1,9 +1,11 @@
 #include "component/Model.h"
 
+#include <component/Animator.h>
+
+#include <algorithm>
 #include <bitset>
 #include <chrono>
 #include <vector>
-#include <algorithm>
 
 #include "component/Material.h"
 #include "component/Mesh.h"
@@ -12,21 +14,15 @@ namespace component {
 
 static constexpr unsigned int max_vtx_bones = 4;
 
-Node::Node(int nid, int pid, const std::string& name) : nid(nid), bid(pid), alive(0), name(name) {
+Node::Node(int nid, int pid, const std::string& name) : nid(nid), pid(pid), bid(-1), alive(0), name(name) {
   CORE_ASERT(nid >= 0 && pid < nid, "Parent node is not procssed before its chidren!");
 }
 
-bool Node::is_bone() const {
-  return bid >= 0;
-}
+bool Node::is_bone() const { return bid >= 0; }
 
-bool Node::animated() const {
-  return (bid >= 0) && alive;
-}
+bool Node::animated() const { return (bid >= 0) && alive; }
 
-static inline glm::mat4 AssimpMat2GLM(const aiMatrix4x4& m) {
-  return glm::transpose(glm::make_mat4(&m.a1));
-}
+static inline glm::mat4 AssimpMat2GLM(const aiMatrix4x4& m) { return glm::transpose(glm::make_mat4(&m.a1)); }
 
 Model::Model(const std::string& file_path, Quality quality, bool animated) : m_animated(animated) {
   // clang-format off
@@ -41,6 +37,8 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : m_a
   // clang-format on
 
   Assimp::Importer importer;
+  importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
+  importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_ANIMATIONS, false);
 
   auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -84,7 +82,17 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : m_a
   for (const auto& it : meshes_name) {
     CORE_DEBUG("mesh name : {}", it);
   }
+  CORE_TRACE("-----------------------------------------------------");
+  CORE_DEBUG("internal Node");
+  for (const auto& node : nodes) {
+    CORE_DEBUG("Node name : {} id : {} , parent : {}", node.name, node.nid, node.pid);
+  }
+  CORE_TRACE("-----------------------------------------------------");
 }
+
+Model::Model(Model&& rhs) = default;
+Model& Model::operator=(Model&& rhs) = default;
+Model::~Model() = default;
 
 void Model::process_tree(aiNode* ai_node, int parent) {
   aiString& ai_name = ai_node->mName;
@@ -189,7 +197,7 @@ void Model::process_mesh(aiMesh* ai_mesh) {
     for (std::size_t i = 0; i < ai_mesh->mNumBones; i++) {
       aiBone* ai_bone = ai_mesh->mBones[i];
       std::string name = ai_bone->mName.C_Str();
-      auto it = std::find_if(nodes.begin(), nodes.end(), [&name](const Node& node){ return name == node.name; });
+      auto it = std::find_if(nodes.begin(), nodes.end(), [&name](const Node& node) { return name == node.name; });
       CORE_ASERT(it != nodes.end(), "Invaild bone, cannot find a match in the nodes hierarchy!");
       Node& node = nodes[it->nid];
       if (node.bid < 0) {
@@ -205,13 +213,18 @@ void Model::process_mesh(aiMesh* ai_mesh) {
         bool full = glm::all(glm::greaterThanEqual(vertex.bone_id, glm::ivec4(0)));
         CORE_ASERT(!full, "Fuond more than 4 bones pre vertex, check the import settings");
         for (int k = 0; k < max_vtx_bones; k++) {
-          if(vertex.bone_id[k] < 0) {
+          if (vertex.bone_id[k] < 0) {
             vertex.bone_id[k] = node.bid;
-            vertex.bone_id[k] = weight;
+            vertex.bone_wt[k] = weight;
             break;
           }
         }
       }
+/*
+      for (const auto& vertex : vertices) {
+        CORE_DEBUG("vector bound : ({}, {}, {}, {}) weight : ({}, {}, {}, {})", vertex.bone_id.x, vertex.bone_id.y, vertex.bone_id.z, vertex.bone_id.w, vertex.bone_wt.x, vertex.bone_wt.y, vertex.bone_wt.z, vertex.bone_wt.w);
+      }
+*/
     }
   }
 
@@ -251,6 +264,34 @@ Material& Model::SetMatermial(const std::string& matkey, const Material& materia
   materials.insert_or_assign(matid, material);
 
   return materials.at(matid);
+}
+
+void Model::AttachMotion(const std::string& filepath) {
+  if (!m_animated) {
+    CORE_ERROR("Cannot attach animation to the model, model must be animated...");
+  }
+  // clang-format off
+  const unsigned int import_options = 0
+    | aiProcess_FlipUVs
+    | aiProcess_Triangulate
+    | aiProcess_GenSmoothNormals
+    | aiProcess_FindInvalidData
+    | aiProcess_ValidateDataStructure
+    | aiProcess_CalcTangentSpace
+    | aiProcess_LimitBoneWeights;
+  //clang-format on
+
+  Assimp::Importer importer;
+  importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
+  importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_READ_ANIMATIONS, true);
+  const aiScene* scene = importer.ReadFile(filepath, import_options);
+
+  if(!scene || scene->mRootNode == nullptr) {
+    CORE_ERROR("Failed to import animation: {0}",  filepath);
+    CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
+    std::runtime_error("Unexpection...");
+  }
+  animation = std::make_unique<Animation>(scene, this);
 }
 
 }  // namespace component

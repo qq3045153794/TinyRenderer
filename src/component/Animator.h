@@ -10,7 +10,7 @@ class Channel {
  private:
   template <typename TKey, int key>
   struct Frame {
-    Frame(TKey value, float time);
+    Frame(TKey value, float time) : value(value), timestamp(time) {}
 
     TKey value;
     float timestamp;
@@ -40,6 +40,8 @@ class Channel {
   glm::mat4 Interpolate(float time) const;
 };
 
+class Model;
+
 class Animation {
  private:
   unsigned int n_channels;
@@ -57,6 +59,7 @@ class Animator {
  public:
   float m_current_time;
   std::vector<glm::mat4> m_bone_transforms;
+  Animator() = default;
   Animator(Model* model);
 
   void Update(Model& model, float deltatime);

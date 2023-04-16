@@ -17,8 +17,9 @@ void VAO::set_vbo(const VBO& vbo, GLuint index, GLuint sz, GLuint stride,
                   GLuint offset, GLenum type) {
   this->bind();
   vbo.bind();
-  glVertexAttribPointer(index, sz, type, GL_FALSE, stride,
+  if (type == GL_FLOAT) glVertexAttribPointer(index, sz, type, GL_FALSE, stride,
                         reinterpret_cast<void*>(offset));
+  else glVertexAttribIPointer(index, sz, type, stride, reinterpret_cast<void*>(offset));
   glEnableVertexAttribArray(index);
   this->ubind();
   vbo.ubind();

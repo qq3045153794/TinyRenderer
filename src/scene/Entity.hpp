@@ -11,7 +11,9 @@
 #include "component/Transform.h"
 #include "component/Tag.hpp"
 #include "component/Light.h"
+#include "component/Animator.h"
 #include "core/Debug.h"
+#include "core/Clock.h"
 #include "utils/ext.hpp"
 
 namespace scene {

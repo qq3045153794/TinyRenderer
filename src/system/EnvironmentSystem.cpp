@@ -89,6 +89,16 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     ubo->set_uniform(5, &range);
   }
 
+ 
+  auto animate_view = m_scene->registry.view<Model, Animator>();
+  for (auto& e : animate_view) {
+    auto& animator = animate_view.get<Animator>(e);
+    auto& model = animate_view.get<Model>(e);
+    animator.Update(model, Clock::dt * 1.0);
+    // auto& bone_transforms = animator.m_bone_transforms;
+  }
+  
+
   // TODO
   // if (auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("SL"); true) {
   // auto& camera = main_camera.GetComponent<Transform>();

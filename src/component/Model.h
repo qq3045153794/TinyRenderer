@@ -64,7 +64,9 @@ class Model {
    * @return       {*}
    */
   Model(const std::string& file_path, Quality quality, bool m_animated = false);
-
+  Model(Model&& rhs);
+  Model& operator=(Model&& rhs);
+  ~Model();
   /**
    * @brief       : 绑定模型材质
    * @param        {string&} matkey 绑定的材质名 注意:
@@ -73,6 +75,8 @@ class Model {
    * @return       {*}
    */
   Material& SetMatermial(const std::string& matkey, const Material& material);
+
+  void AttachMotion(const std::string& filepath);
 
   const aiScene* ai_root = nullptr;
 
