@@ -121,9 +121,7 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::mat4& v) {
   return out;
 }
 
-
 void SerializeObject::SerializeEntity(Entity& entity, YAML::Emitter& out) {
-
   out << YAML::BeginMap;
   auto& tag_component = entity.GetComponent<::component::Tag>();
   out << YAML::Key << "TagComponent";
@@ -172,6 +170,54 @@ void SerializeObject::SerializeEntity(Entity& entity, YAML::Emitter& out) {
       std::visit([&out](auto& val) { out << YAML::Key << val.m_name << YAML::Value << val.m_data; }, value);
     }
 
+    out << YAML::EndMap;
+  }
+
+  if (entity.Contains<::component::Model>()) {
+    auto& model_conponent = entity.GetComponent<::component::Model>();
+    out << YAML::Key << "ModelComponent";
+    out << YAML::BeginMap;
+    out << YAML::Key << "ModelFliePath" << YAML::Value << model_conponent.model_filepath;
+    out << YAML::Key << "isAnimation" << YAML::Value << model_conponent.m_animated;
+    out << YAML::Key << "Materials" << YAML::Value << YAML::BeginSeq;
+    for (auto& [texture_name, uid] : model_conponent.materials_cache) {
+      auto& material = model_conponent.materials.at(uid);
+      out << YAML::BeginMap;
+      out << YAML::Key << "MaterialName" << YAML::Value << texture_name;
+      out << YAML::Key << "ShadingModel" << YAML::Value << static_cast<uint16_t>(material.m_shading_model);
+      std::array<std::string, 10> texture_dictionary = {
+          "texture_0",      "texture_1",         "irradiance_map",    "prefilter_map", "brdf_LUT_map",
+          "albedo_texture", "metalness_texture", "roughness_texture", "ao_texture",    "normal_texture"};
+      for (auto& [u_id, texture] : material.m_textures) {
+        if (texture->m_image_path) {
+          out << YAML::Key << texture_dictionary[u_id] + "_path" << YAML::Value << texture->m_image_path->string();
+        }
+      }
+
+      for (auto& [name_key, value] : material.m_uniforms_cache) {
+        std::visit(
+            [&out](auto& val) {
+              // bone transform 不需要序列化 特判下
+              if (val.m_name != "bone_transform") {
+                out << YAML::Key << val.m_name << YAML::Value << val.m_data;
+              }
+            },
+            value);
+      }
+      out << YAML::EndMap;
+    }
+    out << YAML::EndSeq;
+
+    if (model_conponent.m_animated) {
+      out << YAML::Key << "AnimationPathfile" << YAML::Value << model_conponent.animation_filepath;
+    }
+    out << YAML::EndMap;
+  }
+
+  if (entity.Contains<::component::Animator>()) {
+    out << YAML::Key << "AnimatorComponent";
+    out << YAML::BeginMap;
+    out << YAML::Key << "node" << YAML::Value << "node";
     out << YAML::EndMap;
   }
 
@@ -259,7 +305,7 @@ void SerializeObject::SerializeScene(const std::filesystem::path& file_name_path
   out << YAML::Key << "SceneName" << YAML::Value << scene.m_title;
   out << YAML::Key << "Entitys" << YAML::Value << YAML::BeginSeq;
   scene.registry.each([&](auto& entity_id) {
-    Entity e {"temp", entity_id, &scene.registry};
+    Entity e{"temp", entity_id, &scene.registry};
     if (!scene.is_exclude_entity(entity_id)) {
       SerializeEntity(e, out);
     }
@@ -269,14 +315,13 @@ void SerializeObject::SerializeScene(const std::filesystem::path& file_name_path
   ::utils::File::write_yml_file(file_name_path, out);
 }
 
-
 void SerializeObject::DeserializeScene(const std::filesystem::path& file_name_path, Scene& scene) {
   YAML::Node doc;
   ::utils::File::parser_yml_file(file_name_path.c_str(), doc);
   auto scene_name = doc["SceneName"].as<std::string>();
   scene.m_title = scene_name;
   YAML::Node entitys = doc["Entitys"];
-  if(entitys) {
+  if (entitys) {
     for (int i = 0; i < entitys.size(); i++) {
       auto entity = DeserializeEntity(scene, entitys[i]);
       auto& tag = entity.GetComponent<::component::Tag>();
@@ -387,6 +432,68 @@ Entity SerializeObject::DeserializeEntity(Scene& scene, const YAML::Node& doc) {
     } else {
       CORE_WARN("Not to do...");
     }
+  }
+
+  auto model_component = doc["ModelComponent"];
+  if (model_component) {
+    auto model_filepath = model_component["ModelFliePath"].as<std::string>();
+    auto is_animation = model_component["isAnimation"].as<bool>();
+    auto& model = entity.AddComponent<::component::Model>(model_filepath, ::component::Auto, is_animation);
+    auto materials = model_component["Materials"];
+
+    // CORE_ASERT(materials.size() == model.materials_cache.size(), "Unexpection material count (count : {})...", mater)
+    // int material_indence = 0;
+
+    // 不存在有Animator但没有Model的状态
+    // 所以Animator 的反序列化在Model反序了化时候完成 
+    if (is_animation) {
+      CORE_ASERT(model_component["AnimationPathfile"], "If there is animation, there must be AnimationPathfile");
+      auto animation_filepath = model_component["AnimationPathfile"].as<std::string>();
+      model.AttachMotion(animation_filepath);
+      CORE_ASERT(doc["AnimatorComponent"], "If the model is animated, it must be bound to Animotor");
+      entity.AddComponent<::component::Animator>(&model);
+    }
+
+    std::array<std::string, 10> texture_dictionary = {
+        "texture_0",      "texture_1",         "irradiance_map",    "prefilter_map", "brdf_LUT_map",
+        "albedo_texture", "metalness_texture", "roughness_texture", "ao_texture",    "normal_texture"};
+    for (std::size_t i = 0U; i < materials.size(); i++) {
+      auto material_doc = materials[i];
+      auto Material_name = material_doc["MaterialName"].as<std::string>();
+      auto shading_model = material_doc["ShadingModel"].as<uint16_t>();
+      if (static_cast<::component::Material::ShadingModel>(shading_model) ==
+          ::component::Material::ShadingModel::DEFAULT) {
+        auto oringe_material = std::make_shared<::component::Material>(::component::Material::ShadingModel::DEFAULT);
+        auto& material = model.SetMatermial(Material_name, *oringe_material);
+
+        for (std::size_t i = 0; i < texture_dictionary.size(); i++) {
+          auto texture_key = texture_dictionary[i];
+          auto texture_path_doc = material_doc[texture_key + "_path"];
+          if (texture_path_doc) {
+            auto texture_path = texture_path_doc.as<std::string>();
+            // 目前纹理序列化还不完善 先写死
+            material.set_texture(i, std::make_shared<::asset::Texture>(texture_path.c_str(), false, 7));
+          }
+        }
+
+        if (is_animation) {
+          CORE_ASERT(doc["AnimatorComponent"], "If the model is animated, it must be bound to Animotor");
+          auto& animator = entity.GetComponent<::component::Animator>();
+          auto& bone_transforms = animator.m_bone_transforms;
+          material.set_bound_arrary("bone_transform", 0U, &bone_transforms);
+        }
+      } else if (static_cast<::component::Material::ShadingModel>(shading_model) ==
+                 ::component::Material::ShadingModel::PBR) {
+        // TODO
+      }
+    }
+    /*
+    for (auto& [texture_name, uid] : model.materials_cache) {
+      auto material_path = model_component[]
+      auto& material = model.materials.at(uid);
+      material.set_texture(0U, );
+    }
+    */
   }
 
   auto camera_component = doc["CameraComponent"];

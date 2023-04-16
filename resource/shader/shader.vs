@@ -14,6 +14,7 @@ out _vtx {
     out vec2 _uv;
 };
 
+uniform bool is_animation;
 uniform mat4 bone_transform[600];
 
 layout (std140) uniform Matrices {
@@ -37,7 +38,7 @@ mat4 CalcBoneTransform() {
 
 void main()
 {
-    mat4 BT = CalcBoneTransform();
+    mat4 BT = is_animation? CalcBoneTransform() : mat4(1.0);
     gl_Position = camera.projection * camera.view * model * BT * vec4(position, 1.0);
     _position = vec3(model * BT * vec4(position, 1.0));
     _normal   = normalize(vec3(model * BT * vec4(normal, 0.0)));

@@ -95,7 +95,7 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     auto& animator = animate_view.get<Animator>(e);
     auto& model = animate_view.get<Model>(e);
     animator.Update(model, Clock::dt * 1.0);
-    // auto& bone_transforms = animator.m_bone_transforms;
+    std::cout << "animation name : " << model.animation->m_name << std::endl;
   }
   
 

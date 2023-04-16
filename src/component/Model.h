@@ -92,6 +92,8 @@ class Model {
   // 模型纹理名称与模型mesh的id的映射
   std::unordered_map<std::string, GLuint> materials_cache;
 
+  std::string model_filepath;
+  std::string animation_filepath;
   bool m_animated;
   unsigned int n_nodes = 0, n_bones = 0;
   unsigned int n_meshes = 0, n_verts = 0, n_tris = 0;

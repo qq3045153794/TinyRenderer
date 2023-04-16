@@ -112,9 +112,10 @@ class Material {
 
   template <typename T>
   void set_bound_arrary(const GLchar* name, GLuint size, const std::vector<T>* array_ptr) {
-
-      m_uniforms_cache[name] = UboData<T>(name, m_shader, array_ptr);
-    }
+    // 设置骨骼代表有动画
+    set_uniform(200U, true);
+    m_uniforms_cache[name] = UboData<T>(name, m_shader, array_ptr);
+  }
 
   template <typename T>
   void set_uniform(GLuint uid, const T& val) {

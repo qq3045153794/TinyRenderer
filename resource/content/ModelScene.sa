@@ -1,0 +1,224 @@
+SceneName: hello world
+Entitys:
+  - TagComponent:
+      Tag: 1
+      EntityName: CubePBR
+    TransformComponent:
+      Position: [0, -20.8999996, 0]
+      Rotation: [0, -0, 0]
+      Scale: [200, 0.00999999978, 200]
+    MeshComponent:
+      primitive: 1
+    MaterialComponent:
+      ShadingModel: 2
+      normal_texture_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/textures/wood_pbr/WoodFloor043_1K_NormalGL.jpg
+      ao_texture_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/textures/wood_pbr/WoodFloor043_1K_AmbientOcclusion.jpg
+      metalness_texture_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/textures/wood_pbr/WoodFloor043_1K_Metalness.jpg
+      roughness_texture_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/textures/wood_pbr/WoodFloor043_1K_Roughness.jpg
+      albedo_texture_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/textures/wood_pbr/WoodFloor043_1K_Color.jpg
+      normal_texture: 9
+      metalness_texture: 6
+      roughness_texture: 7
+      albedo_texture: 5
+      albedo: [0.784313738, 0.784313738, 0.784313738, 1]
+      sample_ao: true
+      brdf_LUT_map: 4
+      sample_normal: true
+      sample_albedo: true
+      sample_metalness: true
+      prefilter_map: 3
+      roughness: 1
+      ao: 1
+      metalness: 0
+      irradiance_map: 2
+      ao_texture: 8
+      sample_roughness: false
+      specular: 0.5
+  - TagComponent:
+      Tag: 16
+      EntityName: skybox
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      primitive: 1
+    MaterialComponent:
+      ShadingModel: 0
+      VertexShaderPath: ../resource/shader/skybox.vs
+      FragmentShaderPath: ../resource/shader/skybox.fs
+      specular: 0.5
+      ao: 1
+      roughness: 1
+      metalness: 0
+      sample_normal: false
+      sample_ao: false
+      sample_roughness: false
+      albedo: [1, 1, 1, 1]
+      sample_metalness: false
+      sample_albedo: false
+  - TagComponent:
+      Tag: 1
+      EntityName: paimon
+    TransformComponent:
+      Position: [-5.80000019, -2, -3.0999999]
+      Rotation: [0, -0, 0]
+      Scale: [4, 4, 4]
+    ModelComponent:
+      ModelFliePath: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/untitled.obj
+      isAnimation: false
+      Materials:
+        - MaterialName: 披风
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/披风2.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 头发
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/头发.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 衣服
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/衣服.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 皮肤
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/衣服.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 眼睛
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/头发.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 表情
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/config/textures/003.jpeg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 脸
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/脸.jpg
+          texture_0: 0
+          is_animation: false
+        - MaterialName: 眼白
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/paimon/Texture/脸.jpg
+          texture_0: 0
+          is_animation: false
+  - TagComponent:
+      Tag: 1
+      EntityName: babala
+    TransformComponent:
+      Position: [0, -20, 0]
+      Rotation: [0, -0, 0]
+      Scale: [0.100000001, 0.100000001, 0.100000001]
+    ModelComponent:
+      ModelFliePath: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/babala.fbx
+      isAnimation: true
+      Materials:
+        - MaterialName: 脸红.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 裙子.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/服.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 肌.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/肌.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 魔法书.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/服.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: "> <.002"
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/表情.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 腿.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/服.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 面1.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 面2.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 睫.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 发饰.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/发.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 目星.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 目.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/发.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 二重.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 齿.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 眉.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 目白.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 口舌.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/面.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 腰带.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/服.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 发.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/发.png
+          texture_0: 0
+          is_animation: true
+        - MaterialName: 上衣.002
+          ShadingModel: 1
+          texture_0_path: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/tex/服.png
+          texture_0: 0
+          is_animation: true
+      AnimationPathfile: /home/xietao/hub/github/xietao/TinyRenderer/build/resource/content/models/babala/babala.fbx
+    AnimatorComponent:
+      node: node

@@ -24,7 +24,7 @@ bool Node::animated() const { return (bid >= 0) && alive; }
 
 static inline glm::mat4 AssimpMat2GLM(const aiMatrix4x4& m) { return glm::transpose(glm::make_mat4(&m.a1)); }
 
-Model::Model(const std::string& file_path, Quality quality, bool animated) : m_animated(animated) {
+Model::Model(const std::string& file_path, Quality quality, bool animated) : model_filepath(file_path), m_animated(animated) {
   // clang-format off
   u_int32_t improt_options = static_cast<unsigned int>(quality) 
     | aiProcess_FlipUVs 
@@ -220,11 +220,6 @@ void Model::process_mesh(aiMesh* ai_mesh) {
           }
         }
       }
-/*
-      for (const auto& vertex : vertices) {
-        CORE_DEBUG("vector bound : ({}, {}, {}, {}) weight : ({}, {}, {}, {})", vertex.bone_id.x, vertex.bone_id.y, vertex.bone_id.z, vertex.bone_id.w, vertex.bone_wt.x, vertex.bone_wt.y, vertex.bone_wt.z, vertex.bone_wt.w);
-      }
-*/
     }
   }
 
@@ -269,7 +264,9 @@ Material& Model::SetMatermial(const std::string& matkey, const Material& materia
 void Model::AttachMotion(const std::string& filepath) {
   if (!m_animated) {
     CORE_ERROR("Cannot attach animation to the model, model must be animated...");
+    std::runtime_error("opt error");
   }
+  animation_filepath = filepath;
   // clang-format off
   const unsigned int import_options = 0
     | aiProcess_FlipUVs

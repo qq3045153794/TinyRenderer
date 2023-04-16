@@ -18,6 +18,7 @@ std::map<GLuint, std::string> Material::uniform_dictionary{
     {102, "sample_roughness"},
     {103, "sample_ao"},
     {104, "sample_normal"},
+    {200, "is_animation"},
     {997, "irradiance_map"}
 };
 
@@ -57,6 +58,8 @@ Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_mod
   if (shadering_model == ShadingModel::DEFAULT) {
     auto default_shader = ::saber::PublicSingleton<saber::Library<::asset::Shader>>::GetInstance().GetDefaultShader();
     set_shader(default_shader);
+    // 初始化未有动画
+    set_uniform(200U, false);
 
   } else if (shadering_model == ShadingModel::PBR) {
     auto pbr_shader = ::saber::PublicSingleton<saber::Library<::asset::Shader>>::GetInstance().GetPbrShader();
