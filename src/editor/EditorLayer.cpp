@@ -209,13 +209,13 @@ void EditorLayer::OnAttach() {
   // CHECK_ERROR();
   // CORE_INFO("{} created", m_editor_camera.name);
 
-
   auto skybox_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().Get("hdr");
   Entity skybox = scene->create_entity("skybox", ETag::Skybox);
   skybox.AddComponent<Mesh>(Mesh::primitive::CUBE);
   skybox.AddComponent<Material>(skybox_shader);
   skybox.GetComponent<Material>().set_texture(0, skybox_texture);
-  ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / skybox.name, skybox);
+  ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / skybox.name,
+                                            skybox);
 
   m_editor_camera = this->create_entity("editor camera", ::component::ETag::MainCamera);
   m_editor_camera.AddComponent<CameraFps>(
@@ -223,47 +223,57 @@ void EditorLayer::OnAttach() {
   m_editor_camera.GetComponent<Transform>().set_position(glm::vec3(0.0, 0.0, 5.0));
 
   auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
-  /*
-    Entity paimon = scene->create_entity("paimon");
-    auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon" ;
-    paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
-    paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
-    paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
-    auto& paimon_model = paimon.GetComponent<Model>();
-    auto paimon_1 = std::make_shared<Material>(Material::ShadingModel::DEFAULT);
-    for(auto& [texture_name, uid] : paimon_model.materials_cache) {
-      auto& temp_mat = paimon_model.SetMatermial(texture_name, *paimon_1);
-      temp_mat.set_texture(0, default_texture);
-    }
-    ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "paimon.sa",
-    paimon);
-  */
-  Entity paimon = ::scene::SerializeObject::DeserializeEntity(
-      PublicSingleton<ConfigManage>::GetInstance().content_path / "paimon.sa", *scene);
-/*
+
+  Entity paimon = scene->create_entity("paimon");
+  auto paimon_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/paimon";
+  paimon.AddComponent<Model>((paimon_path / "untitled.obj").c_str(), Quality::Auto);
+  paimon.GetComponent<Transform>().set_position(glm::vec3(0.0, -2.0, 0.0));
+  paimon.GetComponent<Transform>().set_scale(glm::vec3(4.0, 4.0, 4.0));
+  auto& paimon_model = paimon.GetComponent<Model>();
+  auto paimon_1 = std::make_shared<Material>(Material::ShadingModel::PBR);
+
+  auto brdf_lut_texture = ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+  auto irradian_texture = ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("irradian");
+  auto prefiltermap = ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+  paimon_1->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+  paimon_1->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+  paimon_1->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+  for (auto& [texture_name, uid] : paimon_model.materials_cache) {
+    auto& temp_mat = paimon_model.SetMatermial(texture_name, *paimon_1);
+    // temp_mat.set_texture(0, default_texture);
+  }
+  // ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "paimon.sa",
+  // paimon);
+
+  // Entity paimon = ::scene::SerializeObject::DeserializeEntity(
+  //    PublicSingleton<ConfigManage>::GetInstance().content_path / "paimon.sa", *scene);
+
   Entity aili = scene->create_entity("babala");
+  auto& aili_transform = aili.GetComponent<Transform>();
+  aili_transform.set_scale(glm::vec3(0.1F, 0.1F, 0.1F));
   auto aili_path = PublicSingleton<ConfigManage>::GetInstance().content_path / "models/babala/babala.fbx";
   aili.AddComponent<Model>(aili_path.c_str(), Quality::Auto, true);
   auto& aili_model = aili.GetComponent<Model>();
   aili_model.AttachMotion(aili_path);
   auto& animator = aili.AddComponent<Animator>(&aili_model);
   animator.Update(aili.GetComponent<Model>(), Clock::dt);
-  // CORE_DEBUG("dt : {}", Clock::dt);
-  auto aili_mat = std::make_shared<Material>(Material::ShadingModel::DEFAULT);
+  auto aili_mat = std::make_shared<Material>(Material::ShadingModel::PBR);
+
+  aili_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+  aili_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+  aili_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
   for (auto& [texture_name, uid] : aili_model.materials_cache) {
     auto& temp_mat = aili_model.SetMatermial(texture_name, *aili_mat);
-    temp_mat.set_texture(0, default_texture);
+    //temp_mat.set_texture(0, default_texture);
     auto& bone_transforms = animator.m_bone_transforms;
     temp_mat.set_bound_arrary("bone_transform", 0U, &bone_transforms);
-    // temp_mat.set_uniform();
   }
 
-  ::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "babala.sa",
-                                            aili);
-*/
+  //::scene::SerializeObject::SerializeEntity(PublicSingleton<ConfigManage>::GetInstance().content_path / "babala.sa",
+  //                                          aili);
 
-  Entity aili = ::scene::SerializeObject::DeserializeEntity(
-      PublicSingleton<ConfigManage>::GetInstance().content_path / "babala.sa", *scene);
+  // Entity aili = ::scene::SerializeObject::DeserializeEntity(
+  //    PublicSingleton<ConfigManage>::GetInstance().content_path / "babala.sa", *scene);
   /*
   auto& temp_mat_1 = paimon.GetComponent<Model>().SetMatermial("披风", *paimon_1);
   temp_mat_1.set_texture(0, std::make_shared<asset::Texture>((paimon_path / "Texture/披风2.jpg").c_str(), false, 5));

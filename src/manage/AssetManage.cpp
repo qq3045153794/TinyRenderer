@@ -14,20 +14,12 @@ void AssetManage::Init() {
       return throw std::runtime_error("The loaded file does not exist on disk (file = asset_path.yml)");
     }
 
-
   } else {
     CORE_WARN("Asset Path no exists");
   }
 }
 
-
-// AssetManage::~AssetManage() {
-//  SPDLOG_DEBUG("Call ~AssetManage");
-//  textures_cache.clear();
-// }
-
 void AssetManage::Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path) {
-
   CORE_ASERT(!std::filesystem::is_directory(from_path), "From path is Dir!");
   CORE_ASERT(std::filesystem::is_directory(to_path), "From path is not Dir!");
 
@@ -64,7 +56,8 @@ void AssetManage::Import(const std::filesystem::path& from_path, const std::file
 }
 
 void AssetManage::Remove(const std::filesystem::path& filename_path) {
-  CORE_ASERT(m_resource_register.count(filename_path) > 0, "No find filename (filename_path = {})", filename_path.string());
+  CORE_ASERT(m_resource_register.count(filename_path) > 0, "No find filename (filename_path = {})",
+             filename_path.string());
   auto find_item = std::find(m_resource_storage.begin(), m_resource_storage.end(), filename_path);
   CORE_ASERT(find_item != m_resource_storage.end(), "No find filename (filename_path = {})", filename_path.string());
   m_resource_storage.erase(find_item);
@@ -76,8 +69,5 @@ void AssetManage::SaveConfig() {
   auto path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
   Serialize(path);
 }
-
-
-
 
 }  // namespace saber

@@ -70,6 +70,8 @@ Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_mod
     set_uniform(103U, false);
     set_uniform(104U, false);
 
+    set_uniform(200U, false);
+
     // 标准模型
     set_uniform(0U, glm::vec4(1.0f));
     set_uniform(1U, 0.0f);
