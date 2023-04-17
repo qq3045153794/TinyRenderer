@@ -284,11 +284,12 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   });
 
   draw_component<component::Model>("Model", entity, [](component::Model& component) {
-    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
+    //auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
+    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
     std::vector<std::string> items;
     items.push_back("DEFAULT");
     auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
-    for (const auto& [path, texture] : textures_cache) {
+    for (const auto& path : textures_cache) {
       items.push_back(path);
     }
     ImGui::PushFont(ImGuiWrapper::u8_font);
@@ -325,8 +326,9 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
-    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
+    //auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
 
+    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
     auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
                                              auto& component, const Entity& entity, bool is_samle) -> void {
       std::vector<std::filesystem::path> items;
@@ -335,8 +337,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         if (!current_item) {
           auto texture = component.get_texture(pbr);
           current_item = texture->m_image_path->string();
-          CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
-                     texture->m_image_path->string());
+          //CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
+          //           texture->m_image_path->string());
         }
       }
 
@@ -344,7 +346,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         current_item = "None";
       }
 
-      for (const auto& [path, texture] : textures_cache) {
+      for (const auto& path : textures_cache) {
         items.push_back(path);
       }
 
@@ -353,7 +355,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           // 由于是顺序的 可以通过计算来映射
           component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
         } else {
-          auto texture = textures_cache[item];
+          auto texture = std::make_shared<::asset::Texture>(item.c_str(), true, 7U);
           component.bind_texture(pbr, texture);
         }
       });
@@ -368,7 +370,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
       if (*current_item == default_texture->m_image_path->string()) current_item = "DEFAULT";
 
-      for (const auto& [path, texture] : textures_cache) {
+      for (const auto& path : textures_cache) {
         items.push_back(path);
       }
 
@@ -379,7 +381,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
           component.set_texture(0, default_texture);
         } else {
-          auto texture = textures_cache[item];
+          //auto texture = textures_cache[item];
+          auto texture = std::make_shared<::asset::Texture>(item.c_str(), true, 7U);
           component.set_texture(0, texture);
         }
       });

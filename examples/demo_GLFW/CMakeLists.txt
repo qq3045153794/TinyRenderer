@@ -1,7 +1,3 @@
-project(DEMO_GLFW VERSION 0.0.1 LANGUAGES C CXX)
-
-
-include(${PROJECT_SOURCE_DIR}/config/CMakeLists.txt)
 
 add_executable(demo_glfw
   ${PROJECT_SOURCE_DIR}/examples/demo_GLFW/main.cpp
@@ -25,5 +21,5 @@ target_include_directories(demo_glfw
 
 target_link_libraries(demo_glfw
     PUBLIC
-        ${MAIN_LIBS}
+    ${VEN_LIBS}
 )

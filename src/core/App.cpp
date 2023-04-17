@@ -56,10 +56,8 @@ void App::Init() {
   getcwd(root_path, MAXPATH);
   this->root_path = std::string(root_path);
 
-
   ::saber::PublicSingleton<::saber::ConfigManage>::GetInstance().Init();
   ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().Init();
-
 }
 
 void App::AttachLayer() {
@@ -71,7 +69,15 @@ void App::AttachLayer() {
   editor_layer->Awake();
 }
 
-void App::Clean() { Window::clear(); }
+void App::Clean() {
+  
+  Window::clear();
+  CORE_DEBUG("Asset Clear");
+  ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().Clear();
+  CORE_DEBUG("Editor Clear");
+  editor_layer.reset();
+  
+}
 
 void App::Run() {
   while (!Window::should_close()) {

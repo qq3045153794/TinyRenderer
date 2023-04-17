@@ -21,14 +21,14 @@ Texture::Texture(const GLchar* img_path, bool flip, GLuint levels)
   glBindTexture(m_target, m_id);
 
   if (image.is_hdr()) {
-    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
-                 m_image_format, GL_FLOAT, image.get_buffer());
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_FLOAT, image.get_buffer());
   } else {
-    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0,
-                 m_image_format, GL_UNSIGNED_BYTE, image.get_buffer());
+    glTexImage2D(m_target, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE,
+                 image.get_buffer());
   }
 
   set_sampler_state();
+  CORE_INFO("Texture 2D (id = {})", m_id);
 }
 
 Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels)
@@ -44,17 +44,15 @@ Texture::Texture(const std::vector<std::string>& path_vec, GLuint levels)
     m_image_format = image.get_img_format();
     m_internal_format = image.get_ine_format();
 
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + idx, 0, m_internal_format,
-                 m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE,
-                 image.get_buffer());
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + idx, 0, m_internal_format, m_width, m_height, 0, m_image_format,
+                 GL_UNSIGNED_BYTE, image.get_buffer());
     ++idx;
   }
 
   set_sampler_state();
 }
 
-Texture::Texture(const GLchar* path, int resolution, GLuint levels)
-    : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
+Texture::Texture(const GLchar* path, int resolution, GLuint levels) : m_target(GL_TEXTURE_CUBE_MAP), m_levels(levels) {
   // 加载hdr图片 转换时候转换成cubemap 注意hdr图像加载进texture为float类型
   // (不会进行归一化) 转换成的cubemap也是float
 
@@ -67,8 +65,7 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   GLuint hdr_id;
   glGenTextures(1, &hdr_id);
   glBindTexture(GL_TEXTURE_2D, hdr_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0,
-               m_image_format, GL_FLOAT, image.get_buffer());
+  glTexImage2D(GL_TEXTURE_2D, 0, m_internal_format, m_width, m_height, 0, m_image_format, GL_FLOAT, image.get_buffer());
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -85,8 +82,8 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   glBindTexture(m_target, m_id);
   for (size_t i = 0; i < faces; i++) {
     // 我们存储的是float格式 由于采样的纹理是hdr
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, resolution,
-                 resolution, 0, GL_RGB, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, resolution, resolution, 0, GL_RGB, GL_FLOAT,
+                 nullptr);
   }
   glBindTexture(m_target, 0);
   set_sampler_state();
@@ -98,18 +95,12 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   glm::mat4 proj = glm::perspective(glm::radians(kFOV), kAspect, kZNear, kZFar);
 
   glm::mat4 views[] = {
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 0.0F, 0.0F),
-                  glm::vec3(0.0F, -1.0F, 0.0F)),
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(-1.0F, 0.0F, 0.0F),
-                  glm::vec3(0.0F, -1.0F, 0.0F)),
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 1.0F, 0.0F),
-                  glm::vec3(0.0F, 0.0F, 1.0F)),
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, -1.0F, 0.0F),
-                  glm::vec3(0.0F, 0.0F, -1.0F)),
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, 1.0F),
-                  glm::vec3(0.0F, -1.0F, 0.0F)),
-      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, -1.0F),
-                  glm::vec3(0.0F, -1.0F, 0.0F))};
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 0.0F, 0.0F), glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(-1.0F, 0.0F, 0.0F), glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 1.0F, 0.0F), glm::vec3(0.0F, 0.0F, 1.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, -1.0F, 0.0F), glm::vec3(0.0F, 0.0F, -1.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, 1.0F), glm::vec3(0.0F, -1.0F, 0.0F)),
+      glm::lookAt(glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, -1.0F), glm::vec3(0.0F, -1.0F, 0.0F))};
 
   // clang-format off
   // 创建cubek
@@ -236,8 +227,8 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
 
   cube_vao->set_vbo(*cube_vbo, 0U, 3U, 3U * sizeof(int), 0, GL_FLOAT);
 
-  auto cubemap_shader = std::make_unique<Shader>(
-      "../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs");
+  auto cubemap_shader =
+      std::make_unique<Shader>("../resource/shader/hdr2cubemap.vs", "../resource/shader/hdr2cubemap.fs");
 
   cubemap_shader->bind();
   cubemap_shader->set_uniform("projection", proj);
@@ -250,8 +241,7 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   for (size_t i = 0; i < faces; i++) {
     cubemap_shader->set_uniform("view", views[i]);
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                           GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_id, 0);
 
     glClearColor(1.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -265,8 +255,7 @@ Texture::Texture(const GLchar* path, int resolution, GLuint levels)
   glDeleteTextures(1, &hdr_id);
 }
 
-Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
-                 GLuint levels)
+Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GLuint levels)
     : m_width(width),
       m_height(height),
       m_internal_format(i_format),
@@ -278,13 +267,12 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
       if (m_image_format == GL_RGB || m_image_format == GL_RGBA) {
-        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
-                     0, m_image_format, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE,
+                     nullptr);
       } else {
         std::cout << "width = " << width << " "
                   << "height = " << height << std::endl;
-        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height,
-                     0, GL_RG, GL_FLOAT, nullptr);
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, GL_RG, GL_FLOAT, nullptr);
       }
       glBindTexture(m_target, 0);
       break;
@@ -294,8 +282,7 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
       glGenTextures(1, &m_id);
       glBindTexture(m_target, m_id);
       for (size_t i = 0; i < faces; i++) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_width,
-                     m_height, 0, GL_RGB, GL_FLOAT, nullptr);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
       }
       glBindTexture(m_target, 0);
       break;
@@ -305,7 +292,13 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format,
   set_sampler_state();
 }
 
-Texture::~Texture() { glDeleteTextures(1, &m_id); }
+Texture::~Texture() {
+  CORE_INFO("~Texture (id : {})", m_id);
+  glDeleteTextures(1, &m_id);
+  CHECK_ERROR();
+
+  CORE_DEBUG("~Texture ok (id : {})", m_id);
+}
 
 GLuint Texture::get_id() const { return m_id; }
 
@@ -347,11 +340,7 @@ void Texture::ubind(GLuint unit) const {
   glBindTexture(m_target, 0);
 }
 
-GLuint Texture::Width() const {
-  return m_width;
-}
-GLuint Texture::Height() const {
-  return m_height;
-}
+GLuint Texture::Width() const { return m_width; }
+GLuint Texture::Height() const { return m_height; }
 
 }  // namespace asset

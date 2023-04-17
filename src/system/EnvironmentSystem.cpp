@@ -95,9 +95,8 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     auto& animator = animate_view.get<Animator>(e);
     auto& model = animate_view.get<Model>(e);
     animator.Update(model, Clock::dt * 1.0);
-    std::cout << "animation name : " << model.animation->m_name << std::endl;
   }
-  
+
 
   // TODO
   // if (auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("SL"); true) {
