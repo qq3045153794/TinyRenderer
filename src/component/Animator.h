@@ -57,9 +57,13 @@ class Animation {
 
 class Animator {
  public:
+  bool m_action = true;
   float m_current_time;
+  std::string m_name;
+  float m_duration;
+  float m_speed;
+  float m_tick_speed = 1.0;
   std::vector<glm::mat4> m_bone_transforms;
-  Animator() = default;
   Animator(Model* model);
 
   void Update(Model& model, float deltatime);

@@ -70,13 +70,8 @@ void App::AttachLayer() {
 }
 
 void App::Clean() {
-  
-  Window::clear();
-  CORE_DEBUG("Asset Clear");
-  ::saber::PublicSingleton<::saber::AssetManage>::GetInstance().Clear();
-  CORE_DEBUG("Editor Clear");
   editor_layer.reset();
-  
+  Window::clear();
 }
 
 void App::Run() {

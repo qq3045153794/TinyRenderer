@@ -94,7 +94,11 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
   for (auto& e : animate_view) {
     auto& animator = animate_view.get<Animator>(e);
     auto& model = animate_view.get<Model>(e);
-    animator.Update(model, Clock::dt * 1.0);
+    bool is_update = animator.m_action;
+    if (is_update) {
+      float tick_speed = animator.m_tick_speed;
+      animator.Update(model, Clock::dt * tick_speed);
+    }
   }
 
 

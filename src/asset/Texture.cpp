@@ -297,7 +297,6 @@ Texture::~Texture() {
   glDeleteTextures(1, &m_id);
   CHECK_ERROR();
 
-  CORE_DEBUG("~Texture ok (id : {})", m_id);
 }
 
 GLuint Texture::get_id() const { return m_id; }

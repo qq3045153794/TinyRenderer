@@ -284,7 +284,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   });
 
   draw_component<component::Model>("Model", entity, [](component::Model& component) {
-    //auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
     auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
     std::vector<std::string> items;
     items.push_back("DEFAULT");
@@ -324,6 +323,24 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     ImGui::PopFont();
   });
 
+
+  draw_component<component::Animator>("Animator", entity, [](component::Animator& component) {
+    ImGui::Text("Animation Name : %s", component.m_name.c_str());
+    ImGui::Text("Animation Speed : %f", component.m_speed);
+    ImGui::Text("Animation Time : %f", component.m_duration);
+    ImGui::Text("Animation Action : %d", component.m_action); 
+    ImGui::SameLine();
+    if(ImGui::Button("Switch")) {
+      component.m_action = component.m_action ^ 1;
+    }
+    ImGui::Text("Current Time : %f", component.m_current_time);
+    //ImGui::DragFloat("##CurrentTime", &component.m_current_time, 0.1F, 0.F, component.m_duration, "%.2f");
+    ImGui::SliderFloat("##CurrentTime", &component.m_current_time, 0.F, component.m_duration, "%.2f");
+
+    ImGui::Text("Tick Speed : %f", component.m_tick_speed);
+    ImGui::SliderFloat("##TickSpeed", &component.m_tick_speed, 0.1F, 10.F, "%.2f");
+  });
+
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
     //auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
@@ -350,7 +367,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         items.push_back(path);
       }
 
-      ImGuiWrapper::DrawCombo(combo_key, items, current_item, [&component, &textures_cache, &pbr](const auto& item) {
+      ImGuiWrapper::DrawCombo(combo_key, items, current_item, [&component, &pbr](const auto& item) {
         if (item == "None") {
           // 由于是顺序的 可以通过计算来映射
           component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
@@ -523,12 +540,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       ImGui::BeginTable("##Texture", 1);
       ImGui::TableNextRow();
       ImGui::TableSetColumnIndex(0);
-      // static std::optional<std::string> current_item;
-      // static Entity last_entity;
-      // if (last_entity.id != entity.id) {
-      //   current_item.reset();
-      // }
-      // last_entity = entity;
       TextureCombo("##TexutreCombo", component, entity);
       ImGui::EndTable();
     }

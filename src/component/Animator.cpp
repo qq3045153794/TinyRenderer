@@ -156,6 +156,9 @@ void Animator::Reset(Model* model) {
   CORE_ASERT(model->m_animated, "Model doesn't have animation!");
   m_bone_transforms.resize(model->n_bones, identity_m);
   m_current_time = 0.F;
+  m_name = model->animation->m_name;
+  m_duration = model->animation->m_duration;
+  m_speed = model->animation->m_speed;
 }
 
 void Animator::Update(Model& model, float deltatime) {

@@ -14,12 +14,6 @@ void AssetManage::Init() {
       return throw std::runtime_error("The loaded file does not exist on disk (file = asset_path.yml)");
     }
 
-    //for (const auto& path : m_resource_storage) {
-    //  BuildTexture(path, 7U, true);
-    //}
-    //for(auto& [uid, texture] : textures_cache) {
-    //  CORE_DEBUG("asset texture (id : {})", texture->get_id());
-    //}
 
   } else {
     CORE_WARN("Asset Path no exists");
@@ -66,7 +60,6 @@ void AssetManage::Import(const std::filesystem::path& from_path, const std::file
   meta_out << YAML::EndMap;
   ::utils::File::write_yml_file(expend_meta, meta_out);
 
-  BuildTexture(import_name_path, 7U, true);
   SaveConfig();
 }
 
@@ -76,7 +69,6 @@ void AssetManage::Remove(const std::filesystem::path& filename_path) {
   CORE_ASERT(find_item != m_resource_storage.end(), "No find filename (filename_path = {})", filename_path.string());
   m_resource_storage.erase(find_item);
   m_resource_register.erase(filename_path);
-  DeleteTexture(filename_path);
   SaveConfig();
 }
 
@@ -85,16 +77,7 @@ void AssetManage::SaveConfig() {
   Serialize(path);
 }
 
-void AssetManage::BuildTexture(const std::filesystem::path& file_name_path, uint32_t level, bool is_filp) {
-  CORE_INFO("Build texture...(path = {})", file_name_path.string());
-  //textures_cache[file_name_path.string()] = std::make_shared<::asset::Texture>(file_name_path.c_str(), is_filp, level);
-  //CHECK_ERROR();
-}
 
 
-void AssetManage::DeleteTexture(const std::filesystem::path& file_name_path) {
-  //CORE_ASERT(textures_cache.count(file_name_path) > 0, "No find Delete Texture...");
-  //textures_cache.erase(file_name_path);
-}
 
 }  // namespace saber
