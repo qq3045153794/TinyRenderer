@@ -284,7 +284,36 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
   });
 
   draw_component<component::Model>("Model", entity, [&entity](component::Model& component) {
+    using Material = ::component::Material;
     auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
+
+    auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
+                                             auto& component, bool is_samle) -> void {
+      std::vector<std::filesystem::path> items;
+      items.push_back("None");
+      if (is_samle) {
+        auto texture = component.get_texture(pbr);
+        current_item = texture->m_image_path->string();
+      }
+
+      if (!current_item) {
+        current_item = "None";
+      }
+
+      for (const auto& path : textures_cache) {
+        items.push_back(path);
+      }
+
+      ImGuiWrapper::DrawCombo(combo_key, items, current_item, [&component, &pbr](const auto& item) {
+        if (item == "None") {
+          // 由于是顺序的 可以通过计算来映射
+          component.set_uniform(95U + static_cast<uint32_t>(pbr), false);
+        } else {
+          auto texture = std::make_shared<::asset::Texture>(item.c_str(), false, 7U);
+          component.bind_texture(pbr, texture);
+        }
+      });
+    };
     std::vector<std::string> items;
     items.push_back("DEFAULT");
     auto default_texture = PublicSingleton<Library<::asset::Texture>>::GetInstance().GetDefaultTexture();
@@ -350,6 +379,110 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           ImGui::EndCombo();
         }
       } else if (mat.m_shading_model == ::component::Material::ShadingModel::PBR) {
+        using Material = ::component::Material;
+        if (ImGui::Text("Albedo"); true) {
+          ImGui::BeginTable(("##Albedo" + mat_name).c_str(), 2);
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          float f_albedo[4];
+          auto ubo_var = mat.get_uniform(Material::pbr_u::albedo);
+          auto albedo = std::get<::component::UboData<glm::vec4>>(ubo_var).m_data;
+          auto sample_albedo_var = mat.get_uniform("sample_albedo");
+          bool sample_albedo = std::get<::component::UboData<bool>>(sample_albedo_var).m_data;
+          for (std::size_t i = 0; i < 4; i++) f_albedo[i] = albedo[i];
+          if (sample_albedo) ImGui::BeginDisabled();
+          ImGui::ColorEdit4("##albedo", f_albedo);
+          if (sample_albedo) ImGui::EndDisabled();
+          for (std::size_t i = 0; i < 4; i++) albedo[i] = f_albedo[i];
+          mat.bind_uniform(Material::pbr_u::albedo, albedo);
+
+          ImGui::TableSetColumnIndex(1);
+          std::optional<std::string> current_item;
+          PbrTextureCombo(("##AlbedoCombo" + mat_name), Material::pbr_t::albedo, current_item, mat, sample_albedo);
+          ImGui::EndTable();
+        }
+
+        if (ImGui::Text("Roughness"); true) {
+          ImGui::BeginTable(("##Roughness" + mat_name).c_str(), 2);
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          auto ubo_var = mat.get_uniform(Material::pbr_u::roughness);
+          float reghness = std::get<::component::UboData<float>>(ubo_var).m_data;
+          auto sample_reghness_var = mat.get_uniform("sample_roughness");
+          bool sample_reghness = std::get<::component::UboData<bool>>(sample_reghness_var).m_data;
+          if (sample_reghness) ImGui::BeginDisabled();
+          ImGui::DragFloat("##Roughness", &reghness, 0.01F, 0.F, 1.F, "%.2f");
+          if (sample_reghness) ImGui::EndDisabled();
+          mat.bind_uniform(Material::pbr_u::roughness, reghness);
+
+          ImGui::TableSetColumnIndex(1);
+          std::optional<std::string> current_item;
+          PbrTextureCombo(("##RoughnessCombo" + mat_name).c_str(), Material::pbr_t::roughness, current_item, mat,
+                          sample_reghness);
+          ImGui::EndTable();
+        }
+
+        if (ImGui::Text("Metalness"); true) {
+          ImGui::BeginTable("##Metalness", 2);
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          auto ubo_var = mat.get_uniform(Material::pbr_u::metalness);
+          float metalness = std::get<::component::UboData<float>>(ubo_var).m_data;
+          auto sample_metalness_var = mat.get_uniform("sample_metalness");
+          bool sample_metalness = std::get<::component::UboData<bool>>(sample_metalness_var).m_data;
+          if (sample_metalness) ImGui::BeginDisabled();
+          ImGui::DragFloat("##Metalness", &metalness, 0.01F, 0.F, 1.F, "%.2f");
+          if (sample_metalness) ImGui::EndDisabled();
+          mat.bind_uniform(Material::pbr_u::metalness, metalness);
+
+          ImGui::TableSetColumnIndex(1);
+          std::optional<std::string> current_item;
+          PbrTextureCombo(("##MetalnessCombo" + mat_name), Material::pbr_t::metalness, current_item, mat,
+                          sample_metalness);
+          ImGui::EndTable();
+        }
+
+        if (ImGui::Text("Specular"); true) {
+          ImGui::BeginTable("##Specular", 1);
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          auto ubo_var = mat.get_uniform(Material::pbr_u::specular);
+          float specular = std::get<::component::UboData<float>>(ubo_var).m_data;
+          ImGui::DragFloat("##SpecularCombo", &specular, 0.01F, 0.F, 1.F, "%.2f");
+          mat.bind_uniform(Material::pbr_u::specular, specular);
+          ImGui::EndTable();
+        }
+
+        if (ImGui::Text("AO"); true) {
+          ImGui::BeginTable("##Ao", 2);
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          auto ubo_var = mat.get_uniform(Material::pbr_u::ao);
+          float ao = std::get<::component::UboData<float>>(ubo_var).m_data;
+          auto sample_ao_var = mat.get_uniform("sample_ao");
+          bool sample_ao = std::get<::component::UboData<bool>>(sample_ao_var).m_data;
+          if (sample_ao) ImGui::BeginDisabled();
+          ImGui::DragFloat("##Ao", &ao, 0.01F, 0.F, 1.F, "%.2f");
+          if (sample_ao) ImGui::EndDisabled();
+          mat.bind_uniform(Material::pbr_u::ao, ao);
+
+          ImGui::TableSetColumnIndex(1);
+          std::optional<std::string> current_item;
+          PbrTextureCombo("##AoCombo", Material::pbr_t::ao, current_item, mat, sample_ao);
+          ImGui::EndTable();
+        }
+
+        if (ImGui::Text("Normal"); true) {
+          ImGui::BeginTable("##NorTable", 1);
+          ImGui::TableNextRow();
+          auto sample_normal_var = mat.get_uniform("sample_normal");
+          bool sample_normal = std::get<::component::UboData<bool>>(sample_normal_var).m_data;
+
+          ImGui::TableSetColumnIndex(0);
+          std::optional<std::string> current_item;
+          PbrTextureCombo(("##NormalCombo" + mat_name).c_str(), Material::pbr_t::normal, current_item, mat, sample_normal);
+          ImGui::EndTable();
+        }
       }
       ImGui::Separator();
     }
