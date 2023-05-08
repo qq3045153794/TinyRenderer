@@ -393,9 +393,9 @@ void EditorLayer::OnImGuiRender() {
     ImVec2 viewportPanelSize = {static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())};
     uint32_t texture_id = main_fbo->get_color_texture().get_id();
     ImGui::Image((void*)(intptr_t)texture_id, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
-    ImGui::End();
-    ImGui::PopStyleVar();
   }
+  ImGui::PopStyleVar();
+  ImGui::End();
 
   if (demo_window_open) {
     ImGui::ShowDemoWindow(&demo_window_open);

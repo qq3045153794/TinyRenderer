@@ -46,6 +46,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
 
   // 右键点击弹出窗口
 
+  static bool create_model_oepn = false;
   if (ImGui::BeginPopupContextWindow()) {
     if (ImGui::BeginMenu("Create Render Entity")) {
       if (ImGui::MenuItem("Create Empty")) {
@@ -144,6 +145,13 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
       ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("Create Model Entity")) {
+      if (ImGui::MenuItem("Create Model")) {
+        create_model_oepn = true;
+      }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Create Camera Entity")) {
       if (ImGui::MenuItem("Create Camera")) {
         // TODO
@@ -164,6 +172,20 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
 
     ImGui::EndPopup();
   }
+
+  if (create_model_oepn) {
+    ImGui::OpenPopup("Create Model WindowPopUp");
+    if (ImGui::BeginPopupModal("Create Model WindowPopUp", &create_model_oepn)) {
+      if (ImGui::Button("Close##CreateModel")) {
+        CORE_INFO("No Cell");
+        create_model_oepn = false;
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    ImGui::EndPopup();
+  }
+
+  CORE_INFO("What after{}", create_model_oepn);
 
   ImGui::End();
 
@@ -190,6 +212,7 @@ static void draw_vec3_control(const std::string& label, glm::vec3& values, float
   ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
   ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
 
+  // ImGui::InputTextMultiline()
   // 同一个window下的botton id必须不同，否则会冲突导致按键没反应
   // 可用##str 将str作为区分id部分，且str不会显示在ui中
   // 参考：https://github.com/ocornut/imgui/wiki#about-the-imgui-paradigm
@@ -285,7 +308,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
   draw_component<component::Model>("Model", entity, [&entity](component::Model& component) {
     using Material = ::component::Material;
-    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
+    // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
+    auto textures_cache = PublicSingleton<AssetManage>::GetInstance().GetImageFilter();
 
     auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
                                              auto& component, bool is_samle) -> void {
@@ -324,6 +348,58 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       items.push_back(path);
     }
     ImGui::PushFont(ImGuiWrapper::u8_font);
+    // 模型
+    /*
+    {
+      auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
+      std::string& current_item = component.model_filepath;
+      if (ImGui::BeginCombo("##ModelFilePath", current_item.c_str())) {
+        for (auto& item : model_cache) {
+          bool is_selected = (current_item == item);
+          if (ImGui::Selectable(item.c_str(), is_selected)) {
+            if (entity.Contains<::component::Animator>()) {
+              entity.RemoveComponent<::component::Animator>();
+            }
+            entity.SetComponent<::component::Model>(item, ::component::Quality::Auto, false);
+            auto model_mat = std::make_shared<Material>(Material::ShadingModel::PBR);
+            model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+            model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+            model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+            for (auto& [texture_name, uid] : component.materials_cache) {
+              auto& temp_mat = component.SetMatermial(texture_name, *model_mat);
+            }
+          }
+        }
+        ImGui::EndCombo();
+      }
+    }
+    // 动画
+    {
+
+      auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
+      std::string& current_item = component.animation_filepath;
+      if (ImGui::BeginCombo("##AnimationFilePath", current_item.c_str())) {
+        for (auto& item : model_cache) {
+          bool is_selected = (current_item == item);
+          if (ImGui::Selectable(item.c_str(), is_selected)) {
+            if (entity.Contains<::component::Animator>()) {
+              entity.RemoveComponent<::component::Animator>();
+            }
+            entity.SetComponent<::component::Model>(component.model_filepath, ::component::Quality::Auto, true);
+            auto model_mat = std::make_shared<Material>(Material::ShadingModel::PBR);
+            model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+            model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+            model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+            for (auto& [texture_name, uid] : component.materials_cache) {
+              auto& temp_mat = component.SetMatermial(texture_name, *model_mat);
+            }
+
+          }
+        }
+        ImGui::EndCombo();
+      }
+    }
+    */
     for (auto& [mat_name, uid] : component.materials_cache) {
       auto& mat = component.materials.at(uid);
 
@@ -480,7 +556,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
 
           ImGui::TableSetColumnIndex(0);
           std::optional<std::string> current_item;
-          PbrTextureCombo(("##NormalCombo" + mat_name).c_str(), Material::pbr_t::normal, current_item, mat, sample_normal);
+          PbrTextureCombo(("##NormalCombo" + mat_name).c_str(), Material::pbr_t::normal, current_item, mat,
+                          sample_normal);
           ImGui::EndTable();
         }
       }
@@ -510,7 +587,8 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     using Material = ::component::Material;
     // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
 
-    auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
+    // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
+    auto textures_cache = PublicSingleton<AssetManage>::GetInstance().GetImageFilter();
     auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
                                              auto& component, const Entity& entity, bool is_samle) -> void {
       std::vector<std::filesystem::path> items;

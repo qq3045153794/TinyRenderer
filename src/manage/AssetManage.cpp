@@ -65,6 +65,44 @@ void AssetManage::Remove(const std::filesystem::path& filename_path) {
   SaveConfig();
 }
 
+std::vector<std::filesystem::path> AssetManage::GetImageFilter() const {
+  std::vector<std::filesystem::path> ret_image_filter;
+  for (const auto& filepath : m_resource_storage) {
+    if (IsPicture(filepath)) {
+      ret_image_filter.emplace_back(filepath);
+    }
+  }
+  return ret_image_filter;
+}
+
+
+std::vector<std::filesystem::path> AssetManage::GetModelFilter() const {
+  std::vector<std::filesystem::path> ret_model_filter;
+  for (const auto& filepath : m_resource_storage) {
+    if (Is3DModel(filepath)) {
+      ret_model_filter.emplace_back(filepath);
+    }
+  }
+  return ret_model_filter;
+}
+
+bool AssetManage::IsPicture(const std::filesystem::path& filepath) const {
+  auto expend_name = filepath.extension();
+  if (expend_name == ".png" || expend_name == ".jpg" || expend_name == ".jpeg") {
+    return true;
+  }
+  return false;
+}
+
+
+bool AssetManage::Is3DModel(const std::filesystem::path& filepath) const {
+  auto expend_name = filepath.extension();
+  if (expend_name == ".fbx" || expend_name == ".obj") {
+    return true;
+  }
+  return false;
+}
+
 void AssetManage::SaveConfig() {
   auto path = PublicSingleton<ConfigManage>::GetInstance().config_path / "asset_path.yml";
   Serialize(path);

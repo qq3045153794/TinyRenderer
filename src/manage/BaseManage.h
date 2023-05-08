@@ -1,5 +1,4 @@
 #ifndef _SRC_MANAGE_BASEMANAGE_H_
-
 #define _SRC_MANAGE_BASEMANAGE_H_
 #include <core/PublicSingleton.h>
 

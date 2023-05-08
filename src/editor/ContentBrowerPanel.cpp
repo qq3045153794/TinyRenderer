@@ -83,13 +83,21 @@ void ContentBrowerPanel::DrawContent() {
   ImGui::Columns(columnCount, 0, false);
   std::vector<std::filesystem::path> contents;
 
-  ImGui::PushFont(ImGuiWrapper::config_font);
+  ImGui::PushFont(ImGuiWrapper::u8_font);
   for (auto& path : std::filesystem::directory_iterator(m_current_directory)) {
-    bool is_register = PublicSingleton<AssetManage>::GetInstance().CheckResExit(path);
+    auto& asset_manage = PublicSingleton<AssetManage>::GetInstance();
+    bool is_register = asset_manage.CheckResExit(path);
     if (!is_directory(path) && is_register) {
       ImGui::BeginGroup();
       ImTextureID texture_id =
           (void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetTxtFileIcon()->get_id();
+
+      if (asset_manage.IsPicture(path)) {
+        texture_id = (void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetTxtFileIcon()->get_id();
+      } else if (asset_manage.Is3DModel(path)) {
+        texture_id = (void*)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetRabbitIcon()->get_id();
+      }
+
       ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
       ImGui::ImageButton(texture_id, {content_size, content_size}, {0, 1}, {1, 0});
 
@@ -115,17 +123,32 @@ void ContentBrowerPanel::DrawSetting() {
   // Import Button
   ImTextureID texture_id =
       (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetAddIcon()->get_id();
-  static bool file_brower_open = false;
+  ImTextureID texture_id_1 = (ImTextureID)(intptr_t)PublicSingleton<Library<::asset::Texture>>::GetInstance().GetRabbitIcon()->get_id();
+  static bool image_file_brower_open = false;
+  static bool model_file_brower_open = false;
   ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.F, 0.F, 0.F, 0.F));
   if (ImGui::ImageButton(texture_id, {24, 24}, {0, 1}, {1, 0})) {
-    file_brower_open = true;
+    image_file_brower_open = true;
   }
-  if (file_brower_open) {
-    auto file_path_name = ImGuiWrapper::DrawFileBrower("Choose image", file_brower_open, ".png,.jpg,.jpeg");
+  ImGui::SameLine();
+  if (ImGui::ImageButton(texture_id_1, {24, 24}, {0, 1}, {1, 0})) {
+    model_file_brower_open = true;
+  }
+  // 图片
+  if (image_file_brower_open) {
+    auto file_path_name = ImGuiWrapper::DrawFileBrower("Choose image", image_file_brower_open, ".png,.jpg,.jpeg");
     if (file_path_name) {
       PublicSingleton<AssetManage>::GetInstance().Import(*file_path_name, *m_selected_directory);
     }
   }
+  // 模型
+  if(model_file_brower_open) {
+    auto file_path_name = ImGuiWrapper::DrawFileBrower("Choose model", model_file_brower_open, ".fbx,.obj");
+    if(file_path_name) {
+      PublicSingleton<AssetManage>::GetInstance().Import(*file_path_name, *m_selected_directory);
+    }
+  }
+
   ImGui::PopStyleColor();
 
   ImGui::SameLine();
