@@ -176,16 +176,124 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
   if (create_model_oepn) {
     ImGui::OpenPopup("Create Model WindowPopUp");
     if (ImGui::BeginPopupModal("Create Model WindowPopUp", &create_model_oepn)) {
-      if (ImGui::Button("Close##CreateModel")) {
-        CORE_INFO("No Cell");
-        create_model_oepn = false;
-        ImGui::CloseCurrentPopup();
+      auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
+      static std::string current_model = "None";
+      static std::string current_animation = "None";
+      if (ImGui::BeginCombo("##ModelFilePath", current_model.c_str())) {
+        for (auto& item : model_cache) {
+          bool is_selected = (current_model == item);
+          if (ImGui::Selectable(item.c_str(), is_selected)) {
+            current_model = item;
+          }
+        }
+        ImGui::EndCombo();
       }
-    }
-    ImGui::EndPopup();
-  }
+      static bool animation_checkbox = false;
+      ImGui::Checkbox("Animation box", &animation_checkbox);
+      if (animation_checkbox) {
+        if (ImGui::BeginCombo("##AnimationFilePath", current_animation.c_str())) {
+          for (auto& item : model_cache) {
+            bool is_selected = (current_animation == item);
+            if (ImGui::Selectable(item.c_str(), is_selected)) {
+              current_animation = item;
+            }
+          }
+          ImGui::EndCombo();
+        }
+      }
 
-  CORE_INFO("What after{}", create_model_oepn);
+      auto close_popup = [&]() -> void {
+        create_model_oepn = false;
+        animation_checkbox = false;
+        current_model = "None";
+        current_animation = "None";
+        ImGui::CloseCurrentPopup();
+      };
+
+      auto model_builder = [this, &close_popup]() -> void {
+        bool is_animation = false;
+        if (current_animation != "None") {
+          is_animation = true;
+        }
+        Entity e = m_scene->create_entity("3D Model");
+        auto& transform = e.GetComponent<::component::Transform>();
+        transform.set_scale(glm::vec3(0.1F, 0.1F, 0.1F));
+        e.AddComponent<::component::Model>(current_model, ::component::Quality::Auto, is_animation);
+        auto& model = e.GetComponent<::component::Model>();
+
+        CORE_DEBUG("path : {} {}", current_model, current_animation);
+        auto model_mat = std::make_shared<::component::Material>(::component::Material::ShadingModel::PBR);
+
+        auto brdf_lut_texture =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+        auto irradian_texture =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("irradian");
+        auto prefiltermap =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+        model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+        model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+        model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+
+        if (is_animation) {
+          model.AttachMotion(current_animation);
+          auto& animator = e.AddComponent<::component::Animator>(&model);
+          // animator->Update(model, 0);
+
+          for (auto& [texture_name, uid] : model.materials_cache) {
+            auto& temp_mat = model.SetMatermial(texture_name, *model_mat);
+            auto& bone_transforms = animator.m_bone_transforms;
+            temp_mat.set_bound_arrary("bone_transform", 0U, &bone_transforms);
+          }
+        } else {
+          for (auto& [texture_name, uid] : model.materials_cache) {
+            auto& temp_mat = model.SetMatermial(texture_name, *model_mat);
+          }
+        }
+
+        m_scene->SubmitRender(e.id);
+        close_popup();
+      };
+
+      if (ImGui::Button("OK##CreateModel")) {
+        // if (current_model != "None" && current_animation == "None") {
+        /*
+        Entity e = m_scene->create_entity("3D Model");
+        e.AddComponent<::component::Model>(current_model, ::component::Quality::Auto);
+        auto& model = e.GetComponent<::component::Model>();
+        auto model_mat = std::make_shared<::component::Material>(::component::Material::ShadingModel::PBR);
+
+        auto brdf_lut_texture =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
+        auto irradian_texture =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("irradian");
+        auto prefiltermap =
+            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
+        model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
+        model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
+        model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
+        for (auto& [texture_name, uid] : model.materials_cache) {
+          auto& temp_mat = model.SetMatermial(texture_name, *model_mat);
+          // temp_mat.set_texture(0, default_texture);
+        }
+
+        m_scene->SubmitRender(e.id);
+        close_popup();
+        */
+        model_builder();
+        //}
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Close##CreateModel")) {
+        // create_model_oepn = false;
+        // animation_checkbox = false;
+        // current_model = "None";
+        // current_animation = "None";
+        // ImGui::CloseCurrentPopup();
+        close_popup();
+      }
+      ImGui::EndPopup();
+    }
+  }
 
   ImGui::End();
 
