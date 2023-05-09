@@ -47,6 +47,7 @@ Model::Model(const std::string& file_path, Quality quality, bool animated) : mod
   if (!ai_root || ai_root->mRootNode == nullptr || ai_root->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     CORE_ERROR("Failed to import model: {0}", file_path);
     CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
+    std::runtime_error("Failed to import model");
     return;
   }
 
@@ -264,7 +265,7 @@ Material& Model::SetMatermial(const std::string& matkey, const Material& materia
 void Model::AttachMotion(const std::string& filepath) {
   if (!m_animated) {
     CORE_ERROR("Cannot attach animation to the model, model must be animated...");
-    std::runtime_error("opt error");
+    throw std::runtime_error("opt error");
   }
   animation_filepath = filepath;
   // clang-format off
@@ -286,7 +287,7 @@ void Model::AttachMotion(const std::string& filepath) {
   if(!scene || scene->mRootNode == nullptr) {
     CORE_ERROR("Failed to import animation: {0}",  filepath);
     CORE_ERROR("Assimp error: {0}", importer.GetErrorString());
-    std::runtime_error("Unexpection...");
+    throw std::runtime_error("Unexpection...");
   }
   animation = std::make_unique<Animation>(scene, this);
 }

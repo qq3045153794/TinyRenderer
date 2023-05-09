@@ -99,16 +99,17 @@ void ContentBrowerPanel::DrawContent() {
       }
 
       ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+      ImGui::PushID(path.path().c_str());
       ImGui::ImageButton(texture_id, {content_size, content_size}, {0, 1}, {1, 0});
-
       if (ImGui::BeginDragDropSource()) {
         auto filename_path = std::filesystem::path(path);
         const char* drag_data = filename_path.c_str();
-        std::size_t drag_data_size = sizeof(char) * strlen(drag_data);
+        std::size_t drag_data_size = sizeof(char) * (strlen(drag_data) + 1);
         ImGui::SetDragDropPayload("CONTENT_BROWER_ITEM", drag_data, drag_data_size, ImGuiCond_Once);
-        ImGui::Text("drag : %s", drag_data);
+        CORE_DEBUG("drag : {}", drag_data);
         ImGui::EndDragDropSource();
       }
+      ImGui::PopID();
 
       ImGui::PopStyleColor();
       ImGui::TextWrapped(path.path().filename().string().c_str(), "%s");

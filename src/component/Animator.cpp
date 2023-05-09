@@ -114,6 +114,9 @@ glm::mat4 Channel::Interpolate(float time) const {
 }
 
 Animation::Animation(const aiScene* ai_scene, Model* model) : n_channels(0) {
+  if (ai_scene->mNumAnimations <= 0) {
+    throw std::runtime_error("The input file dose not cotain animations!");
+  }
   CORE_ASERT(ai_scene->mNumAnimations > 0, "The input file dose not cotain animations!");
 
   aiAnimation* ai_animation = ai_scene->mAnimations[0];

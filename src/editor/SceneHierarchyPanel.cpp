@@ -176,6 +176,13 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
   if (create_model_oepn) {
     ImGui::OpenPopup("Create Model WindowPopUp");
     if (ImGui::BeginPopupModal("Create Model WindowPopUp", &create_model_oepn)) {
+      static bool error_text_open = false;
+      static std::string error_text;
+      if (error_text_open) {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0, 0.0, 0.0, 1.0));
+        ImGui::Text("%s", error_text.c_str());
+        ImGui::PopStyleColor();
+      }
       auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
       static std::string current_model = "None";
       static std::string current_animation = "None";
@@ -191,15 +198,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
       static bool animation_checkbox = false;
       ImGui::Checkbox("Animation box", &animation_checkbox);
       if (animation_checkbox) {
-        if (ImGui::BeginCombo("##AnimationFilePath", current_animation.c_str())) {
-          for (auto& item : model_cache) {
-            bool is_selected = (current_animation == item);
-            if (ImGui::Selectable(item.c_str(), is_selected)) {
-              current_animation = item;
-            }
-          }
-          ImGui::EndCombo();
-        }
+        current_animation = current_model;
       }
 
       auto close_popup = [&]() -> void {
@@ -207,21 +206,19 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
         animation_checkbox = false;
         current_model = "None";
         current_animation = "None";
+        error_text_open = false;
+        error_text.clear();
         ImGui::CloseCurrentPopup();
       };
 
-      auto model_builder = [this, &close_popup]() -> void {
+      Entity entity;
+      auto model_builder = [this, &entity, &close_popup]() -> void {
         bool is_animation = false;
         if (current_animation != "None") {
           is_animation = true;
         }
-        Entity e = m_scene->create_entity("3D Model");
-        auto& transform = e.GetComponent<::component::Transform>();
-        transform.set_scale(glm::vec3(0.1F, 0.1F, 0.1F));
-        e.AddComponent<::component::Model>(current_model, ::component::Quality::Auto, is_animation);
-        auto& model = e.GetComponent<::component::Model>();
-
-        CORE_DEBUG("path : {} {}", current_model, current_animation);
+        entity = m_scene->create_entity("3D Model");
+        auto& model = entity.AddComponent<::component::Model>(current_model, ::component::Quality::Auto, is_animation);
         auto model_mat = std::make_shared<::component::Material>(::component::Material::ShadingModel::PBR);
 
         auto brdf_lut_texture =
@@ -236,9 +233,7 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
 
         if (is_animation) {
           model.AttachMotion(current_animation);
-          auto& animator = e.AddComponent<::component::Animator>(&model);
-          // animator->Update(model, 0);
-
+          auto& animator = entity.AddComponent<::component::Animator>(&model);
           for (auto& [texture_name, uid] : model.materials_cache) {
             auto& temp_mat = model.SetMatermial(texture_name, *model_mat);
             auto& bone_transforms = animator.m_bone_transforms;
@@ -250,45 +245,22 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
           }
         }
 
-        m_scene->SubmitRender(e.id);
+        m_scene->SubmitRender(entity.id);
         close_popup();
       };
 
       if (ImGui::Button("OK##CreateModel")) {
-        // if (current_model != "None" && current_animation == "None") {
-        /*
-        Entity e = m_scene->create_entity("3D Model");
-        e.AddComponent<::component::Model>(current_model, ::component::Quality::Auto);
-        auto& model = e.GetComponent<::component::Model>();
-        auto model_mat = std::make_shared<::component::Material>(::component::Material::ShadingModel::PBR);
-
-        auto brdf_lut_texture =
-            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("BRDF_LUT");
-        auto irradian_texture =
-            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("irradian");
-        auto prefiltermap =
-            ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("prefiltermap");
-        model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
-        model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
-        model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-        for (auto& [texture_name, uid] : model.materials_cache) {
-          auto& temp_mat = model.SetMatermial(texture_name, *model_mat);
-          // temp_mat.set_texture(0, default_texture);
+        try {
+          model_builder();
+        } catch (std::runtime_error& e) {
+          CORE_ERROR("{}", e.what());
+          m_scene->delete_entity(entity.id);
+          error_text = e.what();
+          error_text_open = true;
         }
-
-        m_scene->SubmitRender(e.id);
-        close_popup();
-        */
-        model_builder();
-        //}
       }
       ImGui::SameLine();
       if (ImGui::Button("Close##CreateModel")) {
-        // create_model_oepn = false;
-        // animation_checkbox = false;
-        // current_model = "None";
-        // current_animation = "None";
-        // ImGui::CloseCurrentPopup();
         close_popup();
       }
       ImGui::EndPopup();
@@ -400,6 +372,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     }
   }
 
+  // 变换组件
   draw_component<component::Transform>("Transform", entity, [](auto& component) {
     auto temp_position = component.get_position();
     draw_vec3_control("Position", temp_position, 0.F, 0.1F, 0.0F, 0.0F);
@@ -414,6 +387,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     component.set_scale(temp_scale);
   });
 
+  // 模型组件
   draw_component<component::Model>("Model", entity, [&entity](component::Model& component) {
     using Material = ::component::Material;
     // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
@@ -445,6 +419,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           component.bind_texture(pbr, texture);
         }
       });
+
+      if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWER_ITEM")) {
+          const char* data = static_cast<const char*>(payload->Data);
+          CORE_DEBUG("Get data : {}", data);
+          auto texture = std::make_shared<::asset::Texture>(data, false, 7U);
+          component.bind_texture(pbr, texture);
+        }
+        ImGui::EndDragDropTarget();
+      }
     };
     std::vector<std::string> items;
     items.push_back("DEFAULT");
@@ -456,58 +440,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
       items.push_back(path);
     }
     ImGui::PushFont(ImGuiWrapper::u8_font);
-    // 模型
-    /*
-    {
-      auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
-      std::string& current_item = component.model_filepath;
-      if (ImGui::BeginCombo("##ModelFilePath", current_item.c_str())) {
-        for (auto& item : model_cache) {
-          bool is_selected = (current_item == item);
-          if (ImGui::Selectable(item.c_str(), is_selected)) {
-            if (entity.Contains<::component::Animator>()) {
-              entity.RemoveComponent<::component::Animator>();
-            }
-            entity.SetComponent<::component::Model>(item, ::component::Quality::Auto, false);
-            auto model_mat = std::make_shared<Material>(Material::ShadingModel::PBR);
-            model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
-            model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
-            model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-            for (auto& [texture_name, uid] : component.materials_cache) {
-              auto& temp_mat = component.SetMatermial(texture_name, *model_mat);
-            }
-          }
-        }
-        ImGui::EndCombo();
-      }
-    }
-    // 动画
-    {
-
-      auto model_cache = PublicSingleton<AssetManage>::GetInstance().GetModelFilter();
-      std::string& current_item = component.animation_filepath;
-      if (ImGui::BeginCombo("##AnimationFilePath", current_item.c_str())) {
-        for (auto& item : model_cache) {
-          bool is_selected = (current_item == item);
-          if (ImGui::Selectable(item.c_str(), is_selected)) {
-            if (entity.Contains<::component::Animator>()) {
-              entity.RemoveComponent<::component::Animator>();
-            }
-            entity.SetComponent<::component::Model>(component.model_filepath, ::component::Quality::Auto, true);
-            auto model_mat = std::make_shared<Material>(Material::ShadingModel::PBR);
-            model_mat->bind_texture(::component::Material::pbr_t::irradiance_map, irradian_texture);
-            model_mat->bind_texture(::component::Material::pbr_t::prefilter_map, prefiltermap);
-            model_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
-            for (auto& [texture_name, uid] : component.materials_cache) {
-              auto& temp_mat = component.SetMatermial(texture_name, *model_mat);
-            }
-
-          }
-        }
-        ImGui::EndCombo();
-      }
-    }
-    */
     for (auto& [mat_name, uid] : component.materials_cache) {
       auto& mat = component.materials.at(uid);
 
@@ -561,6 +493,15 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
             }
           }
           ImGui::EndCombo();
+        }
+
+        if (ImGui::BeginDragDropTarget()) {
+          if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWER_ITEM")) {
+            const char* data = static_cast<const char*>(payload->Data);
+            CORE_DEBUG("Get data : {}", data);
+            mat.set_texture(0, std::make_shared<::asset::Texture>(data, false, 7U));
+          }
+          ImGui::EndDragDropTarget();
         }
       } else if (mat.m_shading_model == ::component::Material::ShadingModel::PBR) {
         using Material = ::component::Material;
@@ -674,6 +615,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     ImGui::PopFont();
   });
 
+  // 动画组件
   draw_component<component::Animator>("Animator", entity, [](component::Animator& component) {
     ImGui::Text("Animation Name : %s", component.m_name.c_str());
     ImGui::Text("Animation Speed : %f", component.m_speed);
@@ -691,6 +633,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     ImGui::SliderFloat("##TickSpeed", &component.m_tick_speed, 0.1F, 10.F, "%.2f");
   });
 
+  // 材质组件
   draw_component<::component::Material>("Material", entity, [&entity](::component::Material& component) {
     using Material = ::component::Material;
     // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().textures_cache;
@@ -698,9 +641,10 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     // auto& textures_cache = PublicSingleton<AssetManage>::GetInstance().m_resource_storage;
     auto textures_cache = PublicSingleton<AssetManage>::GetInstance().GetImageFilter();
     auto PbrTextureCombo = [&textures_cache](const std::string& combo_key, Material::pbr_t pbr, auto& current_item,
-                                             auto& component, const Entity& entity, bool is_samle) -> void {
+                                             auto& component, bool is_samle) -> void {
       std::vector<std::filesystem::path> items;
       items.push_back("None");
+      /*
       if (is_samle) {
         if (!current_item) {
           auto texture = component.get_texture(pbr);
@@ -708,6 +652,12 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           // CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
           //           texture->m_image_path->string());
         }
+      }
+      */
+
+      if (is_samle) {
+        auto texture = component.get_texture(pbr);
+        current_item = texture->m_image_path->string();
       }
 
       if (!current_item) {
@@ -727,6 +677,15 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           component.bind_texture(pbr, texture);
         }
       });
+
+      if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWER_ITEM")) {
+          const char* data = static_cast<const char*>(payload->Data);
+          CORE_DEBUG("Get data : {}", data);
+          component.bind_texture(pbr, std::make_shared<::asset::Texture>(data, true, 7U));
+        }
+        ImGui::EndDragDropTarget();
+      }
     };
 
     auto TextureCombo = [&textures_cache](const std::string& combo_key, auto& component, const Entity& entity) -> void {
@@ -754,6 +713,15 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
           component.set_texture(0, texture);
         }
       });
+
+      if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWER_ITEM")) {
+          const char* data = static_cast<const char*>(payload->Data);
+          CORE_DEBUG("Get data : {}", data);
+          component.set_texture(0, std::make_shared<::asset::Texture>(data, true, 7U));
+        }
+        ImGui::EndDragDropTarget();
+      }
     };
 
     if (component.m_shading_model == Material::ShadingModel::PBR) {
@@ -774,13 +742,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::albedo, albedo);
 
         ImGui::TableSetColumnIndex(1);
-        static std::optional<std::string> current_item;
+        
+        std::optional<std::string> current_item;
+        /*
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##AlbedoCombo", Material::pbr_t::albedo, current_item, component, entity, sample_albedo);
+        */
+        PbrTextureCombo("##AlbedoCombo", Material::pbr_t::albedo, current_item, component, sample_albedo);
         ImGui::EndTable();
       }
 
@@ -798,13 +769,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::roughness, reghness);
 
         ImGui::TableSetColumnIndex(1);
-        static std::optional<std::string> current_item;
+        
+        std::optional<std::string> current_item;
+        /*
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##RoughnessCombo", Material::pbr_t::roughness, current_item, component, entity,
+        */
+        PbrTextureCombo("##RoughnessCombo", Material::pbr_t::roughness, current_item, component,
                         sample_reghness);
         ImGui::EndTable();
       }
@@ -823,13 +797,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::metalness, metalness);
 
         ImGui::TableSetColumnIndex(1);
-        static std::optional<std::string> current_item;
+        
+        std::optional<std::string> current_item;
+        /*
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##MetalnessCombo", Material::pbr_t::metalness, current_item, component, entity,
+        */
+        PbrTextureCombo("##MetalnessCombo", Material::pbr_t::metalness, current_item, component,
                         sample_metalness);
         ImGui::EndTable();
       }
@@ -859,13 +836,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::ao, ao);
 
         ImGui::TableSetColumnIndex(1);
-        static std::optional<std::string> current_item;
+        
+        std::optional<std::string> current_item;
+        /*
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##AoCombo", Material::pbr_t::ao, current_item, component, entity, sample_ao);
+        */
+        PbrTextureCombo("##AoCombo", Material::pbr_t::ao, current_item, component, sample_ao);
         ImGui::EndTable();
       }
 
@@ -876,13 +856,16 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         bool sample_normal = std::get<::component::UboData<bool>>(sample_normal_var).m_data;
 
         ImGui::TableSetColumnIndex(0);
+        
         static std::optional<std::string> current_item;
+        /*
         static Entity last_entity;
         if (last_entity.id != entity.id) {
           current_item.reset();
         }
         last_entity = entity;
-        PbrTextureCombo("##NormalCombo", Material::pbr_t::normal, current_item, component, entity, sample_normal);
+        */
+        PbrTextureCombo("##NormalCombo", Material::pbr_t::normal, current_item, component, sample_normal);
         ImGui::EndTable();
       }
     }
@@ -896,6 +879,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     }
   });
 
+  // 网格组件
   draw_component<component::Mesh>("Mesh", entity, [&entity](component::Mesh& component) {
     ImGui::BeginTable("##NorTable", 1);
     ImGui::TableNextRow();
@@ -919,6 +903,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     ImGui::EndTable();
   });
 
+  // 相机组件
   draw_component<component::CameraFps>("CameraFps", entity, [&entity](component::CameraFps& component) {
     if (component.get_projection_string() == "PERSPECTIVE") {
       ImGui::Text("Aspect");
@@ -970,6 +955,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
     }
   });
 
+  //  光照
   draw_component<component::PointLight>("Point Light", entity, [](component::PointLight& component) {
     ImGui::Text("Color");
     float f_color[3];
