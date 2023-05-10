@@ -20,9 +20,18 @@ Library<UBO>::Library() {
   }
   {
     // 点光源
-    std::vector<GLuint> offset = {0U, 16U, 32U, 36U, 40U, 44U};
-    std::vector<GLuint> lenght = {16U, 16U, 4U, 4U, 4U, 4U};
-    GLuint sz = 48U;
+    // std::vector<GLuint> offset = {0U, 16U, 32U, 36U, 40U, 44U};
+    // std::vector<GLuint> lenght = {16U, 16U, 4U, 4U, 4U, 4U};
+    // GLuint sz = 48U;
+    // Add("PL", std::make_shared<UBO>(offset, lenght, sz));
+
+    // 最大光照数量
+    // 需要和shader里面的对应
+    GLuint data_count = 32U;
+
+    std::vector<GLuint> offset = {0U, 16 * data_count, 2 * 16 * data_count, 3 * 16 * data_count, 4 * 16 * data_count, 5 * 16 * data_count};
+    std::vector<GLuint> lenght = {16U, 16U, 16U, 16U, 16U, 16U};
+    GLuint sz = 16U * 32U * 6U;
     Add("PL", std::make_shared<UBO>(offset, lenght, sz));
   }
   {

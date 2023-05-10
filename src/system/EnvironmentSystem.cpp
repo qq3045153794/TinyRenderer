@@ -69,6 +69,8 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     ubo->set_uniform(2, &intensity);
   }
 
+  // 点光源
+  GLuint id = 0U;
   auto pl_view = m_scene->registry.view<PointLight, Transform>();
   for (auto& e : pl_view) {
     auto ubo = PublicSingleton<Library<::asset::UBO>>::GetInstance().Get("PL");
@@ -81,15 +83,16 @@ void EnvironmentSystem::OnEditorRumtime(Entity& editor_camera) {
     auto quadratic = pl.m_quadratic;
     auto range = pl.m_range;
 
-    ubo->set_uniform(0, glm::value_ptr(color));
-    ubo->set_uniform(1, glm::value_ptr(position));
-    ubo->set_uniform(2, &intensity);
-    ubo->set_uniform(3, &linear);
-    ubo->set_uniform(4, &quadratic);
-    ubo->set_uniform(5, &range);
+    ubo->set_multi_uniform(0, id, glm::value_ptr(color));
+    ubo->set_multi_uniform(1, id, glm::value_ptr(position));
+    ubo->set_multi_uniform(2, id, &intensity);
+    ubo->set_multi_uniform(3, id, &linear);
+    ubo->set_multi_uniform(4, id, &quadratic);
+    ubo->set_multi_uniform(5, id, &range);
+    id++;
   }
 
- 
+
   auto animate_view = m_scene->registry.view<Model, Animator>();
   for (auto& e : animate_view) {
     auto& animator = animate_view.get<Animator>(e);

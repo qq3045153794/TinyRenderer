@@ -26,8 +26,7 @@ void VBO::ubind() const {
   }
 }
 
-IBO::IBO(GLuint sz, void* data, GLenum usage, GLuint count)
-    : BufferBase(), m_count(count) {
+IBO::IBO(GLuint sz, void* data, GLenum usage, GLuint count) : BufferBase(), m_count(count) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sz, data, usage);
 }
@@ -57,17 +56,19 @@ UBO::UBO(const u_vec& offset_vec, const u_vec& length_vec, GLuint sz)
 void UBO::set_uniform(GLuint uid, void* data) {
   CORE_ASERT(uid < m_offset_vec.size(), "uid more then vector size");
   this->bind();
-  glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid], m_length_vec[uid],
-                  data);
+  glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid], m_length_vec[uid], data);
   // this->ubind();
 }
 
-void UBO::set_uid(GLuint uid) {
-  m_uid = uid;
+void UBO::set_multi_uniform(GLuint uid, GLuint id, void* data) {
+  CORE_ASERT(uid < m_offset_vec.size(), "uid more then vector size");
+  this->bind();
+  // 16为步长 参考shader
+  glBufferSubData(GL_UNIFORM_BUFFER, m_offset_vec[uid] + id * 16, m_length_vec[uid], data);
 }
-GLuint UBO::Uid() {
-  return m_uid;
-}
+
+void UBO::set_uid(GLuint uid) { m_uid = uid; }
+GLuint UBO::Uid() { return m_uid; }
 
 void UBO::set_binding(GLuint uid, const std::string& name, GLuint shader_id) {
   GLuint block_idx = glGetUniformBlockIndex(shader_id, name.c_str());

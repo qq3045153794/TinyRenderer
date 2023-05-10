@@ -89,12 +89,12 @@ layout(std140) uniform DL {
 } dl;
 
 layout(std140) uniform PL {
-    vec4  color;
-    vec4  position;
-    float intensity;
-    float linear;
-    float quadratic;
-    float range;
+    vec4  color[32];
+    vec4  position[32];
+    float intensity[32];
+    float linear[32];
+    float quadratic[32];
+    float range[32];
 } pl;
 
 layout(std140) uniform SL {
@@ -366,7 +366,9 @@ void main() {
 
     Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
 
-    Lo += EvalPL(px, pl.position.xyz, pl.range, pl.linear, pl.quadratic) * pl.color.rgb * pl.intensity;
+    for (int i = 0; i < 32; i++) {
+      Lo += EvalPL(px, pl.position[i].xyz, pl.range[i], pl.linear[i], pl.quadratic[i]) * pl.color[i].rgb * pl.intensity[i];
+    }
 
     // Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;
 

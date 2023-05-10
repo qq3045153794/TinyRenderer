@@ -53,6 +53,7 @@ class UBO : public BufferBase {
   virtual ~UBO(){};
   void set_binding(GLuint uid, const std::string& name, GLuint shader_id);
   void set_uniform(GLuint uid, void* data);
+  void set_multi_uniform(GLuint uid, GLuint id, void* data);
   void set_uid(GLuint uid);
   GLuint Uid();
 

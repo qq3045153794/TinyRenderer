@@ -161,11 +161,17 @@ void SceneHierarchyPanel::OnImGuiRender(bool* hierarchy_open, scene::Entity& edi
 
     if (ImGui::BeginMenu("Create Light")) {
       if (ImGui::MenuItem("Create Dirct Light")) {
-        // TODO
+        auto sun_light = m_scene->create_entity("sum light", ::component::ETag::Lamplight);
+        sun_light.AddComponent<::component::DirectionLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
+        sun_light.GetComponent<::component::Transform>().set_ealar_YZX(glm::vec3(-45, 0.0, 0.0));
       }
 
       if (ImGui::MenuItem("Create Point Light")) {
         // TODO
+        auto point_light = m_scene->create_entity("point light", ::component::ETag::Lamplight);
+        point_light.AddComponent<::component::PointLight>(glm::vec3(1.0, 1.0, 1.0), 1.0);
+        point_light.GetComponent<::component::Transform>().set_position(glm::vec3(0.0, 0.0, -5.0));
+        point_light.GetComponent<::component::PointLight>().set_attenuation(0.09f, 0.032f);
       }
       ImGui::EndMenu();
     }
@@ -644,16 +650,6 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
                                              auto& component, bool is_samle) -> void {
       std::vector<std::filesystem::path> items;
       items.push_back("None");
-      /*
-      if (is_samle) {
-        if (!current_item) {
-          auto texture = component.get_texture(pbr);
-          current_item = texture->m_image_path->string();
-          // CORE_ASERT(textures_cache.count(*texture->m_image_path) > 0, "No import the Texture (path = {})",
-          //           texture->m_image_path->string());
-        }
-      }
-      */
 
       if (is_samle) {
         auto texture = component.get_texture(pbr);
@@ -742,7 +738,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::albedo, albedo);
 
         ImGui::TableSetColumnIndex(1);
-        
+
         std::optional<std::string> current_item;
         /*
         static Entity last_entity;
@@ -769,7 +765,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::roughness, reghness);
 
         ImGui::TableSetColumnIndex(1);
-        
+
         std::optional<std::string> current_item;
         /*
         static Entity last_entity;
@@ -778,8 +774,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         }
         last_entity = entity;
         */
-        PbrTextureCombo("##RoughnessCombo", Material::pbr_t::roughness, current_item, component,
-                        sample_reghness);
+        PbrTextureCombo("##RoughnessCombo", Material::pbr_t::roughness, current_item, component, sample_reghness);
         ImGui::EndTable();
       }
 
@@ -797,7 +792,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::metalness, metalness);
 
         ImGui::TableSetColumnIndex(1);
-        
+
         std::optional<std::string> current_item;
         /*
         static Entity last_entity;
@@ -806,8 +801,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         }
         last_entity = entity;
         */
-        PbrTextureCombo("##MetalnessCombo", Material::pbr_t::metalness, current_item, component,
-                        sample_metalness);
+        PbrTextureCombo("##MetalnessCombo", Material::pbr_t::metalness, current_item, component, sample_metalness);
         ImGui::EndTable();
       }
 
@@ -836,7 +830,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         component.bind_uniform(Material::pbr_u::ao, ao);
 
         ImGui::TableSetColumnIndex(1);
-        
+
         std::optional<std::string> current_item;
         /*
         static Entity last_entity;
@@ -856,7 +850,7 @@ void SceneHierarchyPanel::draw_components(Entity& entity) {
         bool sample_normal = std::get<::component::UboData<bool>>(sample_normal_var).m_data;
 
         ImGui::TableSetColumnIndex(0);
-        
+
         static std::optional<std::string> current_item;
         /*
         static Entity last_entity;
