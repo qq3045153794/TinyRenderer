@@ -9,6 +9,7 @@ class ConfigManage : public PublicSingleton<ConfigManage> {
  public:
   void Init();
   void Import(const std::filesystem::path& from_path, const std::filesystem::path& to_path);
+  void SaveConfigSettings();
   // 暂时相对路径
   std::filesystem::path icons_path;
   std::filesystem::path config_path;
@@ -17,6 +18,9 @@ class ConfigManage : public PublicSingleton<ConfigManage> {
   std::filesystem::path shader_path;
   std::filesystem::path content_path;
   std::filesystem::path content_scenes_path;
+
+  // switch
+  bool enable_shadow;
 };
 
 }  // namespace saber

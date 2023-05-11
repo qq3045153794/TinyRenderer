@@ -28,10 +28,13 @@ class FBO : public Asset {
   const std::unique_ptr<Shader>& get_shader() const;
   const Texture& get_color_texture();
   void draw() const;
+  void draw_ex() const;
   void bind() const override;
   void ubind() const override;
   GLuint Width() const;
   GLuint Height() const;
+
+  void render_pass_texture(std::shared_ptr<Texture> texture);
 
  private:
   void set_buffer();

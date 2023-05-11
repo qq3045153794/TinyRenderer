@@ -12,6 +12,7 @@ class Library<Shader> : public LibraryBase<Library, Shader> {
   [[nodiscard]] std::shared_ptr<Shader> GetDefaultShader();
   [[nodiscard]] std::shared_ptr<Shader> GetPbrShader();
   [[nodiscard]] std::shared_ptr<Shader> GetSkyBoxShader();
+  [[nodiscard]] std::shared_ptr<Shader> GetShadowShader();
 };
 }  // namespace saber
 #endif

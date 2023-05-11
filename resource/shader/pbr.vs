@@ -15,6 +15,7 @@ out _vtx {
     out vec2 _uv2;
     out vec3 _tangent;
     out vec3 _binormal;
+    out vec4 _frag_pos_light_space;
 };
 
 layout (std140) uniform Matrices {
@@ -28,6 +29,7 @@ layout (std140) uniform Matrices {
 uniform bool is_animation;
 uniform mat4 bone_transform[600];
 uniform mat4 model;
+uniform mat4 lightSpaceMatrix;
 
 mat4 CalcBoneTransform() {
   mat4 T = mat4(0.0);
@@ -42,7 +44,6 @@ mat4 CalcBoneTransform() {
 
 void main()
 {
-    
     mat4 BT = is_animation? CalcBoneTransform() : mat4(1.0);
     gl_Position = camera.projection * camera.view * model * BT * vec4(position, 1.0);
 
@@ -51,4 +52,5 @@ void main()
     _tangent  = normalize(vec3(model * BT * vec4(tangent, 0.0)));
     _binormal = normalize(vec3(model * BT * vec4(binormal, 0.0)));
     _uv = uv;
+    _frag_pos_light_space = lightSpaceMatrix * vec4(_position, 1.0);
 }

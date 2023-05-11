@@ -269,10 +269,13 @@ Texture::Texture(GLenum target, GLuint width, GLuint height, GLuint i_format, GL
       if (m_image_format == GL_RGB || m_image_format == GL_RGBA) {
         glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, m_image_format, GL_UNSIGNED_BYTE,
                      nullptr);
-      } else {
-        std::cout << "width = " << width << " "
-                  << "height = " << height << std::endl;
+      } else if (m_image_format == GL_RG16F || m_image_format == GL_RG32F) {
         glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, GL_RG, GL_FLOAT, nullptr);
+      } else if (m_image_format == GL_DEPTH_COMPONENT) {
+        glTexImage2D(m_target, m_levels, m_internal_format, m_width, m_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+                     nullptr);
+      } else {
+        CORE_ASERT(0, "Unknown err...");
       }
       glBindTexture(m_target, 0);
       break;
@@ -296,7 +299,6 @@ Texture::~Texture() {
   CORE_INFO("~Texture (id : {})", m_id);
   glDeleteTextures(1, &m_id);
   CHECK_ERROR();
-
 }
 
 GLuint Texture::get_id() const { return m_id; }
@@ -311,6 +313,13 @@ void Texture::set_sampler_state() const {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  } else if (m_image_format == GL_DEPTH_COMPONENT) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
   } else {
     glTexParameteri(m_target, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(m_target, GL_TEXTURE_WRAP_T, GL_REPEAT);

@@ -4,6 +4,7 @@
 
 #include "core/App.h"
 #include "core/Debug.h"
+#include "library/TextureLibrary.h"
 namespace component {
 
 // clang-format off
@@ -32,7 +33,8 @@ std::map<GLuint, std::string> Material::texture_dictionary{
     {6, "metalness_texture"},
     {7, "roughness_texture"},
     {8, "ao_texture"},
-    {9, "normal_texture"}
+    {9, "normal_texture"},
+    {13, "shadow_map"}
 };
 // clang-format on
 
@@ -78,6 +80,10 @@ Material::Material(ShadingModel shadering_model) : m_shading_model(shadering_mod
     set_uniform(2U, 1.0f);
     set_uniform(3U, 1.0f);
     set_uniform(4U, 0.5f);
+
+
+    auto shadow_map = ::saber::PublicSingleton<::saber::Library<::asset::Texture>>::GetInstance().Get("shadow_map");
+    set_texture(13U, shadow_map);
   } else if (shadering_model == ShadingModel::DEFAULT) {
   }
 }

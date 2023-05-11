@@ -5,6 +5,7 @@
 #include <queue>
 
 #include "asset/Shader.h"
+#include "asset/FBO.h""
 
 namespace scene {
 
@@ -22,7 +23,6 @@ class RenderCommand {
   static void eable_alpha_blend(bool enable);
   static void eable_face_culling(bool enable);
   static void eable_msaa(bool enalbe);
-
   static void set_front_is_ccw(bool is_ccw);
 };
 

@@ -1,5 +1,6 @@
 #include <library/TextureLibrary.h>
 #include <manage/ConfigManage.h>
+#include <core/Window.h>
 namespace saber {
 
 using Texture = asset::Texture;
@@ -13,6 +14,9 @@ Library<asset::Texture>::Library() {
   Add("BRDF_LUT", std::make_shared<Texture>(GL_TEXTURE_2D, kResolution, kResolution, GL_RG16F));
   Add("default", std::make_shared<Texture>((texture_path / "003.jpeg").c_str(), true, 7));
   Add("prefiltermap", std::make_shared<Texture>(GL_TEXTURE_CUBE_MAP, kLowResolution, kLowResolution, GL_FLOAT, 5));
+
+  // 阴影贴图
+  Add("shadow_map", std::make_shared<Texture>(GL_TEXTURE_2D, 1024, 1024, GL_DEPTH_COMPONENT));
   //clnag-format on
 
   // add icons

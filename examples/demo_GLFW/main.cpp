@@ -62,9 +62,5 @@ int main(void) {
     glfwPollEvents();
   }
 
-  std::cout << "end loop" << std::endl;
-  t.reset();
-  glfwTerminate();
-  std::cout << "end glfw" << std::endl;
   return 0;
 }

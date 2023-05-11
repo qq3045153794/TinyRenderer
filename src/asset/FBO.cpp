@@ -141,12 +141,28 @@ void FBO::draw() const {
   m_texture->ubind(0);
 }
 
+void FBO::draw_ex() const {
+  m_vao->draw();
+}
+
 const Texture& FBO::get_color_texture() { return *m_texture; }
+
+
+void FBO::render_pass_texture(std::shared_ptr<Texture> texture) {
+  this->bind();
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         texture->get_id(), 0);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    CORE_ERROR("ERROR::FRAMEBUFFER:: Framebuffer is not complete!");
+  }
+  this->ubind();
+}
 
 void FBO::bind() const {
   if (g_cur_bound_fbo != id) {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     g_cur_bound_fbo = id;
+    glViewport(0, 0, m_width, m_height);
   }
 }
 

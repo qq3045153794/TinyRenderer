@@ -30,7 +30,7 @@ class EditorLayer {
   std::shared_ptr<scene::Scene> m_cur_scene;
   std::shared_ptr<scene::Scene> m_new_scene;
   ::scene::Entity m_editor_camera;
-  std::shared_ptr<::asset::FBO> main_fbo;
+  // std::shared_ptr<::asset::FBO> main_fbo;
   std::unique_ptr<SceneHierarchyPanel> m_hierarchy_panel{nullptr};
   std::unique_ptr<ContentBrowerPanel> m_content_brower_panel{nullptr};
   // 场景区域 左上 右下两点

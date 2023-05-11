@@ -16,6 +16,7 @@ in _vtx {
     in vec2 _uv2;
     in vec3 _tangent;
     in vec3 _binormal;
+    in vec4 _frag_pos_light_space;
 };
 
 /*********************************** BIL ***********************************/
@@ -40,6 +41,9 @@ uniform sampler2D metalness_texture;
 uniform sampler2D roughness_texture;
 uniform sampler2D ao_texture;
 uniform sampler2D normal_texture;
+
+// 阴影
+uniform sampler2D shadow_map;
 
 // uniform sampler2D texture_0;
 // uniform sampler2D texture_1;
@@ -352,6 +356,36 @@ void InitPixel(inout Pixel px, const vec3 camera_pos) {
     px.F0 = ComputeF0(px.albedo.rgb, px.metalness, px.specular);
 }
 
+float ShadowCalculation(inout Pixel px, const vec3 direction, vec4 fragPosLightSpace)
+{
+    // 执行透视除法
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // 变换到[0,1]的范围
+    projCoords = projCoords * 0.5 + 0.5;
+    // 取得最近点的深度(使用[0,1]范围下的fragPosLight当坐标)
+    // float closestDepth = texture(shadow_map, projCoords.xy).r; 
+    // 取得当前片段在光源视角下的深度
+    float currentDepth = projCoords.z;
+    // 检查当前片段是否在阴影中
+    float bias = max(0.05 * (1.0 - dot(px._normal, direction)), 0.005);
+    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadow_map, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadow_map, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+        }    
+    }
+    shadow /= 9.0;
+    if (projCoords.z > 1.0) {
+      shadow = 0.0;
+    }
+    return shadow;
+}
+
 void main() {
 
     Pixel px;
@@ -364,10 +398,12 @@ void main() {
 
     vec3 Lo = vec3(0.0);
 
-    Lo += EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
+    float shadow = ShadowCalculation(px, dl.direction.xyz, _frag_pos_light_space);
+
+    Lo += (1.0 - shadow) * EvalDL(px, dl.direction.xyz) * dl.color.rgb * dl.intensity;
 
     for (int i = 0; i < 32; i++) {
-      Lo += EvalPL(px, pl.position[i].xyz, pl.range[i], pl.linear[i], pl.quadratic[i]) * pl.color[i].rgb * pl.intensity[i];
+      Lo += (1.0 - shadow) * EvalPL(px, pl.position[i].xyz, pl.range[i], pl.linear[i], pl.quadratic[i]) * pl.color[i].rgb * pl.intensity[i];
     }
 
     // Lo += EvalSL(px, sl.position.xyz, sl.direction.xyz, sl.range, sl.inner_cos, sl.outer_cos) * sl.color.rgb * sl.intensity;

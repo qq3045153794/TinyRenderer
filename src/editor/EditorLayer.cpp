@@ -5,6 +5,7 @@
 #include <imGui/ImGuiWrapper.h>
 #include <library/ShaderLibrary.h>
 #include <library/TextureLibrary.h>
+#include <library/FBOLibrary.h>
 #include <manage/ConfigManage.h>
 #include <scene/RenderCommand.h>
 #include <scene/SerializeEntity.h>
@@ -264,7 +265,6 @@ void EditorLayer::OnAttach() {
   aili_mat->bind_texture(::component::Material::pbr_t::brdf_LUT_map, brdf_lut_texture);
   for (auto& [texture_name, uid] : aili_model.materials_cache) {
     auto& temp_mat = aili_model.SetMatermial(texture_name, *aili_mat);
-    //temp_mat.set_texture(0, default_texture);
     auto& bone_transforms = animator.m_bone_transforms;
     temp_mat.set_bound_arrary("bone_transform", 0U, &bone_transforms);
   }
@@ -299,10 +299,6 @@ void EditorLayer::OnAttach() {
   //   ::scene::SerializeObject::DeserializeScene(PublicSingleton<ConfigManage>::GetInstance().content_path /
   //   scene->m_title, *scene);
 
-  // 展示设置 800 600
-  main_fbo = std::make_shared<asset::FBO>(1024, 576);
-  main_fbo->set_color_texture();
-  main_fbo->set_depth_texture();
 
   // scene->SubmitRender(quad.id);
   // scene->SubmitRender(cube.id);
@@ -319,15 +315,9 @@ void EditorLayer::OnDetach() {
   // TODO
 }
 void EditorLayer::OnUpdateRuntime() {
-  // glfwSetInputMode(::core::Window::m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  main_fbo->bind();
-  glViewport(0U, 0U, 1026, 576);
-  ::scene::RenderCommand::clear_buffer();
   m_cur_scene->OnEditorRumtime(m_editor_camera);
-  main_fbo->ubind();
 }
 void EditorLayer::OnImGuiRender() {
-  // glViewport(0U, 0U, 800, 600);
   ::scene::RenderCommand::clear_buffer();
   static bool dockspaceOpen = true;
   static bool demo_window_open = false;
@@ -335,7 +325,6 @@ void EditorLayer::OnImGuiRender() {
   static bool open_scene_popup_open = false;
   static bool save_scene_dir_popup_open = false;
   static bool save_scene_name_popup_open = false;
-  // static bool viewportOpen = true;
   TriggerViewPort();
 
   ImGuiWrapper::Begin();
@@ -344,8 +333,6 @@ void EditorLayer::OnImGuiRender() {
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
   ImGui::SetNextWindowViewport(viewport->ID);
-  // ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-  // ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
   window_flags |=
@@ -366,6 +353,15 @@ void EditorLayer::OnImGuiRender() {
       ImGui::EndMenu();
     }
 
+    if(ImGui::BeginMenu("Settings")) {
+      // if (ImGui::MenuItem("Enable Shadow")) {
+      if(ImGui::Checkbox("enable shadow", &PublicSingleton<ConfigManage>::GetInstance().enable_shadow)) {
+        PublicSingleton<ConfigManage>::GetInstance().SaveConfigSettings();
+      }
+      // }
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("ImGui Demo Window")) {
         demo_window_open = true;
@@ -382,6 +378,9 @@ void EditorLayer::OnImGuiRender() {
   m_content_brower_panel->OnImGuiRender();
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+  auto main_fbo = PublicSingleton<Library<::asset::FBO>>::GetInstance().GetMainFBO();
+  // auto main_fbo = PublicSingleton<Library<::asset::FBO>>::GetInstance().GetDeBugShadowFBO();
+
   ImGui::SetNextWindowSize(ImVec2{static_cast<float>(main_fbo->Width()), static_cast<float>(main_fbo->Height())});
   if (ImGui::Begin("ViewPort")) {
     auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
